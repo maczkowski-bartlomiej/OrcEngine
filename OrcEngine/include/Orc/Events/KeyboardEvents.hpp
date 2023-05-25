@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Events/Event.hpp"
 #include "Input/Keyboard.hpp"
+#include "Events/Event.hpp"
 
 namespace orc {
 

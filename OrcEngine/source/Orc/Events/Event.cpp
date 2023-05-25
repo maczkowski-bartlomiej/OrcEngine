@@ -1,5 +1,4 @@
-#include "OrcPch.hpp"
-
+#include "orcPch.hpp"
 #include "Events/Event.hpp"
 
 namespace orc {
