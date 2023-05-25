@@ -19,7 +19,7 @@ public:
 	};
 
 	static void init(const std::string& logPath);
-	static void shutdown() ;
+	static void shutdown();
 
 	template<typename... Arguments>
 	static void log(Logger::Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments) 
