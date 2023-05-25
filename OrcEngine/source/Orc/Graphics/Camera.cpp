@@ -1,4 +1,5 @@
-#include "orcPch.hpp"
+#include "OrcPch.hpp"
+
 #include "Graphics/Camera.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,6 +9,11 @@ namespace orc {
 Camera::Camera(float left, float right, float bottom, float top) 
 	: m_rotation(0.0f), m_position(0.0f, 0.0f, 0.0f), m_viewMatrix(1.0f), m_projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)), m_viewProjectionMatrix(m_projectionMatrix * m_viewMatrix)
 {
+}
+
+void Camera::move(const Vector2f& offset)
+{
+	setPosition(Vector2f(m_position.x + offset.x, m_position.y + offset.y));
 }
 
 void Camera::setRotation(float rotation) 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "System/System.hpp"
+#include "Engine/Core.hpp"
 #include "Graphics/Window.hpp"
 
 #include <string>
@@ -13,10 +13,9 @@ struct GameSettings
 	int32 minorVersion = 0u;
 	int32 patchVersion = 1u;
 
-	std::string gameName = "orcEngine Game";
+	std::string gameName = "OrcEngine Game";
 
 	std::string logPath = "log.txt";
-	std::string loggerName = "GAME";
 
 	Window::VideoSettings videoSettings;
 };

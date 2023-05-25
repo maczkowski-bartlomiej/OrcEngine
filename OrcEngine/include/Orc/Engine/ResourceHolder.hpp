@@ -1,7 +1,11 @@
 #pragma once
 
-#include "Tools/Utility.hpp"
-#include "System/System.hpp"
+#include "Utility.hpp"
+
+#include "Engine/Core.hpp"
+
+#include "Graphics/Shader.hpp"
+#include "Graphics/Texture.hpp"
 
 #include <string>
 #include <string_view>
@@ -12,17 +16,20 @@ template<typename ResourceType>
 class ResourceHolder
 {
 public:
-	ResourceHolder(const std::string& xmlPath);
+	ResourceHolder(const FilePath& xmlPath);
+
 	Reference<ResourceType> getResource(std::string_view name);
 
 private:
-	void loadResources(const std::string& xmlPath);
-
-	utility::StringViewUnorderedMap<std::shared_ptr<ResourceType>> m_resources;
+	void loadResources(const FilePath& xmlPath);
+	
+	std::unordered_map<std::string, Reference<ResourceType>, utility::string_view_hash, std::equal_to<>> m_resources;
 };
 
+using ShaderHolder = ResourceHolder<Shader>;
+using TextureHolder = ResourceHolder<Texture>;
+
 //using FontHolder = ResourceHolder<Font>;
-//using TextureHolder = ResourceHolder<Texture>;
 //using SoundBufferHolder = ResourceHolder<SoundBuffer>;
 
 }

@@ -16,7 +16,8 @@ public:
 };
 
 namespace glfw {
-	Mouse::Button glfwButtonToorcButton(int glfwButton);
+
+	Mouse::Button glfwButtonToOrcButton(int glfwButton);
 	int orcButtonToGlfwButton(Mouse::Button button);
 }
 

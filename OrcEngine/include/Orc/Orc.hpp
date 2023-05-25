@@ -1,8 +1,13 @@
 #pragma once
 
+#include "Engine/Core.hpp"
+#include "Engine/Debug.hpp"
+#include "Engine/Logger.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/Version.hpp"
+#include "Engine/DeltaTime.hpp"
 #include "Engine/GameLayer.hpp"
+#include "Engine/EntryPoint.hpp"
 #include "Engine/GameSettings.hpp"
 #include "Engine/GameLayerStack.hpp"
 #include "Engine/ResourceHolder.hpp"
@@ -15,8 +20,10 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Window.hpp"
+#include "Graphics/Texture.hpp"
 #include "Graphics/Renderer.hpp"
 #include "Graphics/IndexBuffer.hpp"
+#include "Graphics/VertexBuffer.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/RenderCommand.hpp"
 
@@ -27,9 +34,4 @@
 #include "Math/Vector3.hpp"
 #include "Math/Vector4.hpp"
 
-#include "System/System.hpp"
-#include "System/EntryPoint.hpp"
-
-#include "Tools/Debug.hpp"
-#include "Tools/Logger.hpp"
-#include "Tools/Utility.hpp"
+#include "Utility.hpp"

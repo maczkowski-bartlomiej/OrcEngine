@@ -1,4 +1,5 @@
-#include "orcPch.hpp"
+#include "OrcPch.hpp"
+
 #include "Input/Keyboard.hpp"
 
 #include "Engine/Engine.hpp"
@@ -16,7 +17,7 @@ bool Keyboard::isKeyPressed(Key key)
 
 namespace glfw {
 
-Keyboard::Key glfwKeyToorcKey(int glfwKey, int mods)
+Keyboard::Key glfwKeyToOrcKey(int glfwKey, int mods)
 {
 	switch (glfwKey)
 	{
@@ -154,7 +155,7 @@ Keyboard::Key glfwKeyToorcKey(int glfwKey, int mods)
 	}
 }
 
-Keyboard::SpecialKeys glfwKeyModsToorcSpecialKeys(int mods)
+Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods)
 {
 	Keyboard::SpecialKeys specialKeys;
 

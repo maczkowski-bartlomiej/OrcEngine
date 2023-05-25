@@ -1,64 +1,93 @@
-#include "orcPch.hpp"
-#include "Engine/ResourceHolder.hpp"
+#include "OrcPch.hpp"
 
-#include "Tools/Logger.hpp"
+#include "Engine/ResourceHolder.hpp"
 
 #include <tinyxml2.h>
 
 namespace orc {
 
 template<typename ResourceType>
-ResourceHolder<ResourceType>::ResourceHolder(const std::string& xmlPath)
+ResourceHolder<ResourceType>::ResourceHolder(const FilePath& xmlPath)
 {
 	loadResources(xmlPath);
 }
 
 template<typename ResourceType>
-std::shared_ptr<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view name) 
+Reference<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view name) 
 {
-	if (auto find = m_resources.find(); find != m_resources.end())
+	if (auto find = m_resources.find(name); find != m_resources.end())
 	{
 		return find->second;
 	}
 	else
 	{
-		ORC_CORE_LOG_WARNING("Requested non-existing resource\n\tname: {}", name);
-		return std::make_shared<ResourceType>();
+		ORC_LOG_ERROR("Requested non-existing resource '{}'", name);
+		return createReference<ResourceType>(); //Return empty object
 	}
+
+}
+template<typename ResourceType>
+void ResourceHolder<ResourceType>::loadResources(const FilePath& xmlPath)
+{
+
 }
 
-template<typename ResourceType>
-void ResourceHolder<ResourceType>::loadResources(const std::string& xmlPath)
+void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
+	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
-	tinyxml2::XMLError errorResult{ resourceFile.LoadFile(xmlPath.c_str()) };
-	ORC_CORE_THROW_RUNTIME_ERROR_CHECK(errorResult != tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath, tinyxml2::XMLDocument::ErrorIDToName(errorResult));
-
-	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = resourceFile.NextSiblingElement("RESOURCE"))
+	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
 	{
-		const char* name, * path;
+		const char* name = nullptr;
+		const char* path = nullptr;
+		const char* path2 = nullptr;
 
 		errorResult = element->QueryStringAttribute("name", &name);
-		ORC_CORE_THROW_RUNTIME_ERROR_CHECK(errorResult != tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath, tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		errorResult = element->QueryStringAttribute("path", &path);
-		ORC_CORE_THROW_RUNTIME_ERROR_CHECK(errorResult != tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath, tinyxml2::XMLDocument::ErrorIDToName(errorResult));
-		
-		std::shared_ptr<ResourceType> resource = std::make_shared<ResourceType>();
-		if (!resource->loadFromFile(path))
-		{
-			ORC_CORE_LOG_WARNING("Failed to load resource\n\tpath: {}\n\tname: {}", path, name);
-		}
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		errorResult = element->QueryStringAttribute("path2", &path2);
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		Reference<Shader> shader = createReference<Shader>();
+		if (shader->loadFromFile(path, path2))
+			m_resources[name] = shader;
 		else
-		{
-			m_resources[name] = resource;
-		}
+			ORC_LOG_ERROR("Couldn't load resource '{}'\n\tpath: '{}'\n\tpath 2: '{}'", name, path, path2);
 	}
 }
 
-//template class ResourceHolder<Font>;
-//template class ResourceHolder<Texture>;
-//template class ResourceHolder<SoundBuffer>;
+//todo: name: {} path: {}
+void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
+{
+	tinyxml2::XMLDocument resourceFile;
+	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
+	{
+		const char* name = nullptr;
+		const char* path = nullptr;
+
+		errorResult = element->QueryStringAttribute("name", &name);
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		errorResult = element->QueryStringAttribute("path", &path);
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		Reference<Texture> texture = createReference<Texture>();
+		if (texture->loadFromFile(path))
+			m_resources[name] = texture;
+		else
+			ORC_LOG_ERROR("Couldn't load resource '{}'\n\tpath: '{}'", name, path);
+	}
+}
+
+template class ResourceHolder<Shader>;
+template class ResourceHolder<Texture>;
 
 }

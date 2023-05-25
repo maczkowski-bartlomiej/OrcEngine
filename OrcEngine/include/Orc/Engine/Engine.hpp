@@ -1,9 +1,10 @@
 #pragma once
 
-#include "System/System.hpp"
-#include "Graphics/Window.hpp"
+#include "Engine/Core.hpp"
 #include "Engine/GameSettings.hpp"
 #include "Engine/GameLayerStack.hpp"
+
+#include "Graphics/Window.hpp"
 
 namespace orc {
 
