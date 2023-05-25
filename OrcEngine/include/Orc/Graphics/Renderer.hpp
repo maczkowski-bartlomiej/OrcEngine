@@ -5,7 +5,7 @@
 #include "VertexArray.hpp"
 
 #include "Math/Vector4.hpp"
-#include "Engine/Core.hpp"
+#include "System/System.hpp"
 
 
 namespace orc {
@@ -13,8 +13,6 @@ namespace orc {
 class Renderer
 {
 public:
-	static void init();
-
 	static void beginScene(const Camera& camera);
 	static void endScene();
 

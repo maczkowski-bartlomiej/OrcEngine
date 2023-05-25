@@ -37,9 +37,8 @@ public:
 };
 
 namespace glfw {
-
-	Keyboard::Key glfwKeyToOrcKey(int glfwKey, int mods);
-	Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods);
+	Keyboard::Key glfwKeyToorcKey(int glfwKey, int mods);
+	Keyboard::SpecialKeys glfwKeyModsToorcSpecialKeys(int mods);
 
 	int orcKeyToGlfwKey(Keyboard::Key key);
 }

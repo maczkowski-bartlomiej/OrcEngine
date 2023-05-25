@@ -1,10 +1,5 @@
-#include "OrcPch.hpp"
-
+#include "orcPch.hpp"
 #include "Graphics/Window.hpp"
-
-#include "Events/MouseEvents.hpp"
-#include "Events/WindowEvents.hpp"
-#include "Events/KeyboardEvents.hpp"
 
 #include "Input/Mouse.hpp"
 #include "Input/Keyboard.hpp"
@@ -12,38 +7,35 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-constexpr int OPENGL_MAJOR_VERSION = 4;
-constexpr int OPENGL_MINOR_VERSION = 6;
+#define OPENGL_MAJOR_VERSION 4
+#define OPENGL_MINOR_VERSION 6
 
 namespace orc {
 
-Window* Window::m_instance = nullptr;
+uint32 Window::m_windowCount = 0u;
 
 static void glfwErrorCallback(int code, const char* description)
 {
-	ORC_LOG_ERROR("GLFW error occured\n\tcode: {}\n\tdescription: {}", code, description);
+	ORC_CORE_LOG_ERROR("GLFW error occured\n\tcode: {}\n\tdescription: {}", code, description);
 }
 
 
 Window::Window(const VideoSettings& videoSettings)
-	: m_window(nullptr), m_videoSettings(videoSettings)
+	: m_videoSettings(videoSettings)
 {
-	if (m_instance)
-	{
-		ORC_FATAL("Window instance already exist!!!");
-	}
-	else
-	{
-		m_instance = this;
-		initGLAD();
-	}
+	initGLAD();
+	setCallbacks();
+
+	setVsync(m_videoSettings.vsync);
 }
 
 Window::~Window() 
 {
-	if (m_instance == this)
+	glfwDestroyWindow(m_window);
+	--m_windowCount;
+
+	if (m_windowCount == 0u)
 	{
-		glfwDestroyWindow(m_window);
 		glfwTerminate();
 	}
 }
@@ -100,28 +92,29 @@ void* Window::getNativeWindow()
 
 void Window::initGLAD()
 {
-	ORC_LOG_INFO("Creating window...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
+	ORC_CORE_LOG_INFO("Creating window...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
 	
-	int errorResult = glfwInit();
-	ORC_FATAL_CHECK(errorResult != GLFW_FALSE, "Fatal error occured while initializing GLFW");
+	ORC_ASSERT(m_windowCount == 0, "Window is already open")
+	{
+		int errorResult = glfwInit();
+		ORC_CORE_THROW_RUNTIME_ERROR_CHECK(errorResult != GLFW_FALSE, "Fatal error occured while initializing GLFW");
 
-	glfwSetErrorCallback(&glfwErrorCallback);
+		glfwSetErrorCallback(&glfwErrorCallback);
+	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR_VERSION);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 
 	m_window = glfwCreateWindow(static_cast<int>(m_videoSettings.width), static_cast<int>(m_videoSettings.height), m_videoSettings.title.c_str(), nullptr, nullptr);
+	++m_windowCount;
 
 	glfwMakeContextCurrent(m_window);
 	glfwSetWindowUserPointer(m_window, &m_videoSettings);
 
-	errorResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	ORC_FATAL_CHECK(errorResult != NULL, "Fatal error occured while initializing GLAD");
+	int errorResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	ORC_CORE_THROW_RUNTIME_ERROR_CHECK(errorResult != NULL, "Fatal error occured while initializing GLAD");
 
-	ORC_LOG_INFO("Render info...\n\topenGL version: {}.{}\n\tvendor: {}\n\trenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
-
-	setCallbacks();
-	setVsync(m_videoSettings.vsync);
+	ORC_CORE_LOG_INFO("Render info...\n\topenGL version: {}.{}\n\tvendor: {}\n\trenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
 }
 
 void Window::setCallbacks()
@@ -155,12 +148,12 @@ void Window::setCallbacks()
 
 			if (action == GLFW_PRESS)
 			{
-				orc::KeyboardKeyPressedEvent keyboardKeyPressedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
+				orc::KeyboardKeyPressedEvent keyboardKeyPressedEvent(glfw::glfwKeyToorcKey(key, mods), glfw::glfwKeyModsToorcSpecialKeys(mods));
 				videoSettings.eventCallback(keyboardKeyPressedEvent);
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				orc::KeyboardKeyReleasedEvent keyboardKeyReleasedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
+				orc::KeyboardKeyReleasedEvent keyboardKeyReleasedEvent(glfw::glfwKeyToorcKey(key, mods), glfw::glfwKeyModsToorcSpecialKeys(mods));
 				videoSettings.eventCallback(keyboardKeyReleasedEvent);
 			}
 			else if (action == GLFW_REPEAT)
@@ -176,12 +169,12 @@ void Window::setCallbacks()
 
 			if (action == GLFW_PRESS)
 			{
-				orc::MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToOrcButton(button));
+				orc::MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToorcButton(button));
 				properties.eventCallback(mouseButtonPressedEvent);
 			}
 			else if (action == GLFW_RELEASE)
 			{
-				orc::MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToOrcButton(button));
+				orc::MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToorcButton(button));
 				properties.eventCallback(mouseButtonReleasedEvent);
 			}
 		}

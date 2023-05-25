@@ -1,5 +1,4 @@
-#include "OrcPch.hpp"
-
+#include "orcPch.hpp"
 #include "Engine/GameLayerStack.hpp"
 
 namespace orc {

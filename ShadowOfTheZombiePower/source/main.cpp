@@ -24,6 +24,7 @@ orc::Engine* orc::startEngine()
 	gameSettings.patchVersion = 1;
 
 	gameSettings.gameName = "Shadow of the Zombie Power";
+	gameSettings.loggerName = "SOFTZP";
 	gameSettings.logPath = "logs/softzp.log";
 
 	gameSettings.videoSettings.title = "Shadow of the Zombie Power";

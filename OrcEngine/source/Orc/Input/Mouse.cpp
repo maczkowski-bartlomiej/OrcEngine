@@ -1,5 +1,4 @@
-#include "OrcPch.hpp"
-
+#include "orcPch.hpp"
 #include "Input/Mouse.hpp"
 
 #include "Engine/Engine.hpp"
@@ -17,7 +16,7 @@ bool Mouse::isButtonPressed(Button button)
 
 namespace glfw {
 
-Mouse::Button glfwButtonToOrcButton(int glfwButton)
+Mouse::Button glfwButtonToorcButton(int glfwButton)
 {
 	switch (glfwButton)
 	{

@@ -1,47 +1,42 @@
-#include "OrcPch.hpp"
-
+#include "orcPch.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/Version.hpp"
-#include "Engine/DeltaTime.hpp"
 #include "Engine/ResourceHolder.hpp"
+
+#include "Engine/DeltaTime.hpp"
 
 #include "Graphics/Renderer.hpp"
 #include "Graphics/RenderCommand.hpp"
+#include "Graphics/BufferLayout.hpp"
 
 #include "Events/KeyboardEvents.hpp"
 
-namespace orc {
+#include <glad/glad.h>
+
+namespace orc
+{
 
 Engine* Engine::m_instance = nullptr;
 
 Engine::Engine(const GameSettings& gameSettings)
 	: m_running(true), m_gameSettings(gameSettings)
 {
-	if (m_instance)
-	{
-		ORC_FATAL("Engine instance already exist!!!");
-		return;
-	}
-
+	ORC_CORE_ASSERT(!m_instance, "Engine instance already running")
 	m_instance = this;
 
-	Logger::init(gameSettings.logPath);
+	Logger::init(std::string(gameSettings.logPath), std::string(gameSettings.loggerName));
 
-	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
+	ORC_CORE_LOG_INFO("orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
 	m_window = std::make_unique<Window>(m_gameSettings.videoSettings);
 	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
-
-	Renderer::init();
 }
 
 Engine::~Engine()
 {
-	if (m_instance == this)
-	{
-		ORC_LOG_INFO("Engine shutting down...");
-		Logger::shutdown();
-	}
+	ORC_CORE_LOG_INFO("Engine shutting down...");
+
+	Logger::shutdown();
 }
 
 void Engine::run()
@@ -59,12 +54,12 @@ void Engine::run()
 		while (accumulatedTime >= fixedTimestep)
 		{
 			for (auto layer : m_gameLayerStack)
-				layer->onUpdate((float)fixedTimestep);
+				layer->onUpdate(fixedTimestep);
 
 			accumulatedTime -= fixedTimestep;
-
-			m_window->display();
 		}
+
+		m_window->display();
 	}
 }
 

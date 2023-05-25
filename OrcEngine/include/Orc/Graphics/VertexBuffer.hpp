@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core.hpp"
+#include "System/System.hpp"
 #include "Graphics/BufferLayout.hpp"
 
 namespace orc {
