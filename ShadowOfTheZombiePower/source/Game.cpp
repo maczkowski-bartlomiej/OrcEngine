@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Game::Game()
-	: m_camera(-1.0f, 1.0f, -1.0f, 1.0f), m_position(0.0f)
+	: m_camera(-1.0f, 1.0f, -1.0f, 1.0f), m_position(0.0f), m_shaderHolder("assets/shaders.xml"), m_textureHolder("assets/textures.xml")
 {
 	m_vertexArray = orc::createReference<orc::VertexArray>();
 
@@ -29,91 +29,32 @@ Game::Game()
 
 	m_squareVA = orc::createReference<orc::VertexArray>();
 
-	float squareVertices[3 * 4] = {
-		-0.75f, -0.75f, 0.0f,
-		 0.75f, -0.75f, 0.0f,
-		 0.75f, 0.75f, 0.0f,
-		-0.75f, 0.75f, 0.0f,
+	float squareVertices[5 * 4] = {
+		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f,  0.0f, 1.0f
 	};
 
-	orc::Reference<orc::VertexBuffer> squareVB = orc::createReference<orc::VertexBuffer>(squareVertices, sizeof(squareVertices));
+	orc::Reference<orc::VertexBuffer> squareVB = orc::createReference<orc::VertexBuffer>(squareVertices, (orc::uint32)sizeof(squareVertices));
 	squareVB->setLayout({
-		{ orc::BufferLayout::ShaderDataType::Float3, "a_position" }
+		{ orc::BufferLayout::ShaderDataType::Float3, "a_position" },
+		{ orc::BufferLayout::ShaderDataType::Float2, "a_textureCoords" }
 	});
+
 	m_squareVA->addVertexBuffer(squareVB);
 
 	orc::uint32 squareIndices[6] = { 0u, 1u, 2u, 2u, 3u, 0u };
-	orc::Reference<orc::IndexBuffer> squareIB = orc::createReference<orc::IndexBuffer>(squareIndices, sizeof(squareIndices) / sizeof(orc::uint32));
+	orc::Reference<orc::IndexBuffer> squareIB = orc::createReference<orc::IndexBuffer>(squareIndices, (orc::uint32)sizeof(squareIndices) / (orc::uint32)sizeof(orc::uint32));
 	m_squareVA->setIndexBuffer(squareIB);
 
-	std::string vertexSource = R"(
-			#version 460 core
+	m_texture = m_textureHolder.getResource("shrek_texture");
 
-			layout(location = 0) in vec3 a_position;
-			layout(location = 1) in vec4 a_color;
-			
-			uniform mat4 u_viewProjectionMatrix;
-			uniform mat4 u_transform;
+	m_textureShader = m_shaderHolder.getResource("texture_shader");
+	m_textureShader->bind();
+	m_textureShader->uploadUniformInt("u_texture", 0);
+	m_flatColorShader = m_shaderHolder.getResource("flatColor_shader");
 
-			out vec3 v_position;
-			out vec4 v_color;
-
-			void main()
-			{
-				v_position = a_position;
-				v_color = a_color;
-				gl_Position = u_viewProjectionMatrix * u_transform * vec4(a_position, 1.0);
-			}
-		)";
-
-	std::string fragmentSource = R"(
-			#version 460
-
-			layout(location = 0) out vec4 color;
-			
-			in vec3 v_position;
-			in vec4 v_color;
-
-			void main()
-			{
-				color = vec4(v_position * 0.5 + 0.5, 1.0);
-				color = v_color;
-			}
-		)";
-
-	m_shader = orc::createReference<orc::Shader>(vertexSource, fragmentSource);
-
-	std::string blueShaderVertexSource = R"(
-			#version 460 core
-
-			layout(location = 0) in vec3 a_position;
-			
-			uniform mat4 u_viewProjectionMatrix;
-			uniform mat4 u_transform;
-
-			out vec3 v_position;
-
-			void main()
-			{
-				v_position = a_position;
-				gl_Position = u_viewProjectionMatrix * u_transform * vec4(a_position, 1.0);
-			}
-		)";
-
-	std::string blueShaderFragmentSource = R"(
-			#version 460
-
-			layout(location = 0) out vec4 color;
-			
-			in vec3 v_position;
-
-			void main()
-			{
-				color = vec4(0.2, 0.3, 0.0, 1.0);
-			}
-		)";
-
-	m_blueShader = orc::createReference<orc::Shader>(blueShaderVertexSource, blueShaderFragmentSource);
 }
 
 Game::~Game()
@@ -129,7 +70,7 @@ void Game::onDetach()
 {
 }
 
-void Game::onUpdate(double deltaTime) 
+void Game::onUpdate(float deltaTime) 
 {
 	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::A))
 	{
@@ -149,19 +90,71 @@ void Game::onUpdate(double deltaTime)
 		m_position.y -= 1.0f * deltaTime;
 	}
 
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Left))
+	{
+		m_cameraPosition.x -= 1.0f * deltaTime;
+	}
+	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Right))
+	{
+		m_cameraPosition.x += 1.0f * deltaTime;
+	}
+
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Up))
+	{
+		m_cameraPosition.y += 1.0f * deltaTime;
+	}
+	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Down))
+	{
+		m_cameraPosition.y -= 1.0f * deltaTime;
+	}
+
+	m_camera.setPosition(m_cameraPosition);
+
 	orc::RenderCommand::setClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	orc::RenderCommand::clear();
 
 	orc::Renderer::beginScene(m_camera);
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0), m_position);
-	orc::Renderer::submit(m_squareVA, m_blueShader);
-	orc::Renderer::submit(m_vertexArray, m_shader, transform);
+	glm::mat4 scale = glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
+
+	glm::vec4 redColor = { 0.8f, 0.1f, 0.1f, 1.0f };
+	glm::vec4 blueColor = { 0.1f, 0.1f, 0.8f, 1.0f };
+	
+	for (int y = 0; y < 15; y++)
+	{
+		for (int x = 0; x < 15; x++)
+		{
+			glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+
+			if (x % 2 == y % 2)
+			{
+				m_flatColorShader->uploadUniformFloat4("u_color", redColor);
+			}
+			else
+			{
+				m_flatColorShader->uploadUniformFloat4("u_color", blueColor);
+			}
+
+			orc::Renderer::submit(m_squareVA, m_flatColorShader, transform);
+		}
+	}
+
+	m_texture->bind();
+	orc::Renderer::submit(m_squareVA, m_textureShader);
 
 	orc::Renderer::endScene();
 }
 
 void Game::onEvent(orc::Event& event) 
 {
-
+	if (event.getType() == orc::Event::Type::MouseButtonPressed)
+	{
+		auto newEvent = (orc::MouseButtonPressedEvent*)&event;
+		if (newEvent->button == orc::Mouse::Button::Left)
+		{
+			test--;
+			ORC_LOG_INFO("Value: {}", test);
+		}
+	}
 }

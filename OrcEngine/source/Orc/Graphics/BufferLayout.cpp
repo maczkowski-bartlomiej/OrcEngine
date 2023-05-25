@@ -1,8 +1,8 @@
-#include "orcPch.hpp"
+#include "OrcPch.hpp"
+
 #include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>
-
 
 namespace orc {
 

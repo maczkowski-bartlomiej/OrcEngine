@@ -1,4 +1,5 @@
-#include "orcPch.hpp"
+#include "OrcPch.hpp"
+
 #include "Graphics/RenderCommand.hpp"
 
 #include <glad/glad.h>

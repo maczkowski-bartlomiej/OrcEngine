@@ -9,8 +9,6 @@ workspace "OrcEngine"
 		"Distribution"
 	}
 
-
-
 outputDirectory = "%{cfg.buildcfg}/%{cfg.system}_(%{cfg.architecture})"
 
 engineName = "OrcEngine"
@@ -19,8 +17,9 @@ engineCppFilesWorkspace = "Orc"
 
 gameName = "ShadowOfTheZombiePower"
 gamePath = "ShadowOfTheZombiePower/"
-
+		
 project "OrcEngine"
+
 	location "OrcEngine"
 
 	kind "StaticLib"
@@ -34,14 +33,21 @@ project "OrcEngine"
 
 	files
 	{
-		"%{prj.name}/include/**.hpp",
-		"%{prj.name}/source/**.cpp"
-	}
+		"%{prj.name}/include/Orc/**.hpp",
+		"%{prj.name}/include/Orc/**.cpp",
+		"%{prj.name}/source/Orc/**.cpp",
+
+		"%{prj.name}/dependecies/**.h",
+		"%{prj.name}/dependecies/**.c",
+		"%{prj.name}/dependecies/**.hpp",
+		"%{prj.name}/dependecies/**.cpp",
+	}	
 
 	includedirs
 	{
-		"%{prj.name}/include/" .. engineCppFilesWorkspace,
-		"%{prj.name}/source/" .. engineCppFilesWorkspace
+		"%{prj.name}/include/Orc",
+
+		"%{prj.name}/dependecies"
 	}
 
 	filter "system:windows"
@@ -67,6 +73,9 @@ project "OrcEngine"
 		runtime "Release"
 		optimize "on"
 
+
+	pchheader "%{prj.name}/include/Orc/OrcPch.hpp"
+	pchsource "%{prj.name}/include/Orc/OrcPch.cpp"
 
 project "ShadowOfTheZombiePower"
 	location "ShadowOfTheZombiePower"

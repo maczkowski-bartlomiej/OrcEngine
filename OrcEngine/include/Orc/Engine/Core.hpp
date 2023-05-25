@@ -2,10 +2,10 @@
 
 #include <memory>
 #include <cstdint>
+#include <filesystem>
 
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
-	#define ORC_DEBUG_EXCEPTIONS
 
 	#ifdef ORC_PLATFORM_WINDOWS
 		#define ORC_DEBUGBREAK() __debugbreak()
@@ -19,14 +19,14 @@
 #endif
 
 #ifdef ORC_RELEASE
-	#define ORC_DEBUG_EXCEPTIONS
 #endif
 
 #ifdef ORC_DISTRIBUTION
-	#define ORC_DEBUG_EXCEPTIONS
 #endif
 
 namespace orc {
+
+using FilePath = std::filesystem::path;
 
 template<typename T>
 using Reference = std::shared_ptr<T>;

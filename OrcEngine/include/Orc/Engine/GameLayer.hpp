@@ -11,8 +11,9 @@ public:
 
 	virtual void onAttach() {}
 	virtual void onDetach() {}
-	virtual void onUpdate(double deltaTime) {}
+
 	virtual void onEvent(Event& event) {}
+	virtual void onUpdate(float deltaTime) {}
 };
 
 }

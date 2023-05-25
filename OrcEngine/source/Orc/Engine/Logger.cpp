@@ -1,12 +1,13 @@
-#include "orcPch.hpp"
-#include "Tools\Logger.hpp"
+#include "OrcPch.hpp"
 
-#include <array>
+#include "Engine\Logger.hpp"
 
 #include <spdlog\async.h>
 #include <spdlog\spdlog.h>
 #include <spdlog\sinks\basic_file_sink.h>
 #include <spdlog\sinks\stdout_color_sinks.h>
+
+#include <array>
 
 namespace orc {
 
@@ -27,10 +28,16 @@ public:
 	}
 };
 
-void Logger::init(const std::string& logPath, const std::string& gameLoggerName)
+void Logger::init(const std::string& logPath)
 {
 	static bool initialized = false;
-	ORC_THROW_RUNTIME_ERROR_CHECK_NO_LOG(!initialized, "Called Logger::init() more than once!");
+
+	if (initialized)
+	{
+		ORC_FATAL("Logger already initialized!!!");
+		return;
+	}
+
 	initialized = true;
 
 	spdlog::init_thread_pool(8192, 1);
@@ -40,7 +47,7 @@ void Logger::init(const std::string& logPath, const std::string& gameLoggerName)
 		std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)
 	};
 
-	std::string pattern = "[%H:%M:%S %s:%#] [%n] [%^%*%$] %v";
+	std::string pattern = "[%H:%M:%S %s:%#] [%^%*%$] %v";
 
 	auto formatter = std::make_unique<spdlog::pattern_formatter>();
 	formatter->add_flag<CapitalizedLevelNamesFormatter>('*').set_pattern(pattern);
@@ -48,13 +55,9 @@ void Logger::init(const std::string& logPath, const std::string& gameLoggerName)
 	sinks[0]->set_formatter(formatter->clone());
 	sinks[1]->set_formatter(formatter->clone());
 
-	m_engineLogger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-	m_engineLogger->set_level(spdlog::level::info);
-	m_engineLogger->flush_on(spdlog::level::critical);
-
-	m_clientLogger = std::make_shared<spdlog::async_logger>(gameLoggerName, sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-	m_clientLogger->set_level(spdlog::level::info);
-	m_clientLogger->flush_on(spdlog::level::critical);
+	m_logger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+	m_logger->set_level(spdlog::level::info);
+	m_logger->flush_on(spdlog::level::err);
 }
 
 void Logger::shutdown() 

@@ -3,7 +3,7 @@
 #include "VertexArray.hpp"
 
 #include "Math/Vector4.hpp"
-#include "System/System.hpp"
+#include "Engine/Core.hpp"
 
 namespace orc {
 

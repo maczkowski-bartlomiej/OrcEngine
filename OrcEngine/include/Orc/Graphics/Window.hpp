@@ -1,7 +1,8 @@
 #pragma once
 
+#include "Engine/Core.hpp"
 #include "Events/Event.hpp"
-#include "System/System.hpp"
+
 #include "Math/Vector2.hpp"
 
 #include <string>
@@ -18,7 +19,7 @@ public:
 
 	struct VideoSettings
 	{
-		std::string title = "orc Engine";
+		std::string title = "Orc Engine";
 
 		uint32 width = 800u;
 		uint32 height = 600u;
@@ -48,10 +49,10 @@ private:
 	void initGLAD();
 	void setCallbacks();
 
-	GLFWwindow* m_window = nullptr;
+	GLFWwindow* m_window;
 	VideoSettings m_videoSettings;
 
-	static uint32 m_windowCount;
+	static Window* m_instance;
 };
 
 }
