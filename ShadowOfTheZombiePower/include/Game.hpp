@@ -20,7 +20,6 @@ private:
 
 	orc::Reference<orc::Shader> m_textureShader;
 	orc::Reference<orc::Shader> m_flatColorShader;
-	orc::Reference<orc::VertexArray> m_vertexArray;
 	orc::Reference<orc::VertexArray> m_squareVA;
 
 	glm::vec3 m_position;

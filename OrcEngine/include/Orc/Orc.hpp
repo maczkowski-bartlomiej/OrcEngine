@@ -17,21 +17,18 @@
 #include "Events/WindowEvents.hpp"
 #include "Events/KeyboardEvents.hpp"
 
+#include "Graphics/Sprite.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Window.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Renderer.hpp"
+#include "Graphics/Transform.hpp"
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/VertexBuffer.hpp"
 #include "Graphics/BufferLayout.hpp"
-#include "Graphics/RenderCommand.hpp"
 
 #include "Input/Mouse.hpp"
 #include "Input/Keyboard.hpp"
-
-#include "Math/Vector2.hpp"
-#include "Math/Vector3.hpp"
-#include "Math/Vector4.hpp"
 
 #include "Utility.hpp"

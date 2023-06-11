@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Math/Vector2.hpp"
-
-#include <glm/glm.hpp>
+#include "Engine/Core.hpp"
 
 namespace orc {
 
@@ -19,17 +17,17 @@ public:
 
 	float getRotation() const;
 	Vector2f getPosition() const;
-	const glm::mat4& getViewProjectionMatrix() const;
+	const Matrix& getViewProjectionMatrix() const;
 
 private:
 	void recalculateViewMatrix();
 
 	float m_rotation;
+	Vector2f m_position;
 
-	glm::vec3 m_position; 
-	glm::mat4 m_viewMatrix;
-	glm::mat4 m_projectionMatrix;
-	glm::mat4 m_viewProjectionMatrix;
+	Matrix m_viewMatrix;
+	Matrix m_projectionMatrix;
+	Matrix m_viewProjectionMatrix;
 };
 
 }

@@ -7,4 +7,6 @@ glad
 glm
 
 spdlog
-tinyxml2
+tinyxml2 (to remove, use lua??)
+
+stbimage

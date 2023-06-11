@@ -5,7 +5,6 @@
 #include "Utility.hpp"
 
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
 
 namespace orc {
 
@@ -61,13 +60,13 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 	glUniform1i(location, integer);
 }
 
-void Shader::uploadUniformFloat4(const std::string& name, const glm::vec4& float4) const
+void Shader::uploadUniformFloat4(const std::string& name, const Vector4f& float4) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
 	glUniform4f(location, float4.x, float4.y, float4.z, float4.w);
 }
 
-void Shader::uploadUniformMatrix4(const std::string& name, const glm::mat4& matrix) const
+void Shader::uploadUniformMatrix4(const std::string& name, const Matrix& matrix) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));

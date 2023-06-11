@@ -3,8 +3,6 @@
 #include "Engine/Core.hpp"
 #include "Events/Event.hpp"
 
-#include "Math/Vector2.hpp"
-
 #include <string>
 #include <functional>
 

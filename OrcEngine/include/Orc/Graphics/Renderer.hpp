@@ -1,12 +1,11 @@
 #pragma once
 
-#include "Camera.hpp"
-#include "Shader.hpp"
-#include "VertexArray.hpp"
-
-#include "Math/Vector4.hpp"
 #include "Engine/Core.hpp"
 
+#include "Graphics/Camera.hpp"
+#include "Graphics/Sprite.hpp"
+#include "Graphics/Shader.hpp"
+#include "Graphics/VertexArray.hpp"
 
 namespace orc {
 
@@ -15,15 +14,23 @@ class Renderer
 public:
 	static void init();
 
+	static void clear();
+	static void setClearColor(const Vector4f& color);
+
+	static void drawIndexed(Reference<VertexArray> vertexArray);
+
 	static void beginScene(const Camera& camera);
 	static void endScene();
 
-	static void submit(Reference<VertexArray> vertexArray, Reference<Shader> shader, const glm::mat4& transform = glm::mat4(1.0));
+	static void submit(Reference<Sprite> sprite);
+	static void submit(Reference<Sprite> sprite, Reference<Shader> shader);
+
+	static void submit(Reference<VertexArray> vertexArray, Reference<Shader> shader, const Matrix& transform = Matrix(1.0f));
 
 private:
 	struct SceneData
 	{
-		glm::mat4 viewProjectionMatrix;
+		Matrix viewProjectionMatrix;
 	};
 
 	static SceneData* m_sceneData;

@@ -110,15 +110,15 @@ void Game::onUpdate(float deltaTime)
 
 	m_camera.setPosition(m_cameraPosition);
 
-	orc::RenderCommand::setClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	orc::RenderCommand::clear();
+	orc::Renderer::setClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+	orc::Renderer::clear();
 
 	orc::Renderer::beginScene(m_camera);
 
-	glm::mat4 scale = glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
+	orc::Matrix scale = glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
 
-	glm::vec4 redColor = { 0.8f, 0.1f, 0.1f, 1.0f };
-	glm::vec4 blueColor = { 0.1f, 0.1f, 0.8f, 1.0f };
+	orc::Vector4f redColor = { 0.8f, 0.1f, 0.1f, 1.0f };
+	orc::Vector4f blueColor = { 0.1f, 0.1f, 0.8f, 1.0f };
 	
 	for (int y = 0; y < 15; y++)
 	{

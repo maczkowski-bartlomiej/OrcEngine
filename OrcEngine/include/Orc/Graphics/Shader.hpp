@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core.hpp"
-#include <glm/glm.hpp>
 
 #include <string>
 
@@ -26,8 +25,8 @@ public:
 	void unbind() const;
 
 	void uploadUniformInt(const std::string& name, int integer) const;
-	void uploadUniformFloat4(const std::string& name, const glm::vec4& float4) const;
-	void uploadUniformMatrix4(const std::string& name, const glm::mat4& matrix) const;
+	void uploadUniformFloat4(const std::string& name, const Vector4f& float4) const;
+	void uploadUniformMatrix4(const std::string& name, const Matrix& matrix) const;
 
 private:
 	bool readShader(std::string* shader, const FilePath& filePath);
