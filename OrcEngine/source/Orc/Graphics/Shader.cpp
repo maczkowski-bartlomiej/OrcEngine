@@ -60,6 +60,13 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 	glUniform1i(location, integer);
 }
 
+
+void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32 size) const
+{
+	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
+	glUniform1iv(location, size, array);
+}
+
 void Shader::uploadUniformFloat4(const std::string& name, const Vector4f& float4) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());

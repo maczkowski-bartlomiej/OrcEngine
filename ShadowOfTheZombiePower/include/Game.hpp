@@ -16,17 +16,10 @@ public:
 private:
 	orc::Camera m_camera;
 
-	orc::Reference<orc::Texture> m_texture;
-
-	orc::Reference<orc::Shader> m_textureShader;
-	orc::Reference<orc::Shader> m_flatColorShader;
-	orc::Reference<orc::VertexArray> m_squareVA;
-
-	glm::vec3 m_position;
+	orc::Reference<orc::Sprite> m_player;
+	orc::Reference<orc::Sprite> m_zombie;
+	orc::Reference<orc::Rectangle> m_rectangle;
 	orc::Vector2f m_cameraPosition;
-
-	orc::ShaderHolder m_shaderHolder;
+	orc::Vector2f m_position;
 	orc::TextureHolder m_textureHolder;
-
-	int test = 300;
 };

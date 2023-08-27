@@ -20,12 +20,12 @@ public:
 
 	void bind(uint32 slot = 0);
 
-	int32 getWidth() const;
-	int32 getHeight() const;
+	float getWidth() const;
+	float getHeight() const;
+	Vector2f getSize() const;
 
 private:
-	int32 m_width;
-	int32 m_height;
+	Vector2f m_size;
 	RendererID m_rendererID;
 };
 

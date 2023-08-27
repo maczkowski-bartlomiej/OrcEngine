@@ -93,7 +93,7 @@ uint32 BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 		case orc::BufferLayout::ShaderDataType::Float2: return GL_FLOAT;
 		case orc::BufferLayout::ShaderDataType::Float3: return GL_FLOAT;
 		case orc::BufferLayout::ShaderDataType::Float4: return GL_FLOAT;
-		default:                                          return NULL;
+		default:                                        return NULL;
 	}
 }
 

@@ -8,7 +8,7 @@ namespace orc {
 class VertexBuffer
 {
 public:
-	VertexBuffer(float* vertices, uint32 size);
+	VertexBuffer(void* vertices, uint32 size);
 	~VertexBuffer();
 
 	VertexBuffer(VertexBuffer&&) = delete;
@@ -16,6 +16,7 @@ public:
 	VertexBuffer operator=(VertexBuffer&&) = delete;
 	VertexBuffer operator=(const VertexBuffer&) = delete;
 
+	void setData(void* data, uint32 size);
 	void setLayout(const BufferLayout& bufferLayout);
 
 	RendererID getRendererID() const;

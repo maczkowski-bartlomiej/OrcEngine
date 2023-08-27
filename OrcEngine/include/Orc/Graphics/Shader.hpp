@@ -25,6 +25,8 @@ public:
 	void unbind() const;
 
 	void uploadUniformInt(const std::string& name, int integer) const;
+	void uploadUniformIntArray(const std::string& name, int* array, uint32 size) const;
+
 	void uploadUniformFloat4(const std::string& name, const Vector4f& float4) const;
 	void uploadUniformMatrix4(const std::string& name, const Matrix& matrix) const;
 

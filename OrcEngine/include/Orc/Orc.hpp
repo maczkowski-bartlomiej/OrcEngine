@@ -23,10 +23,12 @@
 #include "Graphics/Window.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Renderer.hpp"
-#include "Graphics/Transform.hpp"
+#include "Graphics/Transformable.hpp"
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/VertexBuffer.hpp"
 #include "Graphics/BufferLayout.hpp"
+
+#include "Graphics/Shapes/Rectangle.hpp"
 
 #include "Input/Mouse.hpp"
 #include "Input/Keyboard.hpp"

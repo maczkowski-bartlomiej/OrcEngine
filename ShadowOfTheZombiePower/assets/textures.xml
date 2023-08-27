@@ -1,1 +1,2 @@
-<RESOURCE name="shrek_texture" path="assets/textures/shrek.png"/>
+<RESOURCE name="soldier_texture" path="assets/textures/soldier.png"/>
+<RESOURCE name="zombie_texture" path="assets/textures/zombie.png"/>

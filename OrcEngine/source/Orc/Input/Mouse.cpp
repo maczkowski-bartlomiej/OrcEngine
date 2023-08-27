@@ -8,10 +8,20 @@
 
 namespace orc {
 
+Vector2f Mouse::getMousePosition()
+{
+	Vector2d mousePosition;
+	GLFWwindow* window = static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow());
+	glfwGetCursorPos(window, &mousePosition.x, &mousePosition.y);
+
+	return (Vector2f)mousePosition;
+}
+
 bool Mouse::isButtonPressed(Button button)
 {
 	GLFWwindow* window = static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow());
 	int isPressed = glfwGetMouseButton(window, glfw::orcButtonToGlfwButton(button));
+
 	return isPressed == GLFW_PRESS;
 }
 

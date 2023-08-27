@@ -6,7 +6,6 @@
 #include "Engine/ResourceHolder.hpp"
 
 #include "Graphics/Renderer.hpp"
-#include "Graphics/RenderCommand.hpp"
 
 #include "Events/KeyboardEvents.hpp"
 
