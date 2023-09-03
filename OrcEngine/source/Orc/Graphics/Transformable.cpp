@@ -55,26 +55,6 @@ void Transformable::setRotation(float angle)
 	onTransformChangeCallback();
 }
 
-void Transformable::setSize(float x, float y)
-{
-	m_size = Vector2f(x, y);
-
-	m_isTransformMatrixUpdateNeeded = true;
-	m_isInverseTransformMatrixUpdateNeeded = true;
-
-	onTransformChangeCallback();
-}
-
-void Transformable::setSize(const Vector2f& size)
-{
-	m_size = size;
-
-	m_isTransformMatrixUpdateNeeded = true;
-	m_isInverseTransformMatrixUpdateNeeded = true;
-
-	onTransformChangeCallback();
-}
-
 void Transformable::setOrigin(float x, float y)
 {
 	m_origin = Vector2f(x, y);
@@ -140,11 +120,6 @@ float Transformable::getRotation() const
 	return m_rotation;
 }
 
-Vector2f Transformable::getSize() const
-{
-	return m_size;
-}
-
 Vector2f Transformable::getScale() const
 {
 	return m_scale;
@@ -160,15 +135,15 @@ Vector2f Transformable::getPosition() const
 	return m_position;
 }
 
-const Matrix& Transformable::getTransformMatrix()
+const Matrix& Transformable::getTransformMatrix() const
 {
 	if (m_isTransformMatrixUpdateNeeded)
 	{
-		m_transformMatrix = glm::mat4(1.0f);
-		m_transformMatrix = glm::translate(m_transformMatrix, glm::vec3(m_position, 0.0f));
-		m_transformMatrix = glm::rotate(m_transformMatrix, glm::radians(m_rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-		m_transformMatrix = glm::translate(m_transformMatrix, glm::vec3(-m_origin, 0.0f));
-		m_transformMatrix = glm::scale(m_transformMatrix, glm::vec3(m_size * m_scale, 1.0f));
+		m_transformMatrix = Matrix(1.0f);
+		m_transformMatrix = glm::translate(m_transformMatrix, m_position);
+		m_transformMatrix = glm::rotate(m_transformMatrix, glm::radians(m_rotation));
+		m_transformMatrix = glm::translate(m_transformMatrix, -m_origin);
+		m_transformMatrix = glm::scale(m_transformMatrix, m_scale);
 
 		m_isTransformMatrixUpdateNeeded = false;
 	}
@@ -176,7 +151,7 @@ const Matrix& Transformable::getTransformMatrix()
 	return m_transformMatrix;
 }
 
-const Matrix& Transformable::getInverseTransformMatrix()
+const Matrix& Transformable::getInverseTransformMatrix() const
 {
 	if (m_isInverseTransformMatrixUpdateNeeded)
 	{

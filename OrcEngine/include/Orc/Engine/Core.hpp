@@ -45,18 +45,18 @@ using uint64 = std::uint64_t;
 using FilePath = std::filesystem::path;
 
 template<typename T>
-using Reference = std::shared_ptr<T>;
+using Ref = std::shared_ptr<T>;
 template<typename T>
-using UniquePointer = std::unique_ptr<T>;
+using UniquePtr = std::unique_ptr<T>;
 
 template<typename T, typename... Arguments>
-constexpr Reference<T> createReference(Arguments&&... arguments)
+constexpr Ref<T> createRef(Arguments&&... arguments)
 {
 	return std::make_shared<T>(std::forward<Arguments>(arguments)...);
 }
 
 template<typename T, typename... Arguments>
-constexpr UniquePointer<T> createUniquePointer(Arguments&&... arguments)
+constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 {
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
@@ -87,6 +87,13 @@ using Vector4f = glm::tvec4<float>;
 using Vector4d = glm::tvec3<double>;
 using Vector4u = glm::tvec4<unsigned int>;
 
-using Matrix = glm::mat4;
+using Matrix = glm::mat3;
+using Matrix4 = glm::mat4;
+
+namespace version {
+	static inline constexpr uint32 MAJOR_VERSION = 0u;
+	static inline constexpr uint32 MINOR_VERSION = 0u;
+	static inline constexpr uint32 PATCH_VERSION = 1u;
+}
 
 }

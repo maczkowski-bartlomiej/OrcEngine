@@ -16,9 +16,9 @@ public:
 private:
 	orc::Camera m_camera;
 
-	orc::Reference<orc::Sprite> m_player;
-	orc::Reference<orc::Sprite> m_zombie;
-	orc::Reference<orc::Rectangle> m_rectangle;
+	orc::Ref<orc::Sprite> m_player;
+	orc::Ref<orc::Sprite> m_zombie;
+	orc::Ref<orc::Rectangle> m_rectangle;
 	orc::Vector2f m_cameraPosition;
 	orc::Vector2f m_position;
 	orc::TextureHolder m_textureHolder;

@@ -5,7 +5,7 @@
 #include "Graphics/Camera.hpp"
 #include "Graphics/Sprite.hpp"
 #include "Graphics/Shader.hpp"
-#include "Graphics/Vertices.hpp"
+#include "Graphics/Vertex.hpp"
 #include "Graphics/VertexArray.hpp"
 
 #include "Graphics/Shapes/Rectangle.hpp"
@@ -14,80 +14,90 @@ namespace orc {
 
 class Renderer
 {
-	static constexpr uint32 MAX_QUAD_AMOUNT = 1000u;
-	static constexpr uint32 MAX_QUAD_INDICES = MAX_QUAD_AMOUNT * 6;
-	static constexpr uint32 MAX_QUAD_VERTICES = MAX_QUAD_AMOUNT * 4;
-
-	static constexpr uint32 MAX_LINE_AMOUNT = 5000u;
-	static constexpr uint32 MAX_LINE_VERTICES = MAX_LINE_AMOUNT * 2;
-
-	static constexpr uint32 MAX_SPRITE_AMOUNT = 1000u;
-	static constexpr uint32 MAX_SPRITE_INDICES = MAX_SPRITE_AMOUNT * 6;
-	static constexpr uint32 MAX_SPRITE_VERTICES = MAX_SPRITE_AMOUNT * 4;
-	static constexpr uint32 MAX_SPRITE_TEXTURE_SLOTS = 32u;
-	static constexpr uint32 MAX_SPRITE_TEXTURE_SLOTS_SHADER = 64u;
-
 public:
 	static void init();
 
 	static void clear();
-	static void setClearColor(const Vector4f& color);
+	static void setClearColor(const Color& color);
 
 	static void begin(const Camera& camera);
 	static void end();
 
-	static void drawIndexed(Reference<VertexArray> vertexArray);
+	static void draw(Ref<Sprite> sprite);
+	static void draw(Ref<Rectangle> rectangle);
 
-	static void draw(Reference<Sprite> sprite);
-	static void draw(Reference<Rectangle> rectangle);
+	static void drawIndexed(Ref<VertexArray> vertexArray);
+	static void drawLine(const Vector2f& start, const Vector2f& end, const Color& color);
 
-	static void drawLine(const Vector2f& start, const Vector2f& end, const Vector4f& color);
-
-	static void draw(Reference<VertexArray> vertexArray, Reference<Shader> shader, const Matrix& transform = Matrix(1.0f));
+	//static void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform = Matrix(1.0f));
 
 private:
+	static void initLinesVertices();
+	static void initSpritesVertices();
+	static void initRectanglesVertices();
+
 	static void batchStart();
 	static void batchFlush();
 
-	static void initQuadVertices();
-	static void initLinesVertices();
-	static void initSpriteVertices();
+	static void batchStartLines();
+	static void batchStartSprites();
+	static void batchStartRectangles();
+
+	static void batchFlushLines();
+	static void batchFlushSprites();
+	static void batchFlushRectangles();
+
+	static constexpr uint32 MAX_LINES_COUNT = 5000u;
+	static constexpr uint32 MAX_LINES_VERTICES = MAX_LINES_COUNT * 2;
+
+	static constexpr uint32 MAX_SPRITES_COUNT = 1000u;
+	static constexpr uint32 MAX_SPRITES_INDICES = MAX_SPRITES_COUNT * 6;
+	static constexpr uint32 MAX_SPRITES_VERTICES = MAX_SPRITES_COUNT * 4;
+
+	static constexpr uint32 MAX_RECTANGLES_COUNT = 1000u;
+	static constexpr uint32 MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
+	static constexpr uint32 MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
+
+	static constexpr uint32 MAX_TEXTURE_SLOTS = 32u;
+	static constexpr uint32 EMPTY_TEXTURE_INDEX = 32u;
 
 	struct SceneData
 	{
-		Matrix viewProjectionMatrix;
+		Matrix4 viewProjectionMatrix;
 
-		//QUADS
-		Reference<Shader> quadShader;
-		Reference<VertexArray> quadVertexArray;
-		Reference<VertexBuffer> quadVertexBuffer;
+		struct Lines
+		{
+			Ref<Shader> shader;
+			Ref<VertexArray> vertexArray;
+			Ref<VertexBuffer> vertexBuffer;
+			std::array<LineVertex, MAX_LINES_VERTICES> vertices;
 
-		std::array<Vertex, MAX_QUAD_VERTICES> quadVertices;
+			uint32 verticesCount = 0u;
+		} lines;
 
-		uint32 quadVerticesCount = 0u;
-		//QUADS
+		struct Sprites
+		{
+			Ref<Shader> shader;
+			Ref<VertexArray> vertexArray;
+			Ref<VertexBuffer> vertexBuffer;
+			std::array<Vertex, MAX_SPRITES_VERTICES> vertices;
+			std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
 
-		//LINES
-		Reference<Shader> lineShader;
-		Reference<VertexArray> lineVertexArray;
-		Reference<VertexBuffer> lineVertexBuffer;
+			uint32 verticesCount = 0u;
+			uint32 texturesCount = 0u;
+		} sprites;
+		
+		struct Rectangles
+		{
+			Ref<Shader> shader;
+			Ref<VertexArray> vertexArray;
+			Ref<VertexBuffer> vertexBuffer;
+			std::array<Vertex, MAX_RECTANGLES_VERTICES> vertices;
+			std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
 
-		std::array<Vertex, MAX_LINE_VERTICES> lineVertices;
-
-		uint32 lineVerticesCount = 0u;
-		//LINES
-
-		//SPRITES
-		Reference<Shader> spriteTextureShader;
-		Reference<VertexArray> spriteVertexArray;
-		Reference<VertexBuffer> spriteVertexBuffer;
-
-		std::array<TexturedVertex, MAX_SPRITE_VERTICES> spriteVertices;
-		std::array<Reference<Texture>, MAX_SPRITE_TEXTURE_SLOTS> spriteTextures;
-
-		uint32 spriteTexturesCount = 0u;
-		uint32 spriteVerticesCount = 0u;
-		//SPRITES
+			uint32 verticesCount = 0u;
+			uint32 texturesCount = 0u;
+		} rectangles;
 	};
 
 	static SceneData* m_scene;

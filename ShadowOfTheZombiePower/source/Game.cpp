@@ -3,27 +3,35 @@
 Game::Game()
 	: m_camera(0.0f, 800.0f, 600.0f, 0.0f), m_position(0.0f), m_textureHolder("assets/textures.xml")
 {
-	orc::Reference<orc::Texture> playerTexture = m_textureHolder.getResource("soldier_texture");
-	m_player = orc::createReference<orc::Sprite>(playerTexture);
+	orc::Ref<orc::Texture> playerTexture = m_textureHolder.getResource("soldier_texture");
+	m_player = orc::createRef<orc::Sprite>(playerTexture);
 
-	orc::Reference<orc::Texture> zombieTexture = m_textureHolder.getResource("zombie_texture");
-	m_zombie = orc::createReference<orc::Sprite>(zombieTexture);
+	orc::Ref<orc::Texture> zombieTexture = m_textureHolder.getResource("zombie_texture");
+	m_zombie = orc::createRef<orc::Sprite>(zombieTexture);
 
 	m_zombie->setRotation(0.0f);
-	m_zombie->setPosition(500, 400);
-	m_zombie->setColor(orc::Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
+	//m_zombie->setPosition(500, 400);
+	//m_zombie->setColor(orc::Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
 
 	m_player->setRotation(0.0f);
-	m_player->setPosition(200, 200);
-	m_player->setColor(orc::Vector4f(1.0f, 1.0f, 1.0f, 1.0f));
-	m_player->setOrigin(m_player->getSize() / 2.0f);
-	//m_player->setTextureRect(orc::IntRect(playerTexture->getWidth(), playerTexture->getHeight(), playerTexture->getWidth(), playerTexture->getHeight()));}
+	m_player->setPosition(400.0f, 300.0f);
+	m_player->setOrigin(m_player->getGlobalRect().getSize() / 2.0f);
+	m_player->setTextureRect(orc::IntRect(0, 0, playerTexture->getWidth(), playerTexture->getHeight()));
+	m_player->setScale(1.0f, 1.0f);
+	m_player->setTexture(playerTexture);
+	m_player->setColor(orc::Color(255, 255, 255, 255));
 
-	m_rectangle = orc::createReference<orc::Rectangle>(orc::Vector2f{ 0, 0 }, orc::Vector2f{ 100, 100 }, orc::Vector4f(0.0, 0.0, 1.0, 1.0), false);
-	m_rectangle->setScale(0.5f, 0.5f);
+	orc::Ref<orc::Texture> gradientTexture = m_textureHolder.getResource("gradient_texture");
+	m_rectangle = orc::createRef<orc::Rectangle>(orc::Vector2f{ 0, 0 }, orc::Vector2f{ 100, 100 }, orc::Color());
+	m_rectangle->setTexture(gradientTexture);
+
+	//m_rectangle->setScale(0.5f, 0.5f);
 	/*
-		FillColor, BorderColor (draw lines first i guess)
-		It will not work with scaling etc? check that
+		FillColor, BorderColor, thincess maybe (lines thicness then??) (draw lines first i guess)
+		texture repeat, clamp?
+		circles,
+		polygons,
+		text
 	*/
 }
 
@@ -63,23 +71,23 @@ void Game::onUpdate(float deltaTime)
 
 	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Left))
 	{
-		m_cameraPosition.x -= speed * deltaTime;
+		m_cameraPosition.x += speed * deltaTime;
 	}
 	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Right))
 	{
-		m_cameraPosition.x += speed * deltaTime;
+		m_cameraPosition.x -= speed * deltaTime;
 	}
 
 	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Up))
 	{
-		m_cameraPosition.y -= speed * deltaTime;
+		m_cameraPosition.y += speed * deltaTime;
 	}
 	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Down))
 	{
-		m_cameraPosition.y += speed * deltaTime;
+		m_cameraPosition.y -= speed * deltaTime;
 	}
 
-	m_player->move(m_position);
+	//m_player->move(m_position);
 	m_position = orc::Vector2f();
 
 	m_camera.setPosition(m_cameraPosition);
@@ -90,19 +98,18 @@ void Game::onUpdate(float deltaTime)
 	float angle = glm::degrees(glm::atan(delta.y, delta.x));
 	m_player->setRotation(angle);
 
-	//orc::Renderer::setClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	orc::Renderer::setClearColor({ 1.f, 1.f, 1.f, 1.f });
+	orc::Renderer::setClearColor(orc::Color(25, 25, 25, 255));
 	orc::Renderer::clear();
 
 	orc::Renderer::begin(m_camera);
 
-	orc::Renderer::drawLine({ 100, 100 }, { 500, 100 }, { 1.0f, 0.0f, 0.0f, 0.50f });
-	orc::Renderer::drawLine({ 100, 200 }, { 500, 300 }, { 1.0f, 0.0f, 0.0f, 1.00f });
+	orc::Renderer::drawLine({ 100, 100 }, { 500, 100 }, orc::Color(255, 0, 0));
+	orc::Renderer::drawLine({ 100, 200 }, { 500, 300 }, orc::Color(255, 0, 0));
 
 	orc::Renderer::draw(m_rectangle);
 
-	//orc::Renderer::draw(m_player);
-	//orc::Renderer::draw(m_zombie);
+	orc::Renderer::draw(m_player);
+	orc::Renderer::draw(m_zombie);
 
 	orc::Renderer::end();
 }

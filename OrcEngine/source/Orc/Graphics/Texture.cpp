@@ -26,7 +26,6 @@ Texture::~Texture()
 bool Texture::loadFromFile(const FilePath& filePath)
 {
 	int channels = 0, desiredChannels = 0, width = 0, height = 0;
-	stbi_set_flip_vertically_on_load(true);
 	unsigned char* pixels = stbi_load(filePath.string().c_str(), &width, &height, &channels, desiredChannels);
 
 	if (!pixels)

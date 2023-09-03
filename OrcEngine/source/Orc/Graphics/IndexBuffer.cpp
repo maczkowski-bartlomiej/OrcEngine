@@ -23,7 +23,7 @@ IndexBuffer::~IndexBuffer()
 	glDeleteBuffers(1, &m_rendererID);
 }
 
-uint32 IndexBuffer::getCount() const 
+uint32 IndexBuffer::getCount() const
 {
 	return m_count;
 }

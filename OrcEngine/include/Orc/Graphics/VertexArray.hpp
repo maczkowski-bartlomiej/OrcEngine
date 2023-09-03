@@ -18,18 +18,18 @@ public:
 	VertexArray operator=(VertexArray&&) = delete;
 	VertexArray operator=(const VertexArray&) = delete;
 
-	void setIndexBuffer(Reference<IndexBuffer> indexBuffer);
-	void addVertexBuffer(Reference<VertexBuffer> vertexBuffer);
+	void setIndexBuffer(Ref<IndexBuffer> indexBuffer);
+	void addVertexBuffer(Ref<VertexBuffer> vertexBuffer);
 
-	const Reference<IndexBuffer>& getIndexBuffer() const;
-	const std::vector<Reference<VertexBuffer>>& getVertexBuffers() const;
+	const Ref<IndexBuffer>& getIndexBuffer() const;
+	const std::vector<Ref<VertexBuffer>>& getVertexBuffers() const;
 
 	RendererID getRendererID() const;
 
 private:
 	RendererID m_rendererID;
-	Reference<IndexBuffer> m_indexBuffer;
-	std::vector<Reference<VertexBuffer>> m_vertexBuffers;
+	Ref<IndexBuffer> m_indexBuffer;
+	std::vector<Ref<VertexBuffer>> m_vertexBuffers;
 };
 
 };

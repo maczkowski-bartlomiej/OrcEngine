@@ -1,37 +1,29 @@
 #pragma once
 
 #include "Engine/Core.hpp"
-#include "Graphics/Transformable.hpp"
+
+#include "Graphics/Color.hpp"
+#include "Graphics/Drawable.hpp"
 
 namespace orc {
 
-class Rectangle : public Transformable
+class Rectangle : public Drawable<Vertex, 4>
 {
 public:
-	Rectangle() = default;
-	Rectangle(const Vector2f& position, const Vector2f& size, Vector4f color, bool fillColor = true)
-		: m_color(color), m_isFilled(fillColor)
-	{
-		setPosition(position);
-		setSize(size);
-	}
+	Rectangle();
+	Rectangle(const Vector2f& position, const Vector2f& size, Color color, bool fillColor = true);
 
-	bool isFilled()
-	{
-		return m_isFilled;
-	}
+	void setSize(const Vector2f& size);
 
+	bool isFilled();
+	Vector2f getSize() const;
+	FloatRect getLocalRect() const override;
+	
 private:
-	Vector4f m_color;
-	bool m_isFilled;
+	void updateVerticesPositions() const override;
 
-	std::array<TexturedVertex, 4u> m_vertices;
+	bool m_isFilled;
+	Vector2f m_size;
 };
 
 }
-
-/*
-
-Polygon - with 
-
-*/

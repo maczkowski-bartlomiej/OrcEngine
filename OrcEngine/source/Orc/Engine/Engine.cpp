@@ -1,13 +1,10 @@
 #include "OrcPch.hpp"
 
 #include "Engine/Engine.hpp"
-#include "Engine/Version.hpp"
 #include "Engine/DeltaTime.hpp"
 #include "Engine/ResourceHolder.hpp"
 
 #include "Graphics/Renderer.hpp"
-
-#include "Events/KeyboardEvents.hpp"
 
 namespace orc {
 
@@ -62,8 +59,10 @@ void Engine::run()
 
 			accumulatedTime -= fixedTimestep;
 
-			m_window->display();
+			m_window->display(); //move outside while?
 		}
+
+
 	}
 }
 

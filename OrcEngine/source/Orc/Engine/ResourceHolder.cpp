@@ -13,7 +13,7 @@ ResourceHolder<ResourceType>::ResourceHolder(const FilePath& xmlPath)
 }
 
 template<typename ResourceType>
-Reference<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view name) 
+Ref<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view name) 
 {
 	if (auto find = m_resources.find(name); find != m_resources.end())
 	{
@@ -22,7 +22,7 @@ Reference<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_vi
 	else
 	{
 		ORC_LOG_ERROR("Requested non-existing resource '{}'", name);
-		return createReference<ResourceType>(); //Return empty object
+		return createRef<ResourceType>(); //Return empty object
 	}
 
 }
@@ -53,7 +53,7 @@ void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 		errorResult = element->QueryStringAttribute("path2", &path2);
 		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
-		Reference<Shader> shader = createReference<Shader>();
+		Ref<Shader> shader = createRef<Shader>();
 		if (shader->loadFromFile(path, path2))
 			m_resources[name] = shader;
 		else
@@ -79,7 +79,7 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 		errorResult = element->QueryStringAttribute("path", &path);
 		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
-		Reference<Texture> texture = createReference<Texture>();
+		Ref<Texture> texture = createRef<Texture>();
 		if (texture->loadFromFile(path))
 			m_resources[name] = texture;
 		else

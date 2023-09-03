@@ -20,9 +20,6 @@ public:
 
 	void setRotation(float angle);
 
-	void setSize(float x, float y);
-	void setSize(const Vector2f& size);
-
 	void setOrigin(float x, float y);
 	void setOrigin(const Vector2f& origin);
 
@@ -33,28 +30,26 @@ public:
 	void setPosition(const Vector2f& position);
 
 	float getRotation() const;
-	Vector2f getSize() const;
 	Vector2f getScale() const;
 	Vector2f getOrigin() const;
 	Vector2f getPosition() const;
 
-	const Matrix& getTransformMatrix();
-	const Matrix& getInverseTransformMatrix();
+	const Matrix& getTransformMatrix() const;
+	const Matrix& getInverseTransformMatrix() const;
 
 protected:
 	virtual void onTransformChangeCallback() {}
 
 	float m_rotation;
-	Vector2f m_size;
 	Vector2f m_scale;
 	Vector2f m_origin;
 	Vector2f m_position;
 
-	Matrix m_transformMatrix;
-	Matrix m_inverseTransformMatrix;
+	mutable Matrix m_transformMatrix;
+	mutable Matrix m_inverseTransformMatrix;
 
-	bool m_isTransformMatrixUpdateNeeded;
-	bool m_isInverseTransformMatrixUpdateNeeded;
+	mutable bool m_isTransformMatrixUpdateNeeded;
+	mutable bool m_isInverseTransformMatrixUpdateNeeded;
 };
 
 }

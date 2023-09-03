@@ -5,7 +5,7 @@
 namespace orc {
 
 Camera::Camera(float left, float right, float bottom, float top) 
-	: m_rotation(0.0f), m_position(0.0f, 0.0f), m_viewMatrix(1.0f), m_projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)), m_viewProjectionMatrix(m_projectionMatrix * m_viewMatrix)
+	: m_scale(1.0f), m_rotation(0.0f), m_position(0.0f, 0.0f), m_viewMatrix(1.0f), m_projectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
 {
 }
 
@@ -42,15 +42,19 @@ Vector2f Camera::getPosition() const
 	return Vector2f(m_position.x, m_position.y);
 }
 
-const Matrix& Camera::getViewProjectionMatrix() const
+const Matrix4& Camera::getViewProjectionMatrix() const
 {
 	return m_viewProjectionMatrix;
 }
 
 void Camera::recalculateViewMatrix() 
 {
-	Matrix transform = glm::translate(Matrix(1.0f), Vector3f(m_position, 1.0f)) * glm::rotate(Matrix(1.0f), glm::radians(m_rotation), Vector3f(0.0f, 0.0f, 1.0f));
-	m_viewMatrix = glm::inverse(transform);
+	glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(-m_position, 0.0f));
+	glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(m_scale, m_scale, 1.0f));
+
+	m_viewMatrix = translate * rotate * scale;
+	m_viewMatrix = glm::inverse(m_viewMatrix);
 	m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 }
 

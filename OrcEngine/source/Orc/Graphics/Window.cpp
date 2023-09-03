@@ -138,6 +138,13 @@ void Window::setCallbacks()
 		}
 	);
 
+	glfwSetFramebufferSizeCallback(m_window,
+		[](GLFWwindow* window, int width, int height)
+		{
+			glViewport(0, 0, width, height);
+		}
+	);
+
 	glfwSetWindowCloseCallback(m_window,
 		[](GLFWwindow* window)
 		{

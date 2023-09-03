@@ -17,13 +17,13 @@ VertexArray::~VertexArray()
 	glDeleteVertexArrays(1, &m_rendererID);
 }
 
-void VertexArray::setIndexBuffer(Reference<IndexBuffer> indexBuffer) 
+void VertexArray::setIndexBuffer(Ref<IndexBuffer> indexBuffer) 
 {
 	glVertexArrayElementBuffer(m_rendererID, indexBuffer->getRendererID());
 	m_indexBuffer = indexBuffer;
 }
 
-void VertexArray::addVertexBuffer(Reference<VertexBuffer> vertexBuffer) 
+void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer) 
 {
 	ORC_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex Buffer has no layout")
 
@@ -60,12 +60,12 @@ void VertexArray::addVertexBuffer(Reference<VertexBuffer> vertexBuffer)
 	m_vertexBuffers.push_back(vertexBuffer);
 }
 
-const Reference<IndexBuffer>& VertexArray::getIndexBuffer() const 
+const Ref<IndexBuffer>& VertexArray::getIndexBuffer() const 
 {
 	return m_indexBuffer;
 }
 
-const std::vector<Reference<VertexBuffer>>& VertexArray::getVertexBuffers() const 
+const std::vector<Ref<VertexBuffer>>& VertexArray::getVertexBuffers() const 
 {
 	return m_vertexBuffers;
 }

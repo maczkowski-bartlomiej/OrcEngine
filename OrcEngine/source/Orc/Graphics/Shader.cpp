@@ -73,10 +73,16 @@ void Shader::uploadUniformFloat4(const std::string& name, const Vector4f& float4
 	glUniform4f(location, float4.x, float4.y, float4.z, float4.w);
 }
 
-void Shader::uploadUniformMatrix4(const std::string& name, const Matrix& matrix) const
+void Shader::uploadUniformMatrix4(const std::string& name, const Matrix4& matrix) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void Shader::uploadUniformMatrix3(const std::string& name, const Matrix& matrix) const
+{
+	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
+	glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 bool Shader::readShader(std::string* shader, const FilePath& filePath)

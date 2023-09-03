@@ -29,7 +29,7 @@ private:
 	bool m_running;
 
 	GameSettings m_gameSettings;
-	UniquePointer<Window> m_window;
+	UniquePtr<Window> m_window;
 	GameLayerStack m_gameLayerStack;
 
 	static Engine* m_instance;

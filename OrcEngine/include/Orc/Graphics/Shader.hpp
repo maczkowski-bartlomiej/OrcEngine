@@ -28,7 +28,9 @@ public:
 	void uploadUniformIntArray(const std::string& name, int* array, uint32 size) const;
 
 	void uploadUniformFloat4(const std::string& name, const Vector4f& float4) const;
-	void uploadUniformMatrix4(const std::string& name, const Matrix& matrix) const;
+	void uploadUniformMatrix4(const std::string& name, const Matrix4& matrix) const;
+
+	void uploadUniformMatrix3(const std::string& name, const Matrix& matrix) const;
 
 private:
 	bool readShader(std::string* shader, const FilePath& filePath);

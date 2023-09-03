@@ -17,17 +17,18 @@ public:
 
 	float getRotation() const;
 	Vector2f getPosition() const;
-	const Matrix& getViewProjectionMatrix() const;
+	const Matrix4& getViewProjectionMatrix() const;
 
 private:
 	void recalculateViewMatrix();
 
+	float m_scale;
 	float m_rotation;
 	Vector2f m_position;
 
-	Matrix m_viewMatrix;
-	Matrix m_projectionMatrix;
-	Matrix m_viewProjectionMatrix;
+	Matrix4 m_viewMatrix;
+	Matrix4 m_projectionMatrix;
+	Matrix4 m_viewProjectionMatrix;
 };
 
 }

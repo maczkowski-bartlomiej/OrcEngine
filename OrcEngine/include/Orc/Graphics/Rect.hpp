@@ -18,6 +18,16 @@ public:
 	Rect(const Rect<U>& other)
 		: x((T)other.x), y((T)other.y), width((T)other.width), height((T)other.height) {}
 
+	Vector2<T> getPosition() const
+	{
+		return Vector2<T>(x, y);
+	}
+
+	Vector2<T> getSize() const
+	{
+		return Vector2<T>(width, height);
+	}
+
 	T x, y, width, height;
 };
 
