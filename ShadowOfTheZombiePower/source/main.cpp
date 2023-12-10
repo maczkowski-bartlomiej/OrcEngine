@@ -1,21 +1,5 @@
 #include "Game.hpp"
 
-class ShadowOfTheZombiePower : public orc::Engine
-{
-public:
-	ShadowOfTheZombiePower(const orc::GameSettings& gameSettings)
-		: orc::Engine(gameSettings)
-	{
-		ORC_LOG_INFO("Shadow of The Zombie Power v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
-		pushGameLayer(new Game());
-	}
-
-	~ShadowOfTheZombiePower()
-	{
-		ORC_LOG_INFO("Game shutting down...");
-	}
-};
-
 orc::Engine* orc::startEngine()
 {
 	orc::GameSettings gameSettings;
@@ -27,9 +11,12 @@ orc::Engine* orc::startEngine()
 	gameSettings.logPath = "logs/softzp.log";
 
 	gameSettings.videoSettings.title = "Shadow of the Zombie Power";
-	gameSettings.videoSettings.width = 800u;
-	gameSettings.videoSettings.height = 600u;
+	gameSettings.videoSettings.width = 800;
+	gameSettings.videoSettings.height = 600;
 	gameSettings.videoSettings.vsync = true;
 
-	return new ShadowOfTheZombiePower(gameSettings);
+	orc::Engine* engine = new Engine(gameSettings);
+	ORC_LOG_INFO("Shadow of The Zombie Power v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
+	engine->pushGameLayer(new Game());
+	return engine;
 }

@@ -5,7 +5,7 @@
 namespace orc {
 
 GameLayerStack::GameLayerStack() 
-	:m_gameLayerInsertIndex(0u)
+	:m_gameLayerInsertIndex(0)
 {
 }
 

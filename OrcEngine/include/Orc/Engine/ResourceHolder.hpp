@@ -7,6 +7,8 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Texture.hpp"
 
+#include "Audio/SoundBuffer.hpp"
+
 #include <string>
 #include <string_view>
 
@@ -28,7 +30,8 @@ private:
 
 using ShaderHolder = ResourceHolder<Shader>;
 using TextureHolder = ResourceHolder<Texture>;
-
+using SoundBufferHolder = ResourceHolder<SoundBuffer>;
+// 
 //using FontHolder = ResourceHolder<Font>;
 //using SoundBufferHolder = ResourceHolder<SoundBuffer>;
 

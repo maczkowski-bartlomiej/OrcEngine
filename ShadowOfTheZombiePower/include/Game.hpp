@@ -18,8 +18,25 @@ private:
 
 	orc::Ref<orc::Sprite> m_player;
 	orc::Ref<orc::Sprite> m_zombie;
-	orc::Ref<orc::Rectangle> m_rectangle;
+	orc::Ref<orc::Rectangle> m_rectangle1;
+	orc::Ref<orc::Rectangle> m_rectangle2;
+	orc::Ref<orc::Rectangle> m_rectangle3;
+	orc::Ref<orc::Rectangle> m_rectangle4;
+	orc::Ref<orc::Rectangle> m_rectangle5;
+
+	orc::Ref<orc::Circle> m_circle1;
+	orc::Ref<orc::Circle> m_circle2;
+	orc::Ref<orc::Circle> m_circle3;
+
+	orc::Ref<orc::Sprite> m_sprite1;
+	orc::Ref<orc::Sprite> m_sprite2;
+	orc::Ref<orc::Sprite> m_sprite3;
+	orc::Ref<orc::Sprite> m_sprite4;
+
+	orc::Ref<orc::SoundBuffer> m_audioBuffer;
+
 	orc::Vector2f m_cameraPosition;
 	orc::Vector2f m_position;
 	orc::TextureHolder m_textureHolder;
+	orc::SoundBufferHolder m_soundBufferHolder;
 };

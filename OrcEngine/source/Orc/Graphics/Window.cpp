@@ -34,6 +34,7 @@ Window::Window(const VideoSettings& videoSettings)
 	}
 	else
 	{
+		ORC_LOG_INFO("Window info...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
 		m_instance = this;
 		initGLAD();
 	}
@@ -100,8 +101,6 @@ void* Window::getNativeWindow()
 
 void Window::initGLAD()
 {
-	ORC_LOG_INFO("Creating window...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
-	
 	int errorResult = glfwInit();
 	ORC_FATAL_CHECK(errorResult != GLFW_FALSE, "Fatal error occured while initializing GLFW");
 
@@ -118,7 +117,7 @@ void Window::initGLAD()
 	errorResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	ORC_FATAL_CHECK(errorResult != NULL, "Fatal error occured while initializing GLAD");
 
-	ORC_LOG_INFO("Render info...\n\topenGL version: {}.{}\n\tvendor: {}\n\trenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
+	ORC_LOG_INFO("Graphics info...\n\topenGL version: {}.{}\n\tvendor: {}\n\trenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);

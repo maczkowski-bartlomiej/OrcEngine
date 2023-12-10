@@ -16,7 +16,7 @@ class CapitalizedLevelNamesFormatter : public spdlog::custom_flag_formatter
 public:
 	void format(const spdlog::details::log_msg& message, const std::tm&, spdlog::memory_buf_t& destination) override
 	{
-		static constexpr std::array<std::string_view, 7u> names{ "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF" };
+		static constexpr std::array<std::string_view, 7> names{ "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF" };
 		std::string_view name = names[static_cast<size_t>(message.level)];
 
 		destination.append(name.data(), name.data() + name.size());

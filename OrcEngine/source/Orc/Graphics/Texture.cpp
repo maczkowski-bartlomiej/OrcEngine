@@ -8,14 +8,14 @@
 namespace orc {
 
 Texture::Texture()
-	: m_rendererID(0u)
+	: m_rendererID(0)
 {
 }
 
-Texture::Texture(const FilePath& filePath)
-	: m_rendererID(0u)
+Texture::Texture(const FilePath& filePath, bool repeat)
+	: m_rendererID(0)
 {
-	loadFromFile(filePath);
+	loadFromFile(filePath, repeat);
 }
 
 Texture::~Texture()
@@ -23,7 +23,21 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_rendererID);
 }
 
-bool Texture::loadFromFile(const FilePath& filePath)
+void Texture::setTextureWrapping(bool repeat)
+{
+	if (repeat)
+	{
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+	else
+	{
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	}
+}
+
+bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 {
 	int channels = 0, desiredChannels = 0, width = 0, height = 0;
 	unsigned char* pixels = stbi_load(filePath.string().c_str(), &width, &height, &channels, desiredChannels);
@@ -59,6 +73,8 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	setTextureWrapping(repeat);
 
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, (void*)pixels);
 

@@ -6,14 +6,13 @@
 
 namespace orc {
 
-Renderer::SceneData* Renderer::m_scene = new Renderer::SceneData;
-
-void Renderer::init()
+Renderer::Renderer()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	initLinesVertices();
+	initCircleVertices();
 	initSpritesVertices();
 	initRectanglesVertices();
 }
@@ -31,7 +30,7 @@ void Renderer::setClearColor(const Color& color)
 
 void Renderer::begin(const Camera& camera)
 {
-	m_scene->viewProjectionMatrix = camera.getViewProjectionMatrix();
+	m_viewProjectionMatrix = camera.getViewProjectionMatrix();
 
 	batchStart();
 }
@@ -43,88 +42,112 @@ void Renderer::end()
 
 void Renderer::draw(Ref<Sprite> sprite)
 {
-	Renderer::SceneData::Sprites& sprites = m_scene->sprites;
-
-	if (sprites.texturesCount + 1u >= MAX_TEXTURE_SLOTS)
+	if (m_sprites.texturesCount + 1u >= MAX_TEXTURE_SLOTS)
 	{
 		ORC_LOG_INFO("Maximum amount of available textures used, sprite batch flushing");
 		batchFlushSprites();
 		batchStartSprites();
 	}
-	else if (sprites.verticesCount + 4u >= MAX_SPRITES_VERTICES)
+
+	if (m_sprites.verticesCount + 4u >= MAX_SPRITES_VERTICES)
 	{
 		ORC_LOG_INFO("Maximum amount of available vertices used, sprite batch flushing");
 		batchFlushSprites();
 		batchStartSprites();
 	}
 
-	sprites.textures[sprites.texturesCount] = sprite->getTexture();
+	m_sprites.textures[m_sprites.texturesCount] = sprite->getTexture();
 	std::array<Vertex, 4u> spriteVertices = sprite->getVertices();
 	for (uint64 i = 0u; i < 4u; i++)
 	{
-		sprites.vertices[(uint64)sprites.verticesCount + i] = spriteVertices[i];
-		sprites.vertices[(uint64)sprites.verticesCount + i].textureIndex = (float)sprites.texturesCount;
+		m_sprites.vertices[(uint64)m_sprites.verticesCount + i] = spriteVertices[i];
+		m_sprites.vertices[(uint64)m_sprites.verticesCount + i].textureIndex = (float)m_sprites.texturesCount;
 	}
 
-	sprites.texturesCount += 1u;
-	sprites.verticesCount += 4u;
+	m_sprites.texturesCount += 1u;
+	m_sprites.verticesCount += 4u;
+}
+
+void Renderer::draw(Ref<Circle> circle)
+{
+	if (m_circles.verticesCount + 4u >= MAX_CIRCLES_VERTICES)
+	{
+		ORC_LOG_INFO("Maximum amount of available vertices used, circle batch flushing");
+		batchFlushCircles();
+		batchStartCircles();
+	}
+
+	if (circle->getTexture())
+	{
+		if (m_circles.texturesCount + 1u >= MAX_TEXTURE_SLOTS)
+		{
+			ORC_LOG_INFO("Maximum amount of available textures used, circle batch flushing");
+			batchFlushCircles();
+			batchStartCircles();
+		}
+
+		m_circles.textures[m_circles.texturesCount] = circle->getTexture();
+		std::array<CircleVertex, 4u> circleVertices = circle->getVertices();
+		for (uint64 i = 0u; i < 4u; i++)
+		{
+			m_circles.vertices[(uint64)m_circles.verticesCount + i] = circleVertices[i];
+			m_circles.vertices[(uint64)m_circles.verticesCount + i].textureIndex = (float)m_circles.texturesCount;
+		}
+
+		m_circles.texturesCount += 1u;
+		m_circles.verticesCount += 4u;
+	}
+	else
+	{
+		std::array<CircleVertex, 4u> circleVertices = circle->getVertices();
+		for (uint64 i = 0u; i < 4u; i++)
+		{
+			m_circles.vertices[(uint64)m_circles.verticesCount + i] = circleVertices[i];
+			m_circles.vertices[(uint64)m_circles.verticesCount + i].textureIndex = EMPTY_TEXTURE_INDEX;
+		}
+
+		m_circles.verticesCount += 4u;
+	}
 }
 
 void Renderer::draw(Ref<Rectangle> rectangle)
 {
-	Renderer::SceneData::Rectangles& rectangles = m_scene->rectangles;
-
-	if (rectangle->isFilled())
+	if (m_rectangles.verticesCount + 4u >= MAX_RECTANGLES_VERTICES)
 	{
-		if (rectangles.verticesCount + 4u >= MAX_RECTANGLES_VERTICES)
+		ORC_LOG_INFO("Maximum amount of available vertices used, rectangle batch flushing");
+		batchFlushRectangles();
+		batchStartRectangles();
+	}
+
+	if (rectangle->getTexture())
+	{
+		if (m_rectangles.texturesCount + 1u >= MAX_TEXTURE_SLOTS)
 		{
-			ORC_LOG_INFO("Maximum amount of available vertices used, rectangle batch flushing");
+			ORC_LOG_INFO("Maximum amount of available textures used, rectangle batch flushing");
 			batchFlushRectangles();
 			batchStartRectangles();
 		}
 
-		if (rectangle->getTexture())
+		m_rectangles.textures[m_rectangles.texturesCount] = rectangle->getTexture();
+		std::array<RectangleVertex, 4u> rectangleVertices = rectangle->getVertices();
+		for (uint64 i = 0u; i < 4u; i++)
 		{
-			if (rectangles.texturesCount + 1u >= MAX_TEXTURE_SLOTS)
-			{
-				ORC_LOG_INFO("Maximum amount of available textures used, rectangle batch flushing");
-				batchFlushRectangles();
-				batchStartRectangles();
-			}
-
-			rectangles.textures[rectangles.texturesCount] = rectangle->getTexture();
-			std::array<Vertex, 4u> rectangleVertices = rectangle->getVertices();
-			for (uint64 i = 0u; i < 4u; i++)
-			{
-				rectangles.vertices[(uint64)rectangles.verticesCount + i] = rectangleVertices[i];
-				rectangles.vertices[(uint64)rectangles.verticesCount + i].textureIndex = (float)rectangles.texturesCount;
-			}
-
-			rectangles.texturesCount += 1u;
-			rectangles.verticesCount += 4u;
+			m_rectangles.vertices[(uint64)m_rectangles.verticesCount + i] = rectangleVertices[i];
+			m_rectangles.vertices[(uint64)m_rectangles.verticesCount + i].textureIndex = (float)m_rectangles.texturesCount;
 		}
-		else
-		{
-			std::array<Vertex, 4u> rectangleVertices = rectangle->getVertices();
-			for (uint64 i = 0u; i < 4u; i++)
-			{
-				rectangles.vertices[(uint64)rectangles.verticesCount + i] = rectangleVertices[i];
-				rectangles.vertices[(uint64)rectangles.verticesCount + i].textureIndex = EMPTY_TEXTURE_INDEX;
-			}
 
-			rectangles.verticesCount += 4u;
-		}
+		m_rectangles.texturesCount += 1u;
+		m_rectangles.verticesCount += 4u;
 	}
 	else
 	{
-		Color color = rectangle->getColor();
-		Vector2f start = rectangle->getPosition();
-		Vector2f end = start + rectangle->getSize();
-
-		drawLine(start, Vector2f(end.x, start.y), color);
-		drawLine(Vector2f(end.x, start.y), end, color);
-		drawLine(end, Vector2f(start.x, end.y), color);
-		drawLine(start, Vector2f(start.x, end.y), color);
+		std::array<RectangleVertex, 4u> rectangleVertices = rectangle->getVertices();
+		for (uint64 i = 0u; i < 4u; i++)
+		{
+			m_rectangles.vertices[(uint64)m_rectangles.verticesCount + i] = rectangleVertices[i];
+			m_rectangles.vertices[(uint64)m_rectangles.verticesCount + i].textureIndex = EMPTY_TEXTURE_INDEX;
+		}
+		m_rectangles.verticesCount += 4u;
 	}
 }
 
@@ -135,19 +158,17 @@ void Renderer::drawIndexed(Ref<VertexArray> vertexArray)
 
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color)
 {
-	Renderer::SceneData::Lines& lines = m_scene->lines;
-
-	if (lines.verticesCount >= MAX_LINES_VERTICES)
+	if (m_lines.verticesCount >= MAX_LINES_VERTICES)
 	{
 		ORC_LOG_INFO("Maximum amount of available vertices used, lines batch flushing");
 		batchFlushLines();
 		batchStartLines();
 	}
 
-	lines.vertices[(uint64)lines.verticesCount + 0u] = LineVertex{ .color = color.normalized(), .position = start };
-	lines.vertices[(uint64)lines.verticesCount + 1u] = LineVertex{ .color = color.normalized(), .position = end   };
+	m_lines.vertices[(uint64)m_lines.verticesCount + 0u] = LineVertex{ .color = color.normalized(), .position = start };
+	m_lines.vertices[(uint64)m_lines.verticesCount + 1u] = LineVertex{ .color = color.normalized(), .position = end   };
 
-	lines.verticesCount += 2u;
+	m_lines.verticesCount += 2u;
 }
 
 //void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
@@ -163,34 +184,81 @@ void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color&
 
 void Renderer::initLinesVertices()
 {
-	Renderer::SceneData::Lines& lines = m_scene->lines;
-
-	lines.shader = createRef<Shader>("shaders/line.vert.glsl", "shaders/line.frag.glsl");
-	lines.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32)(sizeof(LineVertex) * MAX_LINES_VERTICES));
-	lines.vertexBuffer->setLayout(BufferLayout{
+	m_lines.shader = createRef<Shader>("shaders/line.vert.glsl", "shaders/line.frag.glsl");
+	m_lines.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32)(sizeof(LineVertex) * MAX_LINES_VERTICES));
+	m_lines.vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
 		{ BufferLayout::ShaderDataType::Float2, "a_position" }
 	});
 
-	lines.vertexArray = createRef<VertexArray>();
-	lines.vertexArray->addVertexBuffer(lines.vertexBuffer);
+	m_lines.vertexArray = createRef<VertexArray>();
+	m_lines.vertexArray->addVertexBuffer(m_lines.vertexBuffer);
 
-	lines.verticesCount = 0u;
+	m_lines.verticesCount = 0u;
+}
+
+void Renderer::initCircleVertices()
+{
+	m_circles.shader = createRef<Shader>("shaders/circle.vert.glsl", "shaders/circle.frag.glsl");
+	m_circles.shader->bind();
+
+	int32 samplers[MAX_TEXTURE_SLOTS] = {};
+	for (int32 i = 0; i < MAX_TEXTURE_SLOTS; i++)
+		samplers[i] = i;
+
+	m_circles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+
+	m_circles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32)(sizeof(Vertex) * MAX_CIRCLES_VERTICES));
+
+	m_circles.vertexBuffer->setLayout(BufferLayout{
+		{ BufferLayout::ShaderDataType::Float4, "a_fillColor" },
+		{ BufferLayout::ShaderDataType::Float4, "a_borderColor" },
+		{ BufferLayout::ShaderDataType::Float2, "a_localPosition" },
+		{ BufferLayout::ShaderDataType::Float2, "a_globalPosition" },
+		{ BufferLayout::ShaderDataType::Float2, "a_textureCoords" },
+		{ BufferLayout::ShaderDataType::Float,  "a_textureIndex" },
+		{ BufferLayout::ShaderDataType::Float,  "a_radius" },
+		{ BufferLayout::ShaderDataType::Float,  "a_thickness" },
+		{ BufferLayout::ShaderDataType::Float,  "a_borderThickness" }
+	});
+
+	std::vector<uint32> circleIndices(MAX_CIRCLES_INDICES);
+	uint32_t offset = 0u;
+	for (uint64_t i = 0u; i < MAX_CIRCLES_INDICES; i += 6u)
+	{
+		circleIndices[i + 0u] = offset + 0u;
+		circleIndices[i + 1u] = offset + 1u;
+		circleIndices[i + 2u] = offset + 2u;
+		circleIndices[i + 3u] = offset + 2u;
+		circleIndices[i + 4u] = offset + 1u;
+		circleIndices[i + 5u] = offset + 3u;
+
+		offset += 4u;
+	}
+
+	Ref<IndexBuffer> circleIndicesBuffer = createRef<IndexBuffer>(circleIndices.data(), MAX_CIRCLES_INDICES);
+
+	m_circles.vertexArray = createRef<VertexArray>();
+	m_circles.vertexArray->addVertexBuffer(m_circles.vertexBuffer);
+	m_circles.vertexArray->setIndexBuffer(circleIndicesBuffer);
+
+	m_circles.verticesCount = 0u;
+	m_circles.texturesCount = 0u;
 }
 
 void Renderer::initSpritesVertices()
 {
-	Renderer::SceneData::Sprites& sprites = m_scene->sprites;
+	m_sprites.shader = createRef<Shader>("shaders/sprite.vert.glsl", "shaders/sprite.frag.glsl");
+	m_sprites.shader->bind();
 
-	sprites.shader = createRef<Shader>("shaders/sprite.vert.glsl", "shaders/sprite.frag.glsl");
-	sprites.shader->bind();
 	int32 samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32 i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
-	sprites.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	sprites.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32)(sizeof(Vertex) * MAX_SPRITES_VERTICES));
-	sprites.vertexBuffer->setLayout(BufferLayout{
+	m_sprites.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+
+	m_sprites.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32)(sizeof(Vertex) * MAX_SPRITES_VERTICES));
+	m_sprites.vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
 		{ BufferLayout::ShaderDataType::Float2, "a_position" },
 		{ BufferLayout::ShaderDataType::Float2, "a_textureCoords" },
@@ -213,32 +281,32 @@ void Renderer::initSpritesVertices()
 
 	Ref<IndexBuffer> spriteIndicesBuffer = createRef<IndexBuffer>(spriteIndices.data(), MAX_SPRITES_INDICES);
 
-	sprites.vertexArray = createRef<VertexArray>();
-	sprites.vertexArray->addVertexBuffer(sprites.vertexBuffer);
-	sprites.vertexArray->setIndexBuffer(spriteIndicesBuffer);
+	m_sprites.vertexArray = createRef<VertexArray>();
+	m_sprites.vertexArray->addVertexBuffer(m_sprites.vertexBuffer);
+	m_sprites.vertexArray->setIndexBuffer(spriteIndicesBuffer);
 
-	sprites.verticesCount = 0u;
-	sprites.texturesCount = 0u;
+	m_sprites.verticesCount = 0u;
+	m_sprites.texturesCount = 0u;
 }
 
 void Renderer::initRectanglesVertices()
 {
-	SceneData::Rectangles& rectangles = m_scene->rectangles;
-
-	rectangles.shader = createRef<Shader>("shaders/rectangle.vert.glsl", "shaders/rectangle.frag.glsl");
-	rectangles.shader->bind();
+	m_rectangles.shader = createRef<Shader>("shaders/rectangle.vert.glsl", "shaders/rectangle.frag.glsl");
+	m_rectangles.shader->bind();
 	int32 samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32 i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
-	rectangles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	m_rectangles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	rectangles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32(sizeof(Vertex) * MAX_RECTANGLES_INDICES)));
-	rectangles.vertexBuffer->setLayout(BufferLayout{
-		{ BufferLayout::ShaderDataType::Float4, "a_color" },
+	m_rectangles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32(sizeof(Vertex) * MAX_RECTANGLES_INDICES)));
+	m_rectangles.vertexBuffer->setLayout(BufferLayout{
+		{ BufferLayout::ShaderDataType::Float4, "a_fillColor" },
+		{ BufferLayout::ShaderDataType::Float4, "a_borderColor" },
 		{ BufferLayout::ShaderDataType::Float2, "a_position" },
 		{ BufferLayout::ShaderDataType::Float2, "a_textureCoords" },
-		{ BufferLayout::ShaderDataType::Float,  "a_textureIndex" }
-	});
+		{ BufferLayout::ShaderDataType::Float,  "a_textureIndex" },
+		{ BufferLayout::ShaderDataType::Float,  "a_borderThickness" }
+	});	
 
 	std::vector<uint32> rectangleIndices(MAX_RECTANGLES_INDICES); //Use std::vector instead of std::array to do not exeed stack memory limit
 	uint32_t offset = 0u;
@@ -256,17 +324,18 @@ void Renderer::initRectanglesVertices()
 
 	Ref<IndexBuffer> quadIndicesBuffer = createRef<IndexBuffer>(rectangleIndices.data(), MAX_RECTANGLES_INDICES);
 
-	rectangles.vertexArray = createRef<VertexArray>();
-	rectangles.vertexArray->addVertexBuffer(rectangles.vertexBuffer);
-	rectangles.vertexArray->setIndexBuffer(quadIndicesBuffer);
+	m_rectangles.vertexArray = createRef<VertexArray>();
+	m_rectangles.vertexArray->addVertexBuffer(m_rectangles.vertexBuffer);
+	m_rectangles.vertexArray->setIndexBuffer(quadIndicesBuffer);
 
-	rectangles.verticesCount = 0u;
-	rectangles.texturesCount = 0u;
+	m_rectangles.verticesCount = 0u;
+	m_rectangles.texturesCount = 0u;
 }
 
 void Renderer::batchStart()
 {
 	batchStartLines();
+	batchStartCircles();
 	batchStartSprites();
 	batchStartRectangles();
 }
@@ -274,72 +343,92 @@ void Renderer::batchStart()
 void Renderer::batchFlush()
 {
 	batchFlushLines();
+	batchFlushCircles();
 	batchFlushSprites();
 	batchFlushRectangles();
 }
 
 void Renderer::batchStartLines()
 {
-	m_scene->lines.verticesCount = 0u;
+	m_lines.verticesCount = 0u;
+}
+
+void Renderer::batchStartCircles()
+{
+	m_circles.verticesCount = 0u;
+	m_circles.texturesCount = 0u;
 }
 
 void Renderer::batchStartSprites()
 {
-	m_scene->sprites.verticesCount = 0u;
-	m_scene->sprites.texturesCount = 0u;
+	m_sprites.verticesCount = 0u;
+	m_sprites.texturesCount = 0u;
 }
 
 void Renderer::batchStartRectangles()
 {
-	m_scene->rectangles.verticesCount = 0u;
-	m_scene->rectangles.texturesCount = 0u;
+	m_rectangles.verticesCount = 0u;
+	m_rectangles.texturesCount = 0u;
 }
 
 void Renderer::batchFlushLines()
 {
-	Renderer::SceneData::Lines& lines = m_scene->lines;
-	if (lines.verticesCount)
+	if (m_lines.verticesCount)
 	{
-		lines.shader->bind();
-		lines.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_scene->viewProjectionMatrix);
-		lines.vertexBuffer->setData((void*)(lines.vertices.data()), (uint32)(lines.verticesCount * sizeof(LineVertex)));
+		m_lines.shader->bind();
+		m_lines.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_lines.vertexBuffer->setData((void*)(m_lines.vertices.data()), (uint32)(m_lines.verticesCount * sizeof(LineVertex)));
 
-		glBindVertexArray(lines.vertexArray->getRendererID());
-		glDrawArrays(GL_LINES, 0, (int32)lines.verticesCount);
+		glBindVertexArray(m_lines.vertexArray->getRendererID());
+		glDrawArrays(GL_LINES, 0, (int32)m_lines.verticesCount);
+	}
+}
+
+void Renderer::batchFlushCircles()
+{
+	if (m_circles.verticesCount)
+	{
+		for (uint32 i = 0u; i < m_circles.texturesCount; i++)
+			m_circles.textures[i]->bind(i);
+
+		m_circles.shader->bind();
+		m_circles.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_circles.vertexBuffer->setData((void*)(m_circles.vertices.data()), (uint32)(m_circles.verticesCount * sizeof(CircleVertex)));
+
+		glBindVertexArray(m_circles.vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, (int32)m_circles.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
 void Renderer::batchFlushSprites()
 {
-	Renderer::SceneData::Sprites& sprites = m_scene->sprites;
-	if (sprites.verticesCount)
+	if (m_sprites.verticesCount)
 	{
-		for (uint32 i = 0u; i < sprites.texturesCount; i++)
-			sprites.textures[i]->bind(i);
+		for (uint32 i = 0u; i < m_sprites.texturesCount; i++)
+			m_sprites.textures[i]->bind(i);
 
-		sprites.shader->bind();
-		sprites.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_scene->viewProjectionMatrix);
-		sprites.vertexBuffer->setData((void*)(sprites.vertices.data()), (uint32)(sprites.verticesCount * sizeof(Vertex)));
+		m_sprites.shader->bind();
+		m_sprites.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_sprites.vertexBuffer->setData((void*)(m_sprites.vertices.data()), (uint32)(m_sprites.verticesCount * sizeof(Vertex)));
 
-		glBindVertexArray(sprites.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, (int32)sprites.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_sprites.vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, (int32)m_sprites.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
 void Renderer::batchFlushRectangles()
 {
-	Renderer::SceneData::Rectangles& rectangles = m_scene->rectangles;
-	if (rectangles.verticesCount)
+	if (m_rectangles.verticesCount)
 	{
-		for (uint32 i = 0u; i < rectangles.texturesCount; i++)
-			rectangles.textures[i]->bind(i);
+		for (uint32 i = 0u; i < m_rectangles.texturesCount; i++)
+			m_rectangles.textures[i]->bind(i);
 
-		rectangles.shader->bind();
-		rectangles.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_scene->viewProjectionMatrix);
-		rectangles.vertexBuffer->setData((void*)(rectangles.vertices.data()), (uint32)(rectangles.verticesCount * sizeof(Vertex)));
+		m_rectangles.shader->bind();
+		m_rectangles.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_rectangles.vertexBuffer->setData((void*)(m_rectangles.vertices.data()), (uint32)(m_rectangles.verticesCount * sizeof(RectangleVertex)));
 
-		glBindVertexArray(rectangles.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, rectangles.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_rectangles.vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, m_rectangles.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 	}
 }
 

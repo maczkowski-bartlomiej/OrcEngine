@@ -7,23 +7,31 @@
 
 namespace orc {
 
-class Rectangle : public Drawable<Vertex, 4>
+class Rectangle : public Drawable<RectangleVertex, 4>
 {
 public:
 	Rectangle();
-	Rectangle(const Vector2f& position, const Vector2f& size, Color color, bool fillColor = true);
+	Rectangle(const Vector2f& size);
+	Rectangle(const Vector2f& position, const Vector2f& size);
 
 	void setSize(const Vector2f& size);
+	void setThickness(float thickness);
+	void setFillColor(const Color& fillColor);
+	void setBorderColor(const Color& borderColor);
 
-	bool isFilled();
 	Vector2f getSize() const;
+	float getThickness() const;
+	Color getFillColor() const;
+	Color getBorderColor() const;
 	FloatRect getLocalRect() const override;
 	
 private:
 	void updateVerticesPositions() const override;
 
-	bool m_isFilled;
 	Vector2f m_size;
+	Color m_fillColor;
+	Color m_borderColor;
+	float m_thickness;
 };
 
 }

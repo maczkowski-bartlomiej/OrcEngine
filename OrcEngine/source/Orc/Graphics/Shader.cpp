@@ -9,7 +9,7 @@
 namespace orc {
 
 Shader::Shader()
-	: m_rendererID(0u)
+	: m_rendererID(0)
 {
 }
 

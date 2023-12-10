@@ -19,8 +19,8 @@ public:
 	{
 		std::string title = "Orc Engine";
 
-		uint32 width = 800u;
-		uint32 height = 600u;
+		uint32 width = 800;
+		uint32 height = 600;
 
 		bool vsync = true;
 

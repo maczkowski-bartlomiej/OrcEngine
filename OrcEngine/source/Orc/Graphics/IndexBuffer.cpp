@@ -7,7 +7,7 @@
 namespace orc {
 
 IndexBuffer::IndexBuffer() 
-	: m_count(0u), m_rendererID(0u)
+	: m_count(0), m_rendererID(0)
 {
 }
 

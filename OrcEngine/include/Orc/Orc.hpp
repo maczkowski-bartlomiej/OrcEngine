@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Audio/Audio.hpp"
+#include "Audio/SoundBuffer.hpp"
+
 #include "Engine/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Logger.hpp"

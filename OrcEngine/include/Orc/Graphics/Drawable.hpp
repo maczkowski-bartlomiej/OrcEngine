@@ -19,12 +19,10 @@ public:
 	Drawable();
 	Drawable(Ref<Texture> texture);
 
-	void setColor(const Color& color);
 	void setTexture(Ref<Texture> texture);
 	void setTextureRect(const FloatRect& textureRect);
 	void setVertices(const std::array<VertexType, VerticesCount>& vertices);
 
-	Color getColor() const;
 	Ref<Texture> getTexture() const;
 	FloatRect getGlobalRect() const;
 	FloatRect getTextureRect() const;
@@ -53,6 +51,7 @@ template<typename VertexType, uint64 VerticesCount>
 Drawable<VertexType, VerticesCount>::Drawable()
 	: m_isVertexPositionsUpdateNeeded(true)
 {
+	updateVertexTextureCoords();
 }
 
 template<typename VertexType, uint64 VerticesCount>
@@ -60,16 +59,6 @@ Drawable<VertexType, VerticesCount>::Drawable(Ref<Texture> texture)
 	: m_isVertexPositionsUpdateNeeded(true)
 {
 	setTexture(texture);
-}
-
-template<typename VertexType, uint64 VerticesCount>
-void Drawable<VertexType, VerticesCount>::setColor(const Color& color)
-{
-	m_color = color;
-	for (uint64 i = 0u; i < VerticesCount; i++)
-	{
-		m_vertices[i].color = color.normalized();
-	}
 }
 
 template<typename VertexType, uint64 VerticesCount>
@@ -90,12 +79,6 @@ template<typename VertexType, uint64 VerticesCount>
 void Drawable<VertexType, VerticesCount>::setVertices(const std::array<VertexType, VerticesCount>& vertices)
 {
 	m_vertices = vertices;
-}
-
-template<typename VertexType, uint64 VerticesCount>
-Color Drawable<VertexType, VerticesCount>::getColor() const
-{
-	return m_color;
 }
 
 template<typename VertexType, uint64 VerticesCount>
@@ -173,21 +156,26 @@ const std::array<VertexType, VerticesCount>& Drawable<VertexType, VerticesCount>
 template<typename VertexType, uint64 VerticesCount>
 void Drawable<VertexType, VerticesCount>::updateVertexTextureCoords()
 {
-	FloatRect clipSpacedTextureRect = m_textureRect;
-	clipSpacedTextureRect.x /= m_texture->getSize().x;
-	clipSpacedTextureRect.y /= m_texture->getSize().y;
-	clipSpacedTextureRect.width /= m_texture->getSize().x;
-	clipSpacedTextureRect.height /= m_texture->getSize().y;
+	if (m_texture)
+	{
+		FloatRect clipSpacedTextureRect = m_textureRect;
+		clipSpacedTextureRect.x /= m_texture->getSize().x;
+		clipSpacedTextureRect.y /= m_texture->getSize().y;
+		clipSpacedTextureRect.width /= m_texture->getSize().x;
+		clipSpacedTextureRect.height /= m_texture->getSize().y;
 
-	m_vertices[0].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.y);
-	m_vertices[1].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.y);
-	m_vertices[2].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.height);
-	m_vertices[3].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.height);
-
-	//m_vertices[0].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.y);
-	//m_vertices[1].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.height);
-	//m_vertices[2].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.height);
-	//m_vertices[3].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.y);
+		m_vertices[0].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.y);
+		m_vertices[1].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.y);
+		m_vertices[2].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.height);
+		m_vertices[3].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.height);
+	}
+	else
+	{
+		m_vertices[0].textureCoords = Vector2f(0.0f, 0.0f);
+		m_vertices[1].textureCoords = Vector2f(1.0f, 0.0f);
+		m_vertices[2].textureCoords = Vector2f(0.0f, 1.0f);
+		m_vertices[3].textureCoords = Vector2f(1.0f, 1.0f);
+	}
 }
 
 template<typename VertexType, uint64 VerticesCount>

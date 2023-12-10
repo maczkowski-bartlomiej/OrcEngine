@@ -7,7 +7,7 @@
 namespace orc {
 
 BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized) 
-	: offset(0u), type(type), name(name), size(getShaderDataTypeSize(type)), normalized(normalized)
+	: offset(0), type(type), name(name), size(getShaderDataTypeSize(type)), normalized(normalized)
 {
 }
 
@@ -31,14 +31,14 @@ uint32 BufferLayout::Element::getComponentCount() const
 }
 
 BufferLayout::BufferLayout() 
-	: m_stride(0u)
+	: m_stride(0)
 {
 }
 
 BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) 
-	: m_stride(0u), m_elements(elements)
+	: m_stride(0), m_elements(elements)
 {
-	uint32 offset = 0u;
+	uint32 offset = 0;
 
 	for (Element& element : m_elements)
 	{
@@ -63,18 +63,18 @@ uint32 BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 {
 	switch (type)
 	{
-		case ShaderDataType::Bool:    return 1u;
-		case ShaderDataType::Mat3:    return 4u * 3u * 3u;
-		case ShaderDataType::Mat4:    return 4u * 4u * 4u;
-		case ShaderDataType::Int:     return 4u;
-		case ShaderDataType::Int2:    return 4u * 2u;
-		case ShaderDataType::Int3:    return 4u * 3u;
-		case ShaderDataType::Int4:    return 4u * 4u;
-		case ShaderDataType::Float:   return 4u;
-		case ShaderDataType::Float2:  return 4u * 2u;
-		case ShaderDataType::Float3:  return 4u * 3u;
-		case ShaderDataType::Float4:  return 4u * 4u;
-		default:					  return 0u;
+		case ShaderDataType::Bool:    return 1;
+		case ShaderDataType::Mat3:    return 4 * 3 * 3;
+		case ShaderDataType::Mat4:    return 4 * 4 * 4;
+		case ShaderDataType::Int:     return 4;
+		case ShaderDataType::Int2:    return 4 * 2;
+		case ShaderDataType::Int3:    return 4 * 3;
+		case ShaderDataType::Int4:    return 4 * 4;
+		case ShaderDataType::Float:   return 4;
+		case ShaderDataType::Float2:  return 4 * 2;
+		case ShaderDataType::Float3:  return 4 * 3;
+		case ShaderDataType::Float4:  return 4 * 4;
+		default:					  return 0;
 	}
 }
 

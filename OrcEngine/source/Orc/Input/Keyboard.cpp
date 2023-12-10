@@ -310,7 +310,6 @@ int orcKeyToGlfwKey(Keyboard::Key key)
 		case Keyboard::Key::VerticalBar:
 		case Keyboard::Key::Backslash: return GLFW_KEY_BACKSLASH;
 
-
 		case Keyboard::Key::Space: return GLFW_KEY_SPACE;
 		case Keyboard::Key::Enter: return GLFW_KEY_ENTER;
 		case Keyboard::Key::NumLock: return GLFW_KEY_NUM_LOCK;

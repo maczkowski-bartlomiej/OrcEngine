@@ -24,12 +24,6 @@ Ref<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view nam
 		ORC_LOG_ERROR("Requested non-existing resource '{}'", name);
 		return createRef<ResourceType>(); //Return empty object
 	}
-
-}
-template<typename ResourceType>
-void ResourceHolder<ResourceType>::loadResources(const FilePath& xmlPath)
-{
-
 }
 
 void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
@@ -87,7 +81,33 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 	}
 }
 
+void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
+{
+	tinyxml2::XMLDocument resourceFile;
+	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+	
+	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
+	{
+		const char* name = nullptr;
+		const char* path = nullptr;
+
+		errorResult = element->QueryStringAttribute("name", &name);
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		errorResult = element->QueryStringAttribute("path", &path);
+		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		Ref<SoundBuffer> soundBuffer = createRef<SoundBuffer>();
+		if (soundBuffer->loadFromFile(path))
+			m_resources[name] = soundBuffer;
+		else
+			ORC_LOG_ERROR("Couldn't load resource '{}'\n\tpath: '{}'", name, path);
+	}
+}
+
 template class ResourceHolder<Shader>;
 template class ResourceHolder<Texture>;
+template class ResourceHolder<SoundBuffer>;
 
 }

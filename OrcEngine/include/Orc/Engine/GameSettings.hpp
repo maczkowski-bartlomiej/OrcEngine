@@ -9,9 +9,9 @@ namespace orc {
 
 struct GameSettings
 {
-	int32 majorVersion = 0u;
-	int32 minorVersion = 0u;
-	int32 patchVersion = 1u;
+	int32 majorVersion = 0;
+	int32 minorVersion = 0;
+	int32 patchVersion = 1;
 
 	std::string gameName = "OrcEngine Game";
 

@@ -25,16 +25,38 @@ Engine::Engine(const GameSettings& gameSettings)
 
 	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
-	m_window = std::make_unique<Window>(m_gameSettings.videoSettings);
+	ORC_LOG_INFO("Initializing window...");
+	m_window = createUniquePtr<Window>(m_gameSettings.videoSettings);
 	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
-	Renderer::init();
+	ORC_LOG_INFO("Initializing renderer...");
+	m_renderer = createUniquePtr<Renderer>();
+
+	ORC_LOG_INFO("Initializing audio...");
+	m_audio = createUniquePtr<Audio>();
+
+	ORC_LOG_INFO("Initializing game layer stack...");
+	m_gameLayerStack = createUniquePtr<GameLayerStack>();
 }
 
 Engine::~Engine()
 {
 	if (m_instance == this)
 	{
+		m_audio->stopAllSounds();
+
+		ORC_LOG_INFO("Deinitializing game layer stack...");
+		m_gameLayerStack.reset();
+
+		ORC_LOG_INFO("Deinitializing audio...");
+		m_audio.reset();
+
+		ORC_LOG_INFO("Deinitializing renderer...");
+		m_renderer.reset();
+
+		ORC_LOG_INFO("Deinitializing window...");
+		m_window.reset();
+
 		ORC_LOG_INFO("Engine shutting down...");
 		Logger::shutdown();
 	}
@@ -54,15 +76,14 @@ void Engine::run()
 
 		while (accumulatedTime >= fixedTimestep)
 		{
-			for (auto layer : m_gameLayerStack)
+			for (auto layer : *m_gameLayerStack)
 				layer->onUpdate((float)fixedTimestep);
 
 			accumulatedTime -= fixedTimestep;
-
-			m_window->display(); //move outside while?
 		}
 
-
+		m_audio->update();
+		m_window->display();
 	}
 }
 
@@ -70,17 +91,12 @@ void Engine::pushGameLayer(GameLayer* gameLayer)
 {
 	gameLayer->onAttach();
 
-	m_gameLayerStack.pushGameLayer(gameLayer);
+	m_gameLayerStack->pushGameLayer(gameLayer);
 }
 
 void Engine::pushGameOverlay(GameLayer* gameLayer) 
 {
-	m_gameLayerStack.pushGameOverlay(gameLayer);
-}
-
-Window& Engine::getWindow()
-{
-	return *m_window;
+	m_gameLayerStack->pushGameOverlay(gameLayer);
 }
 
 Engine& Engine::get()
@@ -88,9 +104,24 @@ Engine& Engine::get()
 	return *m_instance;
 }
 
+Audio& Engine::getAudio()
+{
+	return *m_audio;
+}
+
+Window& Engine::getWindow()
+{
+	return *m_window;
+}
+
+Renderer& Engine::getRenderer()
+{
+	return *m_renderer;
+}
+
 void Engine::onEvent(Event& event) 
 {
-	for (auto layer : m_gameLayerStack | std::views::reverse)
+	for (auto layer : *m_gameLayerStack | std::views::reverse)
 	{
 		if (event.isHandled())
 			break;

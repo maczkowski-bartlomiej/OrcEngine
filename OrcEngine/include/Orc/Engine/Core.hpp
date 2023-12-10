@@ -61,6 +61,7 @@ constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
 
+using AudioID = uint32;
 using RendererID = uint32;
 
 template<typename T>
@@ -91,9 +92,9 @@ using Matrix = glm::mat3;
 using Matrix4 = glm::mat4;
 
 namespace version {
-	static inline constexpr uint32 MAJOR_VERSION = 0u;
-	static inline constexpr uint32 MINOR_VERSION = 0u;
-	static inline constexpr uint32 PATCH_VERSION = 1u;
+	static inline constexpr uint32 MAJOR_VERSION = 0;
+	static inline constexpr uint32 MINOR_VERSION = 0;
+	static inline constexpr uint32 PATCH_VERSION = 1;
 }
 
 }
