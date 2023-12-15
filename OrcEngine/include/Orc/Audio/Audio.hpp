@@ -26,6 +26,10 @@ public:
 	void stopAllSounds();
 
 private:
+	void initOpenAL();
+
+	static Audio* m_instance;
+
 	ALCdevice* m_device;
 	ALCcontext* m_context;
 

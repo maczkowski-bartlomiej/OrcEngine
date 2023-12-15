@@ -3,6 +3,8 @@
 Game::Game()
 	: m_camera(0.0f, 800.0f, 600.0f, 0.0f), m_position(0.0f), m_textureHolder("assets/textures.xml"), m_soundBufferHolder("assets/audio.xml")
 {
+	orc::Audio audio;
+	audio.playSound(m_soundBufferHolder.getResource("example_sound"), { 0, 0 });
 	orc::Ref<orc::Texture> playerTexture = m_textureHolder.getResource("soldier_texture");
 	m_player = orc::createRef<orc::Sprite>(playerTexture);
 
@@ -83,10 +85,10 @@ Game::Game()
 
 	m_audioBuffer = m_soundBufferHolder.getResource("example_sound");
 	/*
-		Make audio singleton
-		openalAudioCallWrap?
 		Disable openAl internal logging
 		Add music streaming support
+
+		OpenAll, drawable tpp files?
 	
 		Empty sprite texture handling??? 
 		Renderer check, rethink of invalid texture index

@@ -1,6 +1,7 @@
 #include "OrcPch.hpp"
 
 #include "Audio/SoundBuffer.hpp"
+#include "Audio/OpenAL.hpp"
 
 #include "Engine/Debug.hpp"
 
@@ -25,7 +26,7 @@ SoundBuffer::SoundBuffer(const FilePath& filePath)
 
 SoundBuffer::~SoundBuffer()
 {
-    alDeleteBuffers(1, &m_audioID);
+    alCall(alDeleteBuffers, 1, &m_audioID);
 }
 
 bool SoundBuffer::loadFromFile(const FilePath& filePath)
@@ -67,21 +68,21 @@ bool SoundBuffer::loadFromFile(const FilePath& filePath)
         case SF_FORMAT_ALAC_32:
         case 0x0080: case 0x0081: case 0x0082: //SF_FORMAT_MPEG_LAYER I, II, III
         {
-            if (alIsExtensionPresent("AL_EXT_FLOAT32"))
+            if (alCall(alIsExtensionPresent, "AL_EXT_FLOAT32"))
                 sampleFormat = Float;
 
             break;
         }
         case SF_FORMAT_IMA_ADPCM:
         {
-            if (audioFileInfo.channels <= 2 && (audioFileInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_WAV && alIsExtensionPresent("AL_EXT_IMA4") && alIsExtensionPresent("AL_SOFT_block_alignment"))
+            if (audioFileInfo.channels <= 2 && (audioFileInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_WAV && alCall(alIsExtensionPresent, "AL_EXT_IMA4") && alCall(alIsExtensionPresent, "AL_SOFT_block_alignment"))
                 sampleFormat = IMA4;
 
             break;
         }
         case SF_FORMAT_MS_ADPCM:
         {
-            if (audioFileInfo.channels <= 2 && (audioFileInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_WAV && alIsExtensionPresent("AL_SOFT_MSADPCM") && alIsExtensionPresent("AL_SOFT_block_alignment"))
+            if (audioFileInfo.channels <= 2 && (audioFileInfo.format & SF_FORMAT_TYPEMASK) == SF_FORMAT_WAV && alCall(alIsExtensionPresent, "AL_SOFT_MSADPCM") && alCall(alIsExtensionPresent, "AL_SOFT_block_alignment"))
                 sampleFormat = MSADPCM;
 
             break;
@@ -225,28 +226,18 @@ bool SoundBuffer::loadFromFile(const FilePath& filePath)
     }
 
     ALuint buffer = 0;
-    alGenBuffers(1, &buffer);
+    alCall(alGenBuffers, 1, &buffer);
 
     if (splBlockAlign > 1)
-        alBufferi(buffer, AL_UNPACK_BLOCK_ALIGNMENT_SOFT, splBlockAlign);
+        alCall(alBufferi, buffer, AL_UNPACK_BLOCK_ALIGNMENT_SOFT, splBlockAlign);
 
-    alBufferData(buffer, format, memoryBuffer, (ALsizei)(framesCount / splBlockAlign * byteBlockAlign), audioFileInfo.samplerate);
+    alCall(alBufferData, buffer, format, memoryBuffer, (ALsizei)(framesCount / splBlockAlign * byteBlockAlign), audioFileInfo.samplerate);
 
     free(memoryBuffer);
     sf_close(audioFile);
 
-    ALenum error = alGetError();
-    if (error != AL_NO_ERROR)
-    {
-        ORC_ERROR("OpenAL error: {}", alGetString(error));
-
-        if (buffer && alIsBuffer(buffer))
-            alDeleteBuffers(1, &buffer);
-
-        return 0;
-    }
-
     m_audioID = buffer;
+
     return 1;
 }
 

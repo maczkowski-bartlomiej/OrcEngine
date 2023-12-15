@@ -21,4 +21,3 @@
 	#define ORC_ERROR_CHECK(check, message, ...) { if(!(check)) { ORC_LOG_ERROR(message, __VA_ARGS__); } }
 	#define ORC_FATAL_CHECK(check, message, ...) { if(!(check)) { ORC_LOG_FATAL(message, __VA_ARGS__); } }
 #endif
-
