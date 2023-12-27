@@ -6,10 +6,10 @@ namespace orc {
 
 struct WindowResizedEvent : public Event
 {
-	WindowResizedEvent(uint32 width, uint32 height) 
+	WindowResizedEvent(uint32_t width, uint32_t height) 
 		: Event(Event::Type::WindowResized), width(width), height(height) {}
 
-	uint32 width, height;
+	uint32_t width, height;
 };
 
 struct WindowClosedEvent : public Event

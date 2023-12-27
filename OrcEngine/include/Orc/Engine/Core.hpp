@@ -32,16 +32,6 @@
 
 namespace orc {
 
-using int8 = std::int8_t;
-using int16 = std::int16_t;
-using int32 = std::int32_t;
-using int64 = std::int64_t;
-
-using uint8 = std::uint8_t;
-using uint16 = std::uint16_t;
-using uint32 = std::uint32_t;
-using uint64 = std::uint64_t;
-
 using FilePath = std::filesystem::path;
 
 template<typename T>
@@ -61,8 +51,8 @@ constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
 
-using AudioID = uint32;
-using RendererID = uint32;
+using AudioID = uint32_t;
+using RendererID = uint32_t;
 
 template<typename T>
 using Vector2 = glm::tvec2<T>;
@@ -92,9 +82,9 @@ using Matrix = glm::mat3;
 using Matrix4 = glm::mat4;
 
 namespace version {
-	static inline constexpr uint32 MAJOR_VERSION = 0;
-	static inline constexpr uint32 MINOR_VERSION = 0;
-	static inline constexpr uint32 PATCH_VERSION = 1;
+	static inline constexpr uint32_t MAJOR_VERSION = 0;
+	static inline constexpr uint32_t MINOR_VERSION = 0;
+	static inline constexpr uint32_t PATCH_VERSION = 1;
 }
 
 }

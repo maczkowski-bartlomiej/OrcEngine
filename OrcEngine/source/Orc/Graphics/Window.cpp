@@ -79,12 +79,12 @@ void Window::setVsync(bool vsync)
 	m_videoSettings.vsync = vsync;
 }
 
-uint32 Window::getWidth() const 
+uint32_t Window::getWidth() const 
 {
 	return m_videoSettings.width;
 }
 
-uint32 Window::getHeight() const 
+uint32_t Window::getHeight() const 
 {
 	return m_videoSettings.height;
 }
@@ -129,8 +129,8 @@ void Window::setCallbacks()
 		[](GLFWwindow* window, int width, int height)
 		{
 			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
-			videoSettings.width = static_cast<uint32>(width);
-			videoSettings.height = static_cast<uint32>(height);
+			videoSettings.width = static_cast<uint32_t>(width);
+			videoSettings.height = static_cast<uint32_t>(height);
 
 			orc::WindowResizedEvent windowResizedEvent(videoSettings.width, videoSettings.height);
 			videoSettings.eventCallback(windowResizedEvent);

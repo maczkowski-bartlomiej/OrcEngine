@@ -6,7 +6,7 @@
 
 namespace orc {
 
-VertexBuffer::VertexBuffer(void* vertices, uint32 size) 
+VertexBuffer::VertexBuffer(void* vertices, uint32_t size) 
 {
 	glCreateBuffers(1, &m_rendererID);
 	glNamedBufferData(m_rendererID, size, vertices, GL_STATIC_DRAW);
@@ -17,7 +17,7 @@ VertexBuffer::~VertexBuffer()
 	glDeleteBuffers(1, &m_rendererID);
 }
 
-void VertexBuffer::setData(void* data, uint32 size)
+void VertexBuffer::setData(void* data, uint32_t size)
 {
 	glNamedBufferSubData(m_rendererID, 0, size, data);
 }

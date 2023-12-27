@@ -8,7 +8,7 @@ class IndexBuffer
 {
 public:
 	IndexBuffer();
-	IndexBuffer(uint32* indices, uint32 count);
+	IndexBuffer(uint32_t* indices, uint32_t count);
 	~IndexBuffer();
 	
 	IndexBuffer(IndexBuffer&&) = delete;
@@ -16,11 +16,11 @@ public:
 	IndexBuffer operator=(IndexBuffer&&) = delete;
 	IndexBuffer operator=(const IndexBuffer&) = delete;
 
-	uint32 getCount() const;
+	uint32_t getCount() const;
 	RendererID getRendererID() const;
 
 private:
-	uint32 m_count;
+	uint32_t m_count;
 	RendererID m_rendererID;
 };
 

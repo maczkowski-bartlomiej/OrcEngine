@@ -52,23 +52,23 @@ private:
 	void batchFlushSprites();
 	void batchFlushRectangles();
 
-	static constexpr uint32 MAX_LINES_COUNT = 5000u;
-	static constexpr uint32 MAX_LINES_VERTICES = MAX_LINES_COUNT * 2;
+	static constexpr uint32_t MAX_LINES_COUNT = 5000;
+	static constexpr uint32_t MAX_LINES_VERTICES = MAX_LINES_COUNT * 2;
 
-	static constexpr uint32 MAX_CIRCLES_COUNT = 1000u;
-	static constexpr uint32 MAX_CIRCLES_INDICES = MAX_CIRCLES_COUNT * 6;
-	static constexpr uint32 MAX_CIRCLES_VERTICES = MAX_CIRCLES_COUNT * 4;
+	static constexpr uint32_t MAX_CIRCLES_COUNT = 1000;
+	static constexpr uint32_t MAX_CIRCLES_INDICES = MAX_CIRCLES_COUNT * 6;
+	static constexpr uint32_t MAX_CIRCLES_VERTICES = MAX_CIRCLES_COUNT * 4;
 
-	static constexpr uint32 MAX_SPRITES_COUNT = 1000u;
-	static constexpr uint32 MAX_SPRITES_INDICES = MAX_SPRITES_COUNT * 6;
-	static constexpr uint32 MAX_SPRITES_VERTICES = MAX_SPRITES_COUNT * 4;
+	static constexpr uint32_t MAX_SPRITES_COUNT = 1000;
+	static constexpr uint32_t MAX_SPRITES_INDICES = MAX_SPRITES_COUNT * 6;
+	static constexpr uint32_t MAX_SPRITES_VERTICES = MAX_SPRITES_COUNT * 4;
 
-	static constexpr uint32 MAX_RECTANGLES_COUNT = 1000u;
-	static constexpr uint32 MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
-	static constexpr uint32 MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
+	static constexpr uint32_t MAX_RECTANGLES_COUNT = 1000;
+	static constexpr uint32_t MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
+	static constexpr uint32_t MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
 
-	static constexpr uint32 MAX_TEXTURE_SLOTS = 32u;
-	static constexpr uint32 EMPTY_TEXTURE_INDEX = 32u;
+	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32;
+	static constexpr uint32_t EMPTY_TEXTURE_INDEX = 32;
 
 	Matrix4 m_viewProjectionMatrix;
 
@@ -79,7 +79,7 @@ private:
 		Ref<VertexBuffer> vertexBuffer;
 		std::array<LineVertex, MAX_LINES_VERTICES> vertices;
 
-		uint32 verticesCount = 0u;
+		uint32_t verticesCount = 0;
 	} m_lines;
 
 	struct Circles
@@ -90,8 +90,8 @@ private:
 		std::array<CircleVertex, MAX_CIRCLES_VERTICES> vertices;
 		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
 
-		uint32 verticesCount = 0u;
-		uint32 texturesCount = 0u;
+		uint32_t verticesCount = 0;
+		uint32_t texturesCount = 0;
 	} m_circles;
 
 	struct Sprites
@@ -99,11 +99,11 @@ private:
 		Ref<Shader> shader;
 		Ref<VertexArray> vertexArray;
 		Ref<VertexBuffer> vertexBuffer;
-		std::array<Vertex, MAX_SPRITES_VERTICES> vertices;
+		std::array<SpriteVertex, MAX_SPRITES_VERTICES> vertices;
 		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
 
-		uint32 verticesCount = 0u;
-		uint32 texturesCount = 0u;
+		uint32_t verticesCount = 0;
+		uint32_t texturesCount = 0;
 	} m_sprites;
 		
 	struct Rectangles
@@ -114,8 +114,8 @@ private:
 		std::array<RectangleVertex, MAX_RECTANGLES_VERTICES> vertices;
 		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
 
-		uint32 verticesCount = 0u;
-		uint32 texturesCount = 0u;
+		uint32_t verticesCount = 0;
+		uint32_t texturesCount = 0;
 	} m_rectangles;
 };
 

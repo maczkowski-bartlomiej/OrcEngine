@@ -15,14 +15,14 @@ public:
 	Circle(const Vector2f& position, float radius);
 
 	void setRadius(float radius);
-	void setThickness(float thickness);
+	void setInnerRadius(float innerRadius);
 	void setBorderThickness(float borderThickness);
 
 	void setFillColor(const Color& fillColor);
 	void setBorderColor(const Color& borderColor);
 
 	float getRadius() const;
-	float getThickness() const;
+	float getInnerRadius() const;
 	float getBorderThickness() const;
 
 	Color getFillColor() const;
@@ -33,7 +33,7 @@ private:
 	void updateVerticesPositions() const override;
 
 	float m_radius;
-	float m_thickness;
+	float m_innerRadius;
 	float m_borderThickness;
 
 	Color m_fillColor;

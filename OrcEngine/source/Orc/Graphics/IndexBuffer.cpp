@@ -11,11 +11,11 @@ IndexBuffer::IndexBuffer()
 {
 }
 
-IndexBuffer::IndexBuffer(uint32* indices, uint32 count) 
+IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) 
 	: m_count(count)
 {
 	glCreateBuffers(1, &m_rendererID);
-	glNamedBufferData(m_rendererID, count * sizeof(uint32), indices, GL_STATIC_DRAW);
+	glNamedBufferData(m_rendererID, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 }
 
 IndexBuffer::~IndexBuffer() 
@@ -23,7 +23,7 @@ IndexBuffer::~IndexBuffer()
 	glDeleteBuffers(1, &m_rendererID);
 }
 
-uint32 IndexBuffer::getCount() const
+uint32_t IndexBuffer::getCount() const
 {
 	return m_count;
 }

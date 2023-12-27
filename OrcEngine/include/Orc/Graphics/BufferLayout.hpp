@@ -23,27 +23,27 @@ public:
 	{
 		Element(ShaderDataType type, const std::string& name, bool normalized = false);
 
-		uint32 getComponentCount() const;
+		uint32_t getComponentCount() const;
 
 		bool normalized;
 		std::string name;
 
-		uint32 size;
-		uint32 offset;
+		uint32_t size;
+		uint32_t offset;
 		ShaderDataType type;
 	};
 
 	BufferLayout();
 	BufferLayout(const std::initializer_list<Element>& elements);
 
-	uint32 getStride() const;
+	uint32_t getStride() const;
 	const std::vector<Element>& getElements() const;
 
-	static uint32 getShaderDataTypeSize(ShaderDataType type);
-	static uint32 shaderDataTypeToOpenGLType(ShaderDataType type);
+	static uint32_t getShaderDataTypeSize(ShaderDataType type);
+	static uint32_t shaderDataTypeToOpenGLType(ShaderDataType type);
 
 private:
-	uint32 m_stride;
+	uint32_t m_stride;
 	std::vector<Element> m_elements;
 };
 

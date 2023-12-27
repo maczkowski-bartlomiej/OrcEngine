@@ -19,8 +19,8 @@ public:
 	{
 		std::string title = "Orc Engine";
 
-		uint32 width = 800;
-		uint32 height = 600;
+		uint32_t width = 800;
+		uint32_t height = 600;
 
 		bool vsync = true;
 
@@ -37,8 +37,8 @@ public:
 	bool getVsync() const;
 	void setVsync(bool vsync);
 
-	uint32 getWidth() const;
-	uint32 getHeight() const;
+	uint32_t getWidth() const;
+	uint32_t getHeight() const;
 	Vector2u getSize() const;
 
 	void* getNativeWindow();

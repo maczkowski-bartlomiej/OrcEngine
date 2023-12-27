@@ -118,7 +118,7 @@ void Audio::initOpenAL()
 
 	ORC_FATAL_CHECK(alcCall(alcMakeContextCurrent, m_device, m_context), "Failed to set sound context");
 
-	int32 alcMajorVersion, alcMinorVersion;
+	int32_t alcMajorVersion, alcMinorVersion;
 	alcGetIntegerv(m_device, ALC_MAJOR_VERSION, 1, &alcMajorVersion);
 	alcGetIntegerv(m_device, ALC_MINOR_VERSION, 1, &alcMinorVersion);
 

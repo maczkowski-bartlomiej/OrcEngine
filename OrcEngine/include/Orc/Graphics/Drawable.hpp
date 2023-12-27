@@ -12,7 +12,7 @@
 
 namespace orc {
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 class Drawable : public Transformable
 {
 public:
@@ -27,7 +27,7 @@ public:
 	FloatRect getGlobalRect() const;
 	FloatRect getTextureRect() const;
 
-	VertexType getVertex(uint64 index) const;
+	VertexType getVertex(uint64_t index) const;
 	const std::array<VertexType, VerticesCount>& getVertices() const;
 
 	virtual FloatRect getLocalRect() const = 0;
@@ -47,53 +47,53 @@ private:
 	mutable bool m_isVertexPositionsUpdateNeeded;
 };
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 Drawable<VertexType, VerticesCount>::Drawable()
 	: m_isVertexPositionsUpdateNeeded(true)
 {
 	updateVertexTextureCoords();
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 Drawable<VertexType, VerticesCount>::Drawable(Ref<Texture> texture)
 	: m_isVertexPositionsUpdateNeeded(true)
 {
 	setTexture(texture);
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::setTexture(Ref<Texture> texture)
 {
 	m_texture = texture;
 	setTextureRect(FloatRect(0.0f, 0.0f, texture->getSize().x, texture->getSize().y));
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::setTextureRect(const FloatRect& textureRect)
 {
 	m_textureRect = textureRect;
 	updateVertexTextureCoords();
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::setVertices(const std::array<VertexType, VerticesCount>& vertices)
 {
 	m_vertices = vertices;
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 Ref<Texture> Drawable<VertexType, VerticesCount>::getTexture() const
 {
 	return m_texture;
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 FloatRect Drawable<VertexType, VerticesCount>::getTextureRect() const
 {
 	return m_textureRect;
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 FloatRect Drawable<VertexType, VerticesCount>::getGlobalRect() const
 {
 	FloatRect localRect = getLocalRect();
@@ -127,8 +127,8 @@ FloatRect Drawable<VertexType, VerticesCount>::getGlobalRect() const
 	return FloatRect(left, top, right - left, bottom - top);
 }
 
-template<typename VertexType, uint64 VerticesCount>
-VertexType Drawable<VertexType, VerticesCount>::getVertex(uint64 index) const
+template<typename VertexType, uint64_t VerticesCount>
+VertexType Drawable<VertexType, VerticesCount>::getVertex(uint64_t index) const
 {
 	ORC_ASSERT(index >= 0 && index <= VerticesCount, "Invalid vertex index '{}'", index);
 
@@ -141,7 +141,7 @@ VertexType Drawable<VertexType, VerticesCount>::getVertex(uint64 index) const
 	return m_vertices[index];
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 const std::array<VertexType, VerticesCount>& Drawable<VertexType, VerticesCount>::getVertices() const
 {
 	if (m_isVertexPositionsUpdateNeeded)
@@ -153,7 +153,7 @@ const std::array<VertexType, VerticesCount>& Drawable<VertexType, VerticesCount>
 	return m_vertices;
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::updateVertexTextureCoords()
 {
 	if (m_texture)
@@ -178,7 +178,7 @@ void Drawable<VertexType, VerticesCount>::updateVertexTextureCoords()
 	}
 }
 
-template<typename VertexType, uint64 VerticesCount>
+template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::onTransformChangeCallback()
 {
 	m_isVertexPositionsUpdateNeeded = true;

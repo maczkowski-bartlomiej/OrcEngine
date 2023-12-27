@@ -4,9 +4,18 @@
 
 namespace orc {
 
-Sprite::Sprite(Ref<Texture> texture)
-	: Drawable(texture)
+Sprite::Sprite()
 {
+	for (auto& vertex : m_vertices)
+	{
+		vertex.color = m_color.normalized();
+	}
+}
+
+Sprite::Sprite(Ref<Texture> texture)
+	: Sprite()
+{
+	setTexture(texture);
 }
 
 FloatRect Sprite::getLocalRect() const

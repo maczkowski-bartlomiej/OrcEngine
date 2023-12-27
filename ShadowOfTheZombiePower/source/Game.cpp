@@ -1,14 +1,12 @@
 #include "Game.hpp"
 
 Game::Game()
-	: m_camera(0.0f, 800.0f, 600.0f, 0.0f), m_position(0.0f), m_textureHolder("assets/textures.xml"), m_soundBufferHolder("assets/audio.xml")
+	: m_camera(0.0f, 800.0f, 600.0f, 0.0f), m_position(0.0f)
 {
-	orc::Audio audio;
-	audio.playSound(m_soundBufferHolder.getResource("example_sound"), { 0, 0 });
-	orc::Ref<orc::Texture> playerTexture = m_textureHolder.getResource("soldier_texture");
+	orc::Ref<orc::Texture> playerTexture = textureHolder.getResource("soldier_texture");
 	m_player = orc::createRef<orc::Sprite>(playerTexture);
 
-	orc::Ref<orc::Texture> zombieTexture = m_textureHolder.getResource("zombie_texture");
+	orc::Ref<orc::Texture> zombieTexture = textureHolder.getResource("zombie_texture");
 	m_zombie = orc::createRef<orc::Sprite>(zombieTexture);
 
 	m_zombie->setRotation(0.0f);
@@ -21,20 +19,23 @@ Game::Game()
 	m_player->setScale(0.3f, 0.3f);
 	m_player->setTexture(playerTexture);
 
-	orc::Ref<orc::Texture> gradientTexture = m_textureHolder.getResource("gradient_texture");
+	m_emptySprite = orc::createRef<orc::Sprite>();
+	m_emptySprite->setPosition(orc::Vector2f(500, 600));
+
+	orc::Ref<orc::Texture> gradientTexture = textureHolder.getResource("gradient_texture");
 
 	m_rectangle1 = orc::createRef<orc::Rectangle>(orc::Vector2f{ 0, 0 }, orc::Vector2f(100, 100));
 	m_rectangle1->setTexture(gradientTexture);
 
 	m_rectangle2 = orc::createRef<orc::Rectangle>(orc::Vector2f(500, 200), orc::Vector2f(100, 100));
 	m_rectangle2->setFillColor(orc::Color(255, 0, 0, 255));
+	m_rectangle2->setBorderThickness(0.05f);
 	m_rectangle2->setBorderColor(orc::Color(255, 255, 255));
-	m_rectangle2->setRotation(45.0f);
+	m_rectangle2->setRotation(-45.0f);
 	m_rectangle2->setOrigin(m_rectangle2->getSize() / 2.0f);
 
 	m_rectangle3 = orc::createRef<orc::Rectangle>(orc::Vector2f(100, 100), orc::Vector2f(100, 100));
-	m_rectangle3->setThickness(0.5f);
-	m_rectangle3->setTexture(m_textureHolder.getResource("small_texture"));
+	m_rectangle3->setTexture(textureHolder.getResource("small_texture"));
 	m_rectangle3->setTextureRect(orc::FloatRect(0, 0, 100, 100));
 	m_rectangle3->getTexture()->setTextureWrapping(false);
 
@@ -62,18 +63,18 @@ Game::Game()
 	m_circle1 = orc::createRef<orc::Circle>();
 	m_circle1->setPosition(200.0f, 450.f);
 	m_circle1->setRadius(60.0f);
-	m_circle1->setTexture(m_textureHolder.getResource("gradient_texture"));
+	m_circle1->setTexture(textureHolder.getResource("gradient_texture"));
 
 	m_circle2 = orc::createRef<orc::Circle>();
 	m_circle2->setFillColor(orc::Color(0, 255, 0));
 	m_circle2->setPosition(300.0f, 150.f);
 	m_circle2->setRadius(30.0f);
-	m_circle2->setThickness(0.5f);
+	m_circle2->setInnerRadius(0.3f);
 	m_circle2->setBorderColor(orc::Color(255, 255, 255));
 	m_circle2->setBorderThickness(0.10f);
 
 	m_circle3 = orc::createRef<orc::Circle>();
-	m_circle3->setBorderThickness(0.2f);
+	m_circle3->setBorderThickness(0.4f);
 	m_circle3->setBorderColor(orc::Color(0, 0, 255));
 	m_circle3->setFillColor(orc::Color(255, 0, 0, 125));
 	m_circle3->setPosition(400.0f, 400.f);
@@ -83,24 +84,24 @@ Game::Game()
 	m_rectangle5->setFillColor(orc::Color(0, 0, 0, 0));
 	m_rectangle5->setBorderColor(orc::Color(255, 255, 255));
 
-	m_audioBuffer = m_soundBufferHolder.getResource("example_sound");
+	m_audioBuffer = soundBufferHolder.getResource("example_sound");
+
 	/*
-		Disable openAl internal logging
+		Add text rendering
+
+		Make more examples with different shapes, sprites, circles, rectangles, lines with transformations
+		Rethink of texture wrapping, clamping, repeating...
+		Z-ordering
+		After z-ordering check for particular batching
+		Check for max texture units
+
 		Add music streaming support
+		Disable openAl internal logging
+		Rethink of audio holder name...
 
 		OpenAll, drawable tpp files?
-	
-		Empty sprite texture handling??? 
-		Renderer check, rethink of invalid texture index
-		Rethink of wrapping, clamping repeating...
-		Normalize values from float to px at setting circles, shaders values etc...
-
-		Make more examples with different shapes, sprites, circles, rectangles, lines with transformions
-
-		New stuff:
-		- Rework event system
-		- add text rendering
-		- add GUI
+		Rework event system
+		Add GUI
 	*/
 }
 
@@ -184,6 +185,7 @@ void Game::onUpdate(float deltaTime)
 	renderer.draw(m_sprite2);
 	renderer.draw(m_sprite3);
 	renderer.draw(m_sprite4);
+	renderer.draw(m_emptySprite);
 
 	m_sprite1->setPosition(m_position);
 

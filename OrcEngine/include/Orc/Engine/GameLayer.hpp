@@ -7,6 +7,8 @@
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
 
+#include "Engine/ResourceHolder.hpp"
+
 namespace orc {
 
 class GameLayer
@@ -15,6 +17,10 @@ protected:
 	Audio& audio;
 	Window& window;
 	Renderer& renderer;
+
+	ShaderHolder& shaderHolder;
+	TextureHolder& textureHolder;
+	SoundBufferHolder& soundBufferHolder;
 
 public:
 	GameLayer();

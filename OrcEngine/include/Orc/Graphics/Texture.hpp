@@ -20,7 +20,7 @@ public:
 	void setTextureWrapping(bool repeat);
 	bool loadFromFile(const FilePath& filePath, bool repeat = false);
 
-	void bind(uint32 slot = 0);
+	void bind(uint32_t slot = 0);
 
 	float getWidth() const;
 	float getHeight() const;

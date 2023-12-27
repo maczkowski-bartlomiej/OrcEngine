@@ -6,7 +6,7 @@ namespace orc {
 
 struct Color
 {
-	constexpr Color(uint8 r = 255, uint8 g = 255, uint8 b = 255, uint8 a = 255)
+	constexpr Color(uint8_t r = 255, uint8_t g = 255, uint8_t b = 255, uint8_t a = 255)
 		: r(r), g(g), b(b), a(a) {}
 
 	constexpr Vector4f normalized() const
@@ -19,7 +19,7 @@ struct Color
 		return (r == other.r && g == other.g && b == other.b && a == other.a);
 	}
 
-	uint8 r, g, b, a;
+	uint8_t r, g, b, a;
 };
 
 }

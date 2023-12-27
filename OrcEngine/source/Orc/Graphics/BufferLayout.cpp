@@ -11,22 +11,22 @@ BufferLayout::Element::Element(ShaderDataType type, const std::string& name, boo
 {
 }
 
-uint32 BufferLayout::Element::getComponentCount() const 
+uint32_t BufferLayout::Element::getComponentCount() const 
 {
 	switch (type)
 	{
-		case ShaderDataType::Bool:    return 1u;
-		case ShaderDataType::Int:     return 1u;
-		case ShaderDataType::Int2:    return 2u;
-		case ShaderDataType::Int3:    return 3u;
-		case ShaderDataType::Int4:    return 4u;
+		case ShaderDataType::Bool:    return 1;
+		case ShaderDataType::Int:     return 1;
+		case ShaderDataType::Int2:    return 2;
+		case ShaderDataType::Int3:    return 3;
+		case ShaderDataType::Int4:    return 4;
 		case ShaderDataType::Mat3:    return 9u;
 		case ShaderDataType::Mat4:    return 16u;
-		case ShaderDataType::Float:   return 1u;
-		case ShaderDataType::Float2:  return 2u;
-		case ShaderDataType::Float3:  return 3u;
-		case ShaderDataType::Float4:  return 4u;
-		default:					  return 0u;
+		case ShaderDataType::Float:   return 1;
+		case ShaderDataType::Float2:  return 2;
+		case ShaderDataType::Float3:  return 3;
+		case ShaderDataType::Float4:  return 4;
+		default:					  return 0;
 	}
 }
 
@@ -38,7 +38,7 @@ BufferLayout::BufferLayout()
 BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) 
 	: m_stride(0), m_elements(elements)
 {
-	uint32 offset = 0;
+	uint32_t offset = 0;
 
 	for (Element& element : m_elements)
 	{
@@ -49,7 +49,7 @@ BufferLayout::BufferLayout(const std::initializer_list<Element>& elements)
 	m_stride = offset;
 }
 
-uint32 BufferLayout::getStride() const 
+uint32_t BufferLayout::getStride() const 
 {
 	return m_stride;
 }
@@ -59,7 +59,7 @@ const std::vector<BufferLayout::Element>& BufferLayout::getElements() const
 	return m_elements;
 }
 
-uint32 BufferLayout::getShaderDataTypeSize(ShaderDataType type) 
+uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type) 
 {
 	switch (type)
 	{
@@ -78,7 +78,7 @@ uint32 BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 	}
 }
 
-uint32 BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type) 
+uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type) 
 {
 	switch (type)
 	{

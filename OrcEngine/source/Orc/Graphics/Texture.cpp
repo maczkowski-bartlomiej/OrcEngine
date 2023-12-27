@@ -83,7 +83,7 @@ bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 	return true;
 }
 
-void Texture::bind(uint32 slot)
+void Texture::bind(uint32_t slot)
 {
 	glBindTextureUnit(slot, m_rendererID);
 }

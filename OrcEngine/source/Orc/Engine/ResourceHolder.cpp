@@ -30,6 +30,10 @@ void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+
+	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+
 	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
@@ -60,6 +64,10 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+
+	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+
 	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
@@ -85,6 +93,10 @@ void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+
+	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+
 	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 	
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))

@@ -35,6 +35,16 @@ Engine::Engine(const GameSettings& gameSettings)
 	ORC_LOG_INFO("Initializing audio...");
 	m_audio = createUniquePtr<Audio>();
 
+	ORC_LOG_INFO("Initializing resource holders...");
+	ORC_LOG_INFO("Loading shaders...");
+	m_shaderHolder = createUniquePtr<ShaderHolder>(m_gameSettings.shadersPath);
+
+	ORC_LOG_INFO("Loading textures...");
+	m_textureHolder = createUniquePtr<TextureHolder>(m_gameSettings.texturesPath);
+
+	ORC_LOG_INFO("Loading audio...");
+	m_soundBufferHolder = createUniquePtr<SoundBufferHolder>(m_gameSettings.audioPath);
+
 	ORC_LOG_INFO("Initializing game layer stack...");
 	m_gameLayerStack = createUniquePtr<GameLayerStack>();
 }
@@ -47,6 +57,16 @@ Engine::~Engine()
 
 		ORC_LOG_INFO("Deinitializing game layer stack...");
 		m_gameLayerStack.reset();
+
+		ORC_LOG_INFO("Deinitializing resource holders...");
+		ORC_LOG_INFO("Unloading audio...");
+		m_soundBufferHolder.reset();
+
+		ORC_LOG_INFO("Unloading textures...");
+		m_textureHolder.reset();
+
+		ORC_LOG_INFO("Unloading shaders...");
+		m_shaderHolder.reset();
 
 		ORC_LOG_INFO("Deinitializing audio...");
 		m_audio.reset();
@@ -117,6 +137,21 @@ Window& Engine::getWindow()
 Renderer& Engine::getRenderer()
 {
 	return *m_renderer;
+}
+
+ShaderHolder& Engine::getShaderHolder()
+{
+	return *m_shaderHolder;
+}
+
+TextureHolder& Engine::getTextureHolder()
+{
+	return *m_textureHolder;
+}
+
+SoundBufferHolder& Engine::getSoundBufferHolder()
+{
+	return *m_soundBufferHolder;
 }
 
 void Engine::onEvent(Event& event) 

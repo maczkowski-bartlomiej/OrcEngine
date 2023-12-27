@@ -18,6 +18,7 @@ private:
 
 	orc::Ref<orc::Sprite> m_player;
 	orc::Ref<orc::Sprite> m_zombie;
+	orc::Ref<orc::Sprite> m_emptySprite;
 	orc::Ref<orc::Rectangle> m_rectangle1;
 	orc::Ref<orc::Rectangle> m_rectangle2;
 	orc::Ref<orc::Rectangle> m_rectangle3;
@@ -37,6 +38,4 @@ private:
 
 	orc::Vector2f m_cameraPosition;
 	orc::Vector2f m_position;
-	orc::TextureHolder m_textureHolder;
-	orc::SoundBufferHolder m_soundBufferHolder;
 };

@@ -61,7 +61,7 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 }
 
 
-void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32 size) const
+void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32_t size) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
 	glUniform1iv(location, size, array);

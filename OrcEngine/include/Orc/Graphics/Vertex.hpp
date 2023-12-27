@@ -5,54 +5,58 @@
 
 namespace orc {
 
-struct Vertex
+struct SpriteVertex
 {
-	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4f color;
+	
 	Vector2f position;
-
 	Vector2f textureCoords;
+
 	float textureIndex;
 };
 
 struct RectangleVertex
 {
-	Vector4f fillColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-	Vector4f borderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4f fillColor;
+	Vector4f borderColor;
+	
 	Vector2f position;
-
 	Vector2f textureCoords;
-	float textureIndex;
 
-	float borderThickness = 0.01f;
+	float textureIndex;
+	float borderThickness;
 };
 
 struct CircleVertex
 {
-	Vector4f fillColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-	Vector4f borderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector4f fillColor;
+	Vector4f borderColor;
+	
 	Vector2f localPosition;
 	Vector2f globalPosition;
-
 	Vector2f textureCoords;
-	float textureIndex;
 
-	float radius = 1.0f;
-	float thickness = 1.0f;
-	float borderThickness = 0.05f;
+	float textureIndex;
+	
+	float radius;
+	float innerRadius;
+	float borderThickness;
 };
 
 struct TextVertex
 {
 	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	
 	Vector2f position;
-
 	Vector2f textureCoords;
+
 	float textureIndex;
 };
 
 struct LineVertex
 {
 	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
 	Vector2f position;
 };
 

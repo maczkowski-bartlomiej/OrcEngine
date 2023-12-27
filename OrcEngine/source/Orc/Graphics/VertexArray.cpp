@@ -38,7 +38,7 @@ void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 		bufferLayout.getStride()
 		);
 
-	for (uint32 i = 0; i < bufferElements.size(); i++)
+	for (uint32_t i = 0; i < bufferElements.size(); i++)
 	{
 		const auto& element = bufferElements[i];
 

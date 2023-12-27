@@ -31,8 +31,7 @@ private:
 using ShaderHolder = ResourceHolder<Shader>;
 using TextureHolder = ResourceHolder<Texture>;
 using SoundBufferHolder = ResourceHolder<SoundBuffer>;
-// 
+
 //using FontHolder = ResourceHolder<Font>;
-//using SoundBufferHolder = ResourceHolder<SoundBuffer>;
 
 }

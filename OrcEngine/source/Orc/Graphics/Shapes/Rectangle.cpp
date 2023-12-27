@@ -6,6 +6,12 @@ namespace orc {
 
 Rectangle::Rectangle()
 {
+	for (auto& vertex : m_vertices)
+	{
+		vertex.fillColor = m_fillColor.normalized();
+		vertex.borderColor = m_borderColor.normalized();
+		vertex.borderThickness = m_borderThickness;
+	}
 }
 
 Rectangle::Rectangle(const Vector2f& size)
@@ -26,20 +32,20 @@ void Rectangle::setSize(const Vector2f& size)
 	m_size = size;
 }
 
-void Rectangle::setThickness(float thickness)
+void Rectangle::setBorderThickness(float borderThickness)
 {
-	m_thickness = thickness;
+	m_borderThickness = borderThickness;
 
-	for (uint64 i = 0; i < 4; i++)
+	for (uint64_t i = 0; i < 4; i++)
 	{
-		m_vertices[i].borderThickness = m_thickness;
+		m_vertices[i].borderThickness = m_borderThickness;
 	}
 }
 
 void Rectangle::setFillColor(const Color& fillColor)
 {
 	m_fillColor = fillColor;
-	for (uint64 i = 0; i < 4; i++)
+	for (uint64_t i = 0; i < 4; i++)
 	{
 		m_vertices[i].fillColor = fillColor.normalized();
 	}
@@ -48,7 +54,7 @@ void Rectangle::setFillColor(const Color& fillColor)
 void Rectangle::setBorderColor(const Color& borderColor)
 {
 	m_borderColor = borderColor;
-	for (uint64 i = 0; i < 4; i++)
+	for (uint64_t i = 0; i < 4; i++)
 	{
 		m_vertices[i].borderColor = m_borderColor.normalized();
 	}
@@ -59,9 +65,9 @@ Vector2f Rectangle::getSize() const
 	return m_size;
 }
 
-float Rectangle::getThickness() const
+float Rectangle::getBorderThickness() const
 {
-	return m_thickness;
+	return m_borderThickness;
 }
 
 Color Rectangle::getFillColor() const

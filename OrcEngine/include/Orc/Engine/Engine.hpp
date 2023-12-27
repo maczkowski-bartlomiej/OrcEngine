@@ -26,6 +26,10 @@ public:
 	Window& getWindow();
 	Renderer& getRenderer();
 
+	ShaderHolder& getShaderHolder();
+	TextureHolder& getTextureHolder();
+	SoundBufferHolder& getSoundBufferHolder();
+
 	static Engine& get();
 
 private:
@@ -37,6 +41,10 @@ private:
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
 	UniquePtr<GameLayerStack> m_gameLayerStack;
+
+	UniquePtr<ShaderHolder> m_shaderHolder;
+	UniquePtr<TextureHolder> m_textureHolder;
+	UniquePtr<SoundBufferHolder> m_soundBufferHolder;
 
 	GameSettings m_gameSettings;
 

@@ -17,6 +17,7 @@ public:
 
 	void update();
 
+	//AudioID playMusic()
 	AudioID playSound(Ref<SoundBuffer> soundBuffer, const Vector2f& position, float volume = 1.0f);
 
 	void pauseSound(AudioID soundID);

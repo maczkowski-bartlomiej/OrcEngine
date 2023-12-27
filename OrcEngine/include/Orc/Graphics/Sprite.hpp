@@ -7,10 +7,10 @@
 
 namespace orc {
 
-class Sprite : public Drawable<Vertex, 4>
+class Sprite : public Drawable<SpriteVertex, 4>
 {
 public:
-	Sprite() = default;
+	Sprite();
 	Sprite(Ref<Texture> texture);
 
 	FloatRect getLocalRect() const override;
@@ -19,6 +19,7 @@ public:
 	{
 		return m_color;
 	}
+
 	void setColor(const Color& color)
 	{
 		m_color = color;
