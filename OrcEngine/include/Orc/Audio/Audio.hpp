@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Engine/Core.hpp"
+
 #include "Audio/SoundBuffer.hpp"
 
-#include <list>
-
 #include <AL/alc.h>
+
+#include <list>
+#include <vector>
 
 namespace orc {
 

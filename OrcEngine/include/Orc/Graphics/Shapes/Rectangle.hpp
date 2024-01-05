@@ -2,7 +2,10 @@
 
 #include "Engine/Core.hpp"
 
+#include "Graphics/Rect.hpp"
 #include "Graphics/Color.hpp"
+#include "Graphics/Vertex.hpp"
+#include "Graphics/Texture.hpp"
 #include "Graphics/Drawable.hpp"
 
 namespace orc {
@@ -14,27 +17,37 @@ public:
 	Rectangle(const Vector2f& size);
 	Rectangle(const Vector2f& position, const Vector2f& size);
 
-	void setSize(const Vector2f& size);
-	void setBorderThickness(float borderThickness);
-
 	void setFillColor(const Color& fillColor);
 	void setBorderColor(const Color& borderColor);
 
-	Vector2f getSize() const;
-	float getBorderThickness() const;
-	FloatRect getLocalRect() const override;
+	void setSize(const Vector2f& size);
+	void setBorderThickness(float borderThickness);
+
+	void setTexture(Ref<Texture> texture);
+	void setTextureRect(const FloatRect& textureRect);
 
 	Color getFillColor() const;
 	Color getBorderColor() const;
+
+	Vector2f getSize() const;
+	float getBorderThickness() const;
+
+	Ref<Texture> getTexture() const;
+	FloatRect getTextureRect() const;
+	FloatRect getLocalRect() const override;
 	
 private:
+	void updateVerticesTexCoords() const;
 	void updateVerticesPositions() const override;
 
-	Vector2f m_size;
 	float m_borderThickness;
 
 	Color m_fillColor;
 	Color m_borderColor;
+
+	Vector2f m_size;
+	Ref<Texture> m_texture;
+	FloatRect m_textureRect;
 };
 
 }

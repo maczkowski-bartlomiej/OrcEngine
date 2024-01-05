@@ -2,12 +2,12 @@
 
 #include "Audio/Audio.hpp"
 
-#include "Events/Event.hpp"
-
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
 
 #include "Engine/ResourceHolder.hpp"
+
+#include "Events/Event.hpp"
 
 namespace orc {
 

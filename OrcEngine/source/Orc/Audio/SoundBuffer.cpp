@@ -5,11 +5,11 @@
 
 #include "Engine/Debug.hpp"
 
-#include <sndfile.h>
-
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
+
+#include <sndfile.h>
 
 namespace orc {
 

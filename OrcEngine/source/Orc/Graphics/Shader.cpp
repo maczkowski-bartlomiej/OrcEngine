@@ -2,7 +2,7 @@
 
 #include "Graphics/Shader.hpp"
 
-#include "Utility.hpp"
+#include "Engine/Utility.hpp"
 
 #include <glad/glad.h>
 
@@ -67,6 +67,12 @@ void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32_t
 	glUniform1iv(location, size, array);
 }
 
+void Shader::uploadUniformFloat3(const std::string& name, const Vector3f& float3) const
+{
+	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
+	glUniform3f(location, float3.x, float3.y, float3.z);
+}
+
 void Shader::uploadUniformFloat4(const std::string& name, const Vector4f& float4) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
@@ -102,7 +108,6 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 	}
 	else
 	{
-		//Copy entire file content to buffer, then call buffer.str() to retrive it as string
 		std::stringstream buffer;
 		buffer << shaderFile.rdbuf();
 		*shader = buffer.str();

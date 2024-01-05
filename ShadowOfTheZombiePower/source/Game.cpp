@@ -15,7 +15,7 @@ Game::Game()
 
 	m_player->setRotation(0.0f);
 	m_player->setPosition(0.0f, 0.0f);
-	m_player->setOrigin(m_player->getGlobalRect().getSize() / 2.0f);
+	//m_player->setOrigin(m_player->getGlobalRect().getSize() / 2.0f);
 	m_player->setScale(0.3f, 0.3f);
 	m_player->setTexture(playerTexture);
 
@@ -28,10 +28,10 @@ Game::Game()
 	m_rectangle1->setTexture(gradientTexture);
 
 	m_rectangle2 = orc::createRef<orc::Rectangle>(orc::Vector2f(500, 200), orc::Vector2f(100, 100));
-	m_rectangle2->setFillColor(orc::Color(255, 0, 0, 255));
+	m_rectangle2->setFillColor(orc::Color(255, 255, 0, 255));
 	m_rectangle2->setBorderThickness(0.05f);
 	m_rectangle2->setBorderColor(orc::Color(255, 255, 255));
-	m_rectangle2->setRotation(-45.0f);
+	m_rectangle2->setRotation(45.0f);
 	m_rectangle2->setOrigin(m_rectangle2->getSize() / 2.0f);
 
 	m_rectangle3 = orc::createRef<orc::Rectangle>(orc::Vector2f(100, 100), orc::Vector2f(100, 100));
@@ -86,22 +86,74 @@ Game::Game()
 
 	m_audioBuffer = soundBufferHolder.getResource("example_sound");
 
+	m_font = orc::createRef<orc::Font>("assets/fonts/arial.ttf");
+	m_text = orc::createRef<orc::Text>(m_font);
+	//m_text->setScale(0.01f, 0.01f);
+	m_text->m_color = orc::Color(255, 255, 255, 255);
+	m_text->setString("Lera jest piekna i wy wszyscy tez cnie");
+	m_text->setScale(0.5f, 0.5f);
+	m_fontText = orc::createRef<orc::Sprite>(m_font->getBitmap());
+	//m_fontText->setScale(1.0f, 1.0f);
+	//m_fontText->setColor(orc::Color(255, 0, 0, 255));
+	//std::array<orc::SpriteVertex, 4> vertices;
+	//vertices[0].color = m_text->m_vertices[0].color;
+	//vertices[0].position = m_text->m_vertices[0].position;
+	//vertices[0].textureCoord = m_text->m_vertices[0].textureCoord;
+	//vertices[1].color = m_text->m_vertices[1].color;
+	//vertices[1].position = m_text->m_vertices[1].position;
+	//vertices[1].textureCoord = m_text->m_vertices[1].textureCoord;
+	//vertices[2].color = m_text->m_vertices[2].color;
+	//vertices[2].position = m_text->m_vertices[2].position;
+	//vertices[2].textureCoord = m_text->m_vertices[2].textureCoord;
+	//vertices[3].color = m_text->m_vertices[3].color;
+	//vertices[3].position = m_text->m_vertices[3].position;
+	//vertices[3].textureCoord = m_text->m_vertices[3].textureCoord;
+
+	//vertices[0].position = { 1, 1 };
+	//vertices[1].position = { 33, 1 };
+	//vertices[2].position = { 1, 33 };
+	//vertices[3].position = { 33, 33 };
+	//vertices[0].position = vertices[0].position + orc::Vector2f{ 0.01, 0.01 };
+	//vertices[1].position = vertices[1].position + orc::Vector2f{ 0.01, 0.01 };
+	//vertices[2].position = vertices[2].position + orc::Vector2f{ 0.01, 0.01 };
+	//vertices[3].position = vertices[3].position + orc::Vector2f{ 0.01, 0.01 };
+
+	//m_fontText->setVertices(vertices);
+	//
+	//ORC_LOG_INFO("Text pos vertices: {0}, {1}, {2}, {3}", vertices[0].position.x, vertices[1].position.x, vertices[2].position.x, vertices[3].position.x);
+	////ORC_LOG_INFO("Text texCoord vertices: {0}:{1}, {2}:{3}, {3}:{4}, {5}:{6}", vertices[0].textureCoord.x, vertices[0].textureCoord.y, vertices[1].textureCoord.x, vertices[1].textureCoord.y, vertices[2].textureCoord.x, vertices[2].textureCoord.y, vertices[3].textureCoord.x, vertices[3].textureCoord.y);
+	////
+	////vertices = m_fontText->getVertices();
+	////
+	////ORC_LOG_INFO("Text pos vertices: {0}, {1}, {2}, {3}", vertices[0].position.x, vertices[1].position.x, vertices[2].position.x, vertices[3].position.x);
+	////ORC_LOG_INFO("Text texCoord vertices: {0}:{1}, {2}:{3}, {3}:{4}, {5}:{6}", vertices[0].textureCoord.x, vertices[0].textureCoord.y, vertices[1].textureCoord.x, vertices[1].textureCoord.y, vertices[2].textureCoord.x, vertices[2].textureCoord.y, vertices[3].textureCoord.x, vertices[3].textureCoord.y);//
+//
+
+	//m_fontText->setVertices(vertices);
+
 	/*
-		Add text rendering
+		Texture mode
 
 		Make more examples with different shapes, sprites, circles, rectangles, lines with transformations
 		Rethink of texture wrapping, clamping, repeating...
+		updateVerticesPositions: 1.0 vs 0.0 z values
 		Z-ordering
 		After z-ordering check for particular batching
 		Check for max texture units
-
+		Shaders in Renderer - project path
+		Check for loadFromFile, loadFromMemory, loadFromStream methods in case of cleanup of previous
 		Add music streaming support
 		Disable openAl internal logging
-		Rethink of audio holder name...
+		Rethink of audio holder name
+
+		Delta time fix
+
+		Boolean init instead constructor?
 
 		OpenAll, drawable tpp files?
 		Rework event system
 		Add GUI
+		Add Lua script engine
 	*/
 }
 
@@ -172,29 +224,32 @@ void Game::onUpdate(float deltaTime)
 
 	renderer.begin(m_camera);
 
-	renderer.drawLine({ 100, 100 }, { 500, 100 }, orc::Color(255, 0, 0));
-	renderer.drawLine({ 100, 200 }, { 500, 300 }, orc::Color(255, 0, 0));
+	renderer.draw(*m_text);
+	//renderer.draw(*m_fontText);
 
-	renderer.draw(m_rectangle1);
-	renderer.draw(m_rectangle2);
-	renderer.draw(m_rectangle3);
-	renderer.draw(m_rectangle4);
-	renderer.draw(m_rectangle5);
+	//renderer.drawLine({ 100, 100 }, { 500, 100 }, orc::Color(255, 0, 0));
+	//renderer.drawLine({ 100, 200 }, { 500, 300 }, orc::Color(255, 0, 0));
 
-	renderer.draw(m_sprite1);
-	renderer.draw(m_sprite2);
-	renderer.draw(m_sprite3);
-	renderer.draw(m_sprite4);
-	renderer.draw(m_emptySprite);
+	//renderer.draw(*m_rectangle1);
+	//renderer.draw(*m_rectangle2);
+	//renderer.draw(*m_rectangle3);
+	//renderer.draw(*m_rectangle4);
+	//renderer.draw(*m_rectangle5);
 
-	m_sprite1->setPosition(m_position);
+	//renderer.draw(*m_sprite1);
+	//renderer.draw(*m_sprite2);
+	//renderer.draw(*m_sprite3);
+	//renderer.draw(*m_sprite4);
+	//renderer.draw(*m_emptySprite);
 
-	renderer.draw(m_player);
-	renderer.draw(m_zombie);
+	//m_sprite1->setPosition(m_position);
 
-	renderer.draw(m_circle1);
-	renderer.draw(m_circle2);
-	renderer.draw(m_circle3);
+	//renderer.draw(*m_player);
+	//renderer.draw(*m_zombie);
+
+	//renderer.draw(*m_circle1);
+	//renderer.draw(*m_circle2);
+	//renderer.draw(*m_circle3);
 
 	renderer.end();
 }

@@ -22,7 +22,7 @@ Ref<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view nam
 	else
 	{
 		ORC_LOG_ERROR("Requested non-existing resource '{}'", name);
-		return createRef<ResourceType>(); //Return empty object
+		return createRef<ResourceType>(); //Return default object
 	}
 }
 
@@ -34,7 +34,7 @@ void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
 
-	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
 	{
@@ -43,13 +43,13 @@ void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 		const char* path2 = nullptr;
 
 		errorResult = element->QueryStringAttribute("name", &name);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
-
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		
 		errorResult = element->QueryStringAttribute("path", &path);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		errorResult = element->QueryStringAttribute("path2", &path2);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<Shader> shader = createRef<Shader>();
 		if (shader->loadFromFile(path, path2))
@@ -68,7 +68,7 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
 
-	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
 	{
@@ -76,10 +76,10 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 		const char* path = nullptr;
 
 		errorResult = element->QueryStringAttribute("name", &name);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		errorResult = element->QueryStringAttribute("path", &path);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<Texture> texture = createRef<Texture>();
 		if (texture->loadFromFile(path))
@@ -97,7 +97,7 @@ void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
 
-	ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 	
 	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
 	{
@@ -105,10 +105,10 @@ void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 		const char* path = nullptr;
 
 		errorResult = element->QueryStringAttribute("name", &name);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		errorResult = element->QueryStringAttribute("path", &path);
-		ORC_ERROR_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<SoundBuffer> soundBuffer = createRef<SoundBuffer>();
 		if (soundBuffer->loadFromFile(path))

@@ -27,6 +27,7 @@ public:
 	void uploadUniformInt(const std::string& name, int integer) const;
 	void uploadUniformIntArray(const std::string& name, int* array, uint32_t size) const;
 
+	void uploadUniformFloat3(const std::string& name, const Vector3f& float3) const;
 	void uploadUniformFloat4(const std::string& name, const Vector4f& float4) const;
 	void uploadUniformMatrix4(const std::string& name, const Matrix4& matrix) const;
 

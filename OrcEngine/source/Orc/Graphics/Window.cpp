@@ -102,7 +102,7 @@ void* Window::getNativeWindow()
 void Window::initGLAD()
 {
 	int errorResult = glfwInit();
-	ORC_FATAL_CHECK(errorResult != GLFW_FALSE, "Fatal error occured while initializing GLFW");
+	ORC_FATAL_CHECK(errorResult != GLFW_FALSE, "Fatal occured while initializing GLFW");
 
 	glfwSetErrorCallback(&glfwErrorCallback);
 
@@ -115,7 +115,7 @@ void Window::initGLAD()
 	glfwSetWindowUserPointer(m_window, &m_videoSettings);
 
 	errorResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	ORC_FATAL_CHECK(errorResult != NULL, "Fatal error occured while initializing GLAD");
+	ORC_FATAL_CHECK(errorResult != NULL, "Fatal occured while initializing GLAD");
 
 	ORC_LOG_INFO("Graphics info...\n\topenGL version: {}.{}\n\tvendor: {}\n\trenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
 

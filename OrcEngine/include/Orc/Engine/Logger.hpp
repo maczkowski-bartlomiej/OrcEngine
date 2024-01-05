@@ -3,6 +3,7 @@
 #include <spdlog/logger.h>
 #include <spdlog/fmt/fmt.h>
 
+#include <string>
 #include <source_location>
 
 namespace orc {
@@ -22,7 +23,7 @@ public:
 	static void shutdown();
 
 	template<typename... Arguments>
-	static void log(Logger::Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments) 
+	static void log(Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments) 
 	{
 		m_logger->log({ sourceLocation.file_name(), static_cast<std::int32_t>(sourceLocation.line()), sourceLocation.function_name() }, static_cast<spdlog::level::level_enum>(level), message, std::forward<Arguments>(arguments)...);
 	}

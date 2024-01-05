@@ -3,7 +3,7 @@
 in vec4 v_fillColor;
 in vec4 v_borderColor;
 in vec2 v_localPosition;
-in vec2 v_textureCoords;
+in vec2 v_textureCoord;
 in float v_textureIndex;
 in float v_radius;
 in float v_innerRadius;
@@ -38,7 +38,7 @@ void main()
         int textureIndex = int(v_textureIndex);
         if (textureIndex != 32)
         {
-            color *= texture(u_textures[int(v_textureIndex)], v_textureCoords);
+            color *= texture(u_textures[int(v_textureIndex)], v_textureCoord);
         }
 
     }

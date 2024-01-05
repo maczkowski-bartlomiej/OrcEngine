@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core.hpp"
+
 #include "Graphics/Window.hpp"
 
 #include <string>

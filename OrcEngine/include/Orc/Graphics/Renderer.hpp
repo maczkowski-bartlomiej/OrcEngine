@@ -2,14 +2,18 @@
 
 #include "Engine/Core.hpp"
 
+#include "Graphics/Text.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Sprite.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Vertex.hpp"
 #include "Graphics/VertexArray.hpp"
+#include "Graphics/VertexBuffer.hpp"
 
 #include "Graphics/Shapes/Circle.hpp"
 #include "Graphics/Shapes/Rectangle.hpp"
+
+#include <array>
 
 namespace orc {
 
@@ -24,17 +28,19 @@ public:
 	void begin(const Camera& camera);
 	void end();
 
-	void draw(Ref<Sprite> sprite);
-	void draw(Ref<Circle> circle);
-	void draw(Ref<Rectangle> rectangle);
+	void draw(const Text& text);
+	void draw(const Sprite& sprite);
+	void draw(const Circle& circle);
+	void draw(const Rectangle& rectangle);
 
-	void drawIndexed(Ref<VertexArray> vertexArray);
 	void drawLine(const Vector2f& start, const Vector2f& end, const Color& color);
 
+	//void drawIndexed(Ref<VertexArray> vertexArray);
 	//static void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform = Matrix(1.0f));
 
 private:
 	void initLinesVertices();
+	void initGlyphsVertices();
 	void initCircleVertices();
 	void initSpritesVertices();
 	void initRectanglesVertices();
@@ -43,11 +49,13 @@ private:
 	void batchFlush();
 
 	void batchStartLines();
+	void batchStartGlyphs();
 	void batchStartCircles();
 	void batchStartSprites();
 	void batchStartRectangles();
 
 	void batchFlushLines();
+	void batchFlushGlyphs();
 	void batchFlushCircles();
 	void batchFlushSprites();
 	void batchFlushRectangles();
@@ -66,6 +74,10 @@ private:
 	static constexpr uint32_t MAX_RECTANGLES_COUNT = 1000;
 	static constexpr uint32_t MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
 	static constexpr uint32_t MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
+
+	static constexpr uint32_t MAX_GLYPHS_COUNT = 1000;
+	static constexpr uint32_t MAX_GLYPHS_INDICES = MAX_GLYPHS_COUNT * 6;
+	static constexpr uint32_t MAX_GLYPHS_VERTICES = MAX_GLYPHS_COUNT * 4;
 
 	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32;
 	static constexpr uint32_t EMPTY_TEXTURE_INDEX = 32;
@@ -117,6 +129,18 @@ private:
 		uint32_t verticesCount = 0;
 		uint32_t texturesCount = 0;
 	} m_rectangles;
+
+	struct Glyphs
+	{
+		Ref<Shader> shader;
+		Ref<VertexArray> vertexArray;
+		Ref<VertexBuffer> vertexBuffer;
+		std::array<GlyphVertex, MAX_GLYPHS_VERTICES> vertices;
+		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
+
+		uint32_t verticesCount = 0;
+		uint32_t texturesCount = 0;
+	} m_glyphs;
 };
 
 }

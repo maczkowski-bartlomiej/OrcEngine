@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Utility.hpp"
-
 #include "Engine/Core.hpp"
 
 #include "Graphics/Shader.hpp"
 #include "Graphics/Texture.hpp"
 
 #include "Audio/SoundBuffer.hpp"
+
+#include "Utility.hpp"
 
 #include <string>
 #include <string_view>

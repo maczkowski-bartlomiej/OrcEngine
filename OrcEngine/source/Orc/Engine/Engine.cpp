@@ -5,6 +5,7 @@
 #include "Engine/ResourceHolder.hpp"
 
 #include "Graphics/Renderer.hpp"
+#include "Graphics/FTLibrary.hpp"
 
 namespace orc {
 
@@ -24,6 +25,9 @@ Engine::Engine(const GameSettings& gameSettings)
 	Logger::init(gameSettings.logPath);
 
 	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
+
+	ORC_LOG_INFO("Initializing FreeType Library...");
+	FTLibrary::init();
 
 	ORC_LOG_INFO("Initializing window...");
 	m_window = createUniquePtr<Window>(m_gameSettings.videoSettings);
@@ -76,6 +80,9 @@ Engine::~Engine()
 
 		ORC_LOG_INFO("Deinitializing window...");
 		m_window.reset();
+
+		ORC_LOG_INFO("Deinitializing FreeType Library...");
+		FTLibrary::shutdown();
 
 		ORC_LOG_INFO("Engine shutting down...");
 		Logger::shutdown();

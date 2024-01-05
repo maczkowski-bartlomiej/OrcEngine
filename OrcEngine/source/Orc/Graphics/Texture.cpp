@@ -39,6 +39,11 @@ void Texture::setTextureWrapping(bool repeat)
 
 bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 {
+	if (m_rendererID)
+	{
+		glDeleteTextures(1, &m_rendererID);
+	}
+
 	int channels = 0, desiredChannels = 0, width = 0, height = 0;
 	unsigned char* pixels = stbi_load(filePath.string().c_str(), &width, &height, &channels, desiredChannels);
 
@@ -79,6 +84,29 @@ bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, (void*)pixels);
 
 	stbi_image_free((void*)pixels);
+
+	return true;
+}
+
+bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, bool repeat)
+{
+	if (!data)
+	{
+		ORC_ERROR("Failed to load texture from memory\n\treason: Data is null");
+		return false;
+	}
+
+	m_size = Vector2f(width, height);
+
+	glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
+	glTextureStorage2D(m_rendererID, 1, GL_RGBA8, (GLsizei)width, (GLsizei)height);
+
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	setTextureWrapping(repeat);
+
+	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
 
 	return true;
 }

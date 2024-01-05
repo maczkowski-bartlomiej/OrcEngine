@@ -2,6 +2,8 @@
 
 #include <Orc/Orc.hpp>
 
+#include <Orc/Graphics/Font.hpp>
+
 class Game : public orc::GameLayer
 {
 public:
@@ -35,6 +37,10 @@ private:
 	orc::Ref<orc::Sprite> m_sprite4;
 
 	orc::Ref<orc::SoundBuffer> m_audioBuffer;
+
+	orc::Ref<orc::Font> m_font;
+	orc::Ref<orc::Text> m_text;
+	orc::Ref<orc::Sprite> m_fontText;
 
 	orc::Vector2f m_cameraPosition;
 	orc::Vector2f m_position;

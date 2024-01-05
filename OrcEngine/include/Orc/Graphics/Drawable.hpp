@@ -5,9 +5,6 @@
 #include "Engine/Core.hpp"
 
 #include "Graphics/Rect.hpp"
-#include "Graphics/Color.hpp"
-#include "Graphics/Vertex.hpp"
-#include "Graphics/Texture.hpp"
 #include "Graphics/Transformable.hpp"
 
 namespace orc {
@@ -17,31 +14,21 @@ class Drawable : public Transformable
 {
 public:
 	Drawable();
-	Drawable(Ref<Texture> texture);
 
-	void setTexture(Ref<Texture> texture);
-	void setTextureRect(const FloatRect& textureRect);
 	void setVertices(const std::array<VertexType, VerticesCount>& vertices);
 
-	Ref<Texture> getTexture() const;
 	FloatRect getGlobalRect() const;
-	FloatRect getTextureRect() const;
+	virtual FloatRect getLocalRect() const = 0;
 
 	VertexType getVertex(uint64_t index) const;
 	const std::array<VertexType, VerticesCount>& getVertices() const;
 
-	virtual FloatRect getLocalRect() const = 0;
-
 protected:
 	virtual void updateVerticesPositions() const = 0;
 
-	Color m_color;
-	FloatRect m_textureRect;
-	Ref<Texture> m_texture;
 	mutable std::array<VertexType, VerticesCount> m_vertices;
 
 private:
-	void updateVertexTextureCoords();
 	void onTransformChangeCallback() override;
 	
 	mutable bool m_isVertexPositionsUpdateNeeded;
@@ -51,46 +38,14 @@ template<typename VertexType, uint64_t VerticesCount>
 Drawable<VertexType, VerticesCount>::Drawable()
 	: m_isVertexPositionsUpdateNeeded(true)
 {
-	updateVertexTextureCoords();
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-Drawable<VertexType, VerticesCount>::Drawable(Ref<Texture> texture)
-	: m_isVertexPositionsUpdateNeeded(true)
-{
-	setTexture(texture);
-}
 
-template<typename VertexType, uint64_t VerticesCount>
-void Drawable<VertexType, VerticesCount>::setTexture(Ref<Texture> texture)
-{
-	m_texture = texture;
-	setTextureRect(FloatRect(0.0f, 0.0f, texture->getSize().x, texture->getSize().y));
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-void Drawable<VertexType, VerticesCount>::setTextureRect(const FloatRect& textureRect)
-{
-	m_textureRect = textureRect;
-	updateVertexTextureCoords();
-}
 
 template<typename VertexType, uint64_t VerticesCount>
 void Drawable<VertexType, VerticesCount>::setVertices(const std::array<VertexType, VerticesCount>& vertices)
 {
 	m_vertices = vertices;
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-Ref<Texture> Drawable<VertexType, VerticesCount>::getTexture() const
-{
-	return m_texture;
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-FloatRect Drawable<VertexType, VerticesCount>::getTextureRect() const
-{
-	return m_textureRect;
 }
 
 template<typename VertexType, uint64_t VerticesCount>
@@ -151,31 +106,6 @@ const std::array<VertexType, VerticesCount>& Drawable<VertexType, VerticesCount>
 	}
 
 	return m_vertices;
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-void Drawable<VertexType, VerticesCount>::updateVertexTextureCoords()
-{
-	if (m_texture)
-	{
-		FloatRect clipSpacedTextureRect = m_textureRect;
-		clipSpacedTextureRect.x /= m_texture->getSize().x;
-		clipSpacedTextureRect.y /= m_texture->getSize().y;
-		clipSpacedTextureRect.width /= m_texture->getSize().x;
-		clipSpacedTextureRect.height /= m_texture->getSize().y;
-
-		m_vertices[0].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.y);
-		m_vertices[1].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.y);
-		m_vertices[2].textureCoords = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.height);
-		m_vertices[3].textureCoords = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.height);
-	}
-	else
-	{
-		m_vertices[0].textureCoords = Vector2f(0.0f, 0.0f);
-		m_vertices[1].textureCoords = Vector2f(1.0f, 0.0f);
-		m_vertices[2].textureCoords = Vector2f(0.0f, 1.0f);
-		m_vertices[3].textureCoords = Vector2f(1.0f, 1.0f);
-	}
 }
 
 template<typename VertexType, uint64_t VerticesCount>
