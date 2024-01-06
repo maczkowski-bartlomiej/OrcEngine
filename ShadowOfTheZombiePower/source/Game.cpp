@@ -89,7 +89,6 @@ Game::Game()
 	m_font = orc::createRef<orc::Font>("assets/fonts/arial.ttf");
 	m_text = orc::createRef<orc::Text>(m_font);
 	//m_text->setScale(0.01f, 0.01f);
-	m_text->m_color = orc::Color(255, 255, 255, 255);
 	m_text->setString("Lera jest piekna i wy wszyscy tez cnie");
 	m_text->setScale(0.5f, 0.5f);
 	m_fontText = orc::createRef<orc::Sprite>(m_font->getBitmap());
@@ -132,7 +131,9 @@ Game::Game()
 	//m_fontText->setVertices(vertices);
 
 	/*
+	* 
 		Texture mode
+		Text \n\t?
 
 		Make more examples with different shapes, sprites, circles, rectangles, lines with transformations
 		Rethink of texture wrapping, clamping, repeating...

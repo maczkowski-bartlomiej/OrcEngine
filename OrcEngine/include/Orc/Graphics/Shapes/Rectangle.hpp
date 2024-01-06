@@ -6,14 +6,14 @@
 #include "Graphics/Color.hpp"
 #include "Graphics/Vertex.hpp"
 #include "Graphics/Texture.hpp"
-#include "Graphics/Drawable.hpp"
+#include "Graphics/Texturable.hpp"
 
 namespace orc {
 
-class Rectangle : public Drawable<RectangleVertex, 4>
+class Rectangle : public Texturable<RectangleVertex, 4>
 {
 public:
-	Rectangle();
+	Rectangle() = default;
 	Rectangle(const Vector2f& size);
 	Rectangle(const Vector2f& position, const Vector2f& size);
 
@@ -23,31 +23,23 @@ public:
 	void setSize(const Vector2f& size);
 	void setBorderThickness(float borderThickness);
 
-	void setTexture(Ref<Texture> texture);
-	void setTextureRect(const FloatRect& textureRect);
-
 	Color getFillColor() const;
 	Color getBorderColor() const;
 
 	Vector2f getSize() const;
 	float getBorderThickness() const;
 
-	Ref<Texture> getTexture() const;
-	FloatRect getTextureRect() const;
 	FloatRect getLocalRect() const override;
 	
 private:
-	void updateVerticesTexCoords() const;
 	void updateVerticesPositions() const override;
 
-	float m_borderThickness;
+	float m_borderThickness = 0.0f;
 
 	Color m_fillColor;
 	Color m_borderColor;
 
 	Vector2f m_size;
-	Ref<Texture> m_texture;
-	FloatRect m_textureRect;
 };
 
 }

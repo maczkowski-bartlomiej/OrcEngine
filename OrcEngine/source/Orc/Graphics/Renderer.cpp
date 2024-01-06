@@ -66,7 +66,7 @@ void Renderer::draw(const Text& text)
 	}
 
 	m_glyphs.texturesCount += 1;
-	m_glyphs.verticesCount += text.getString().size() * 4;
+	m_glyphs.verticesCount += (uint32_t)text.getString().size() * 4;
 }
 
 void Renderer::draw(const Sprite& sprite)
