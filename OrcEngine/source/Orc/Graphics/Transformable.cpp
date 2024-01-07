@@ -2,6 +2,8 @@
 
 #include "Graphics/Transformable.hpp"
 
+#include <cmath>
+
 namespace orc {
 
 Transformable::Transformable()
@@ -75,9 +77,19 @@ void Transformable::setOrigin(const Vector2f& origin)
 	onTransformChangeCallback();
 }
 
+void Transformable::setScale(float value)
+{
+	m_scale = Vector2f(std::abs(value), std::abs(value));
+
+	m_isTransformMatrixUpdateNeeded = true;
+	m_isInverseTransformMatrixUpdateNeeded = true;
+
+	onTransformChangeCallback();
+}
+
 void Transformable::setScale(float x, float y)
 {
-	m_scale = Vector2f(x, y);
+	m_scale = Vector2f(std::abs(x), std::abs(y));
 
 	m_isTransformMatrixUpdateNeeded = true;
 	m_isInverseTransformMatrixUpdateNeeded = true;
@@ -87,7 +99,7 @@ void Transformable::setScale(float x, float y)
 
 void Transformable::setScale(const Vector2f& size)
 {
-	m_scale = size;
+	m_scale = glm::abs(size);
 
 	m_isTransformMatrixUpdateNeeded = true;
 	m_isInverseTransformMatrixUpdateNeeded = true;

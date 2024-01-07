@@ -2,6 +2,8 @@
 
 #include "Graphics/Shapes/Circle.hpp"
 
+#include <cmath>
+
 namespace orc {
 
 Circle::Circle()
@@ -17,17 +19,19 @@ Circle::Circle()
 		vertex.localPosition = localPositions[&vertex - &m_vertices[0]];
 }
 
-Circle::Circle(float radius)
+Circle::Circle(float radius, const Color& color)
 	: Circle()
 {
 	setRadius(radius);
+	setFillColor(color);
 }
 
-Circle::Circle(const Vector2f& position, float radius)
+Circle::Circle(const Vector2f& position, float radius, const Color& color)
 	: Circle()
 {
 	setPosition(position);
 	setRadius(radius);
+	setFillColor(color);
 }
 
 void Circle::setFillColor(const Color& fillColor)
@@ -48,7 +52,7 @@ void Circle::setBorderColor(const Color& borderColor)
 
 void Circle::setRadius(float radius)
 {
-	m_radius = radius;
+	m_radius = std::abs(radius);
 
 	for (auto& vertex : m_vertices)
 		vertex.radius = m_radius;

@@ -11,7 +11,7 @@
 #include "Engine/Engine.hpp"
 #include "Engine/EntryPoint.hpp"
 #include "Engine/GameLayer.hpp"
-#include "Engine/GameLayerStack.hpp"
+#include "Engine/GameLayerManager.hpp"
 #include "Engine/GameSettings.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/ResourceHolder.hpp"

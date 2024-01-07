@@ -20,15 +20,14 @@ void main()
     if (v_textureCoords.x < maxX && v_textureCoords.x > minX && v_textureCoords.y < maxY && v_textureCoords.y > minY)
     {
         color = v_fillColor;
+        int textureIndex = int(v_textureIndex);
+        if (textureIndex != 32)
+        {
+            color *= texture(u_textures[int(v_textureIndex)], v_textureCoords);
+        }
     }
     else
     {
         color = v_borderColor;
-    }
-
-    int textureIndex = int(v_textureIndex);
-    if (textureIndex != 32)
-    {
-        color *= texture(u_textures[int(v_textureIndex)], v_textureCoords);
     }
 }

@@ -19,6 +19,7 @@ struct GameSettings
 	std::string logPath = "log.txt";
 
 	std::string audioPath = "assets/audio.xml";
+	std::string fontsPath = "assets/fonts.xml";
 	std::string shadersPath = "assets/shaders.xml";
 	std::string texturesPath = "assets/textures.xml";
 

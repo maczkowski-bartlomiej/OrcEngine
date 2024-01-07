@@ -14,8 +14,8 @@ class Circle : public Texturable<CircleVertex, 4>
 {
 public:
 	Circle();
-	Circle(float radius);
-	Circle(const Vector2f& position, float radius);
+	Circle(float radius, const Color& color = Color());
+	Circle(const Vector2f& position, float radius, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);
 	void setBorderColor(const Color& borderColor);

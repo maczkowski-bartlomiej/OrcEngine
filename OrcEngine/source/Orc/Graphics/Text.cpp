@@ -2,6 +2,7 @@
 
 #include "Graphics/Text.hpp"
 
+
 namespace orc {
 
 Text::Text(const std::string& string)
@@ -23,12 +24,13 @@ Text::Text(Ref<Font> font, const std::string& string)
 void Text::setFont(Ref<Font> font)
 {
 	m_font = font;
-	updateVertices();
+	m_isGeometryUpdateNeeded = true;
 }
 
 void Text::setColor(const Color& color)
 {
 	m_color = color;
+
 	for (GlyphVertex& vertex : m_vertices)
 		vertex.color = color.normalized();
 }
@@ -39,7 +41,7 @@ void Text::setString(const std::string& string)
 		return;
 
 	m_string = string;
-	updateVertices();
+	m_isGeometryUpdateNeeded = true;
 }
 
 Ref<Font> Text::getFont() const
@@ -59,6 +61,9 @@ std::string_view Text::getString() const
 
 const std::vector<GlyphVertex>& Text::getVertices() const
 {
+	if (m_isGeometryUpdateNeeded)
+		updateVertices();
+
 	return m_vertices;
 }
 
@@ -69,10 +74,13 @@ FloatRect Text::getLocalRect() const
 
 FloatRect Text::getGlobalRect() const
 {
+	if (m_isGeometryUpdateNeeded)
+		updateVertices();
+
 	return m_globalRect;
 }
 
-void Text::updateVertices()
+void Text::updateVertices() const
 {
 	if (!m_font)
 		return;
@@ -121,10 +129,17 @@ void Text::updateVertices()
 		m_localRect.height = std::max(m_localRect.height, height);
 	}
 
+	//Not sure how to skip this offset crap so it can be more efficient...
+	for (GlyphVertex& vertex : m_vertices)
+	{
+		vertex.position.y += m_localRect.height - 1;
+	}
+
 	calculateGlobalRect();
+	m_isGeometryUpdateNeeded = false;
 }
 
-void Text::calculateGlobalRect()
+void Text::calculateGlobalRect() const
 {
 	const Matrix& transform = getTransformMatrix();
 
@@ -154,10 +169,11 @@ void Text::calculateGlobalRect()
 	}
 
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);
+
 }
 void Text::onTransformChangeCallback()
 {
-	updateVertices();
+	m_isGeometryUpdateNeeded = true;
 }
 
 }

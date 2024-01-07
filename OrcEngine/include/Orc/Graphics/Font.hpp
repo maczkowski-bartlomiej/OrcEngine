@@ -5,6 +5,7 @@
 #include "Graphics/Texture.hpp"
 #include "Graphics/FTLibrary.hpp"
 
+#include <freetype/freetype.h>
 
 namespace orc {
 

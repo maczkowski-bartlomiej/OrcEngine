@@ -1,23 +1,27 @@
 #pragma once
 
-#include "Audio/Audio.hpp"
-
-#include "Graphics/Window.hpp"
-#include "Graphics/Renderer.hpp"
-
 #include "Engine/ResourceHolder.hpp"
-
+#include "Graphics/Camera.hpp"
 #include "Events/Event.hpp"
 
 namespace orc {
 
+class Audio;
+class Window;
+class Renderer;
+class GameLayerManager;
+
 class GameLayer
 {
 protected:
+	Camera camera;
+
 	Audio& audio;
 	Window& window;
 	Renderer& renderer;
+	GameLayerManager& gameLayerManager;
 
+	FontHolder& fontHolder;
 	ShaderHolder& shaderHolder;
 	TextureHolder& textureHolder;
 	SoundBufferHolder& soundBufferHolder;

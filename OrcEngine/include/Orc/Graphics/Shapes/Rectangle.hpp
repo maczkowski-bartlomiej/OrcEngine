@@ -14,8 +14,8 @@ class Rectangle : public Texturable<RectangleVertex, 4>
 {
 public:
 	Rectangle() = default;
-	Rectangle(const Vector2f& size);
-	Rectangle(const Vector2f& position, const Vector2f& size);
+	Rectangle(const Vector2f& size, const Color& color = Color());
+	Rectangle(const Vector2f& position, const Vector2f& size, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);
 	void setBorderColor(const Color& borderColor);

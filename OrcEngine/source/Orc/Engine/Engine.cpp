@@ -40,6 +40,10 @@ Engine::Engine(const GameSettings& gameSettings)
 	m_audio = createUniquePtr<Audio>();
 
 	ORC_LOG_INFO("Initializing resource holders...");
+
+	ORC_LOG_INFO("Loading fonts...");
+	m_fontHolder = createUniquePtr<FontHolder>(m_gameSettings.fontsPath);
+
 	ORC_LOG_INFO("Loading shaders...");
 	m_shaderHolder = createUniquePtr<ShaderHolder>(m_gameSettings.shadersPath);
 
@@ -49,8 +53,8 @@ Engine::Engine(const GameSettings& gameSettings)
 	ORC_LOG_INFO("Loading audio...");
 	m_soundBufferHolder = createUniquePtr<SoundBufferHolder>(m_gameSettings.audioPath);
 
-	ORC_LOG_INFO("Initializing game layer stack...");
-	m_gameLayerStack = createUniquePtr<GameLayerStack>();
+	ORC_LOG_INFO("Initializing game layer manager...");
+	m_gameLayerManager = createUniquePtr<GameLayerManager>();
 }
 
 Engine::~Engine()
@@ -59,8 +63,8 @@ Engine::~Engine()
 	{
 		m_audio->stopAllSounds();
 
-		ORC_LOG_INFO("Deinitializing game layer stack...");
-		m_gameLayerStack.reset();
+		ORC_LOG_INFO("Deinitializing game layer manager...");
+		m_gameLayerManager.reset();
 
 		ORC_LOG_INFO("Deinitializing resource holders...");
 		ORC_LOG_INFO("Unloading audio...");
@@ -71,6 +75,9 @@ Engine::~Engine()
 
 		ORC_LOG_INFO("Unloading shaders...");
 		m_shaderHolder.reset();
+
+		ORC_LOG_INFO("Unloading fonts...");
+		m_fontHolder.reset();
 
 		ORC_LOG_INFO("Deinitializing audio...");
 		m_audio.reset();
@@ -103,9 +110,7 @@ void Engine::run()
 
 		while (accumulatedTime >= fixedTimestep)
 		{
-			for (auto layer : *m_gameLayerStack)
-				layer->onUpdate((float)fixedTimestep);
-
+			m_gameLayerManager->getActiveGameLayer()->onUpdate((float)fixedTimestep);
 			accumulatedTime -= fixedTimestep;
 		}
 
@@ -114,21 +119,14 @@ void Engine::run()
 	}
 }
 
-void Engine::pushGameLayer(GameLayer* gameLayer) 
-{
-	gameLayer->onAttach();
-
-	m_gameLayerStack->pushGameLayer(gameLayer);
-}
-
-void Engine::pushGameOverlay(GameLayer* gameLayer) 
-{
-	m_gameLayerStack->pushGameOverlay(gameLayer);
-}
-
 Engine& Engine::get()
 {
 	return *m_instance;
+}
+
+FontHolder& Engine::getFontHolder()
+{
+	return *m_fontHolder;
 }
 
 Audio& Engine::getAudio()
@@ -144,6 +142,11 @@ Window& Engine::getWindow()
 Renderer& Engine::getRenderer()
 {
 	return *m_renderer;
+}
+
+GameLayerManager& Engine::getGameLayerManager()
+{
+	return *m_gameLayerManager;
 }
 
 ShaderHolder& Engine::getShaderHolder()
@@ -163,13 +166,7 @@ SoundBufferHolder& Engine::getSoundBufferHolder()
 
 void Engine::onEvent(Event& event) 
 {
-	for (auto layer : *m_gameLayerStack | std::views::reverse)
-	{
-		if (event.isHandled())
-			break;
-
-		layer->onEvent(event);
-	}
+	m_gameLayerManager->getActiveGameLayer()->onEvent(event);
 
 	if (event.getType() == Event::Type::WindowClosed)
 	{

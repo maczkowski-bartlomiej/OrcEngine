@@ -17,6 +17,9 @@ orc::Engine* orc::startEngine()
 
 	orc::Engine* engine = new Engine(gameSettings);
 	ORC_LOG_INFO("Shadow of The Zombie Power v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
-	engine->pushGameLayer(new Game());
+
+	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
+	engine->getGameLayerManager().setActiveGameLayer("game");
+
 	return engine;
 }

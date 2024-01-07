@@ -23,6 +23,7 @@ public:
 	void setOrigin(float x, float y);
 	void setOrigin(const Vector2f& origin);
 
+	void setScale(float value);
 	void setScale(float x, float y);
 	void setScale(const Vector2f& size);	
 

@@ -43,7 +43,15 @@ void Renderer::end()
 
 void Renderer::draw(const Text& text)
 {
-	if (m_glyphs.verticesCount + 4 >= MAX_GLYPHS_VERTICES)
+	if (!text.getFont())
+		return;
+
+	if (!text.getFont()->getBitmap())
+		return;
+
+	const std::vector<GlyphVertex>& glyphVertices = text.getVertices();
+
+	if (m_glyphs.verticesCount + glyphVertices.size() >= MAX_GLYPHS_VERTICES)
 	{
 		ORC_LOG_INFO("Maximum amount of available vertices used, batch flushing");
 		batchFlush();
@@ -58,7 +66,6 @@ void Renderer::draw(const Text& text)
 	}
 
 	m_glyphs.textures[m_glyphs.texturesCount] = text.getFont()->getBitmap();
-	const std::vector<GlyphVertex>& glyphVertices = text.getVertices();
 	for (uint64_t i = 0; i < glyphVertices.size(); i++)
 	{
 		m_glyphs.vertices[(uint64_t)m_glyphs.verticesCount + i] = glyphVertices[i];
@@ -66,7 +73,7 @@ void Renderer::draw(const Text& text)
 	}
 
 	m_glyphs.texturesCount += 1;
-	m_glyphs.verticesCount += (uint32_t)text.getString().size() * 4;
+	m_glyphs.verticesCount += static_cast<uint32_t>(glyphVertices.size());
 }
 
 void Renderer::draw(const Sprite& sprite)
@@ -342,6 +349,7 @@ void Renderer::initRectanglesVertices()
 	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
+
 	m_rectangles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
 	m_rectangles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t(sizeof(RectangleVertex) * MAX_RECTANGLES_INDICES)));
@@ -450,7 +458,7 @@ void Renderer::batchFlushGlyphs()
 		m_glyphs.vertexBuffer->setData((void*)(m_glyphs.vertices.data()), (uint32_t)(m_glyphs.verticesCount * sizeof(GlyphVertex)));
 
 		glBindVertexArray(m_glyphs.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, (int32_t)m_glyphs.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_glyphs.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
@@ -466,7 +474,7 @@ void Renderer::batchFlushCircles()
 		m_circles.vertexBuffer->setData((void*)(m_circles.vertices.data()), (uint32_t)(m_circles.verticesCount * sizeof(CircleVertex)));
 
 		glBindVertexArray(m_circles.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, (int32_t)m_circles.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_circles.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
@@ -482,7 +490,7 @@ void Renderer::batchFlushSprites()
 		m_sprites.vertexBuffer->setData((void*)(m_sprites.vertices.data()), (uint32_t)(m_sprites.verticesCount * sizeof(SpriteVertex)));
 
 		glBindVertexArray(m_sprites.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, (int32_t)m_sprites.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_sprites.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
@@ -498,7 +506,7 @@ void Renderer::batchFlushRectangles()
 		m_rectangles.vertexBuffer->setData((void*)(m_rectangles.vertices.data()), (uint32_t)(m_rectangles.verticesCount * sizeof(RectangleVertex)));
 
 		glBindVertexArray(m_rectangles.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, m_rectangles.vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_rectangles.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 

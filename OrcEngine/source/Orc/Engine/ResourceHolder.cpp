@@ -26,6 +26,35 @@ Ref<ResourceType> ResourceHolder<ResourceType>::getResource(std::string_view nam
 	}
 }
 
+void ResourceHolder<Font>::loadResources(const FilePath& xmlPath)
+{
+	tinyxml2::XMLDocument resourceFile;
+	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+
+	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+
+	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
+	{
+		const char* name = nullptr;
+		const char* path = nullptr;
+
+		errorResult = element->QueryStringAttribute("name", &name);
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		errorResult = element->QueryStringAttribute("path", &path);
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		Ref<Font> font = createRef<Font>();
+		if (font->loadFromFile(path))
+			m_resources[name] = font;
+		else
+			ORC_LOG_ERROR("Couldn't load resource '{}'\n\tpath: '{}'", name, path);
+	}
+}
+
 void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
@@ -59,7 +88,6 @@ void ResourceHolder<Shader>::loadResources(const FilePath& xmlPath)
 	}
 }
 
-//todo: name: {} path: {}
 void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
@@ -118,6 +146,7 @@ void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 	}
 }
 
+template class ResourceHolder<Font>;
 template class ResourceHolder<Shader>;
 template class ResourceHolder<Texture>;
 template class ResourceHolder<SoundBuffer>;

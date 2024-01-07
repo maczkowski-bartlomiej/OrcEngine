@@ -33,18 +33,20 @@ public:
 	FloatRect getGlobalRect() const;
 
 private:
-	void updateVertices();
-	void calculateGlobalRect();
+	void updateVertices() const;
+	void calculateGlobalRect() const;
 	void onTransformChangeCallback() override;
 
 	Color m_color;
 	Ref<Font> m_font;
 
 	std::string m_string;
-	std::vector<GlyphVertex> m_vertices;
+	mutable std::vector<GlyphVertex> m_vertices;
 
-	FloatRect m_localRect;
-	FloatRect m_globalRect;
+	mutable FloatRect m_localRect;
+	mutable FloatRect m_globalRect;
+
+	mutable bool m_isGeometryUpdateNeeded = false;
 };
 
 }

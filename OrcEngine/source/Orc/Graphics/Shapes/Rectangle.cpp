@@ -6,15 +6,17 @@
 
 namespace orc {
 
-Rectangle::Rectangle(const Vector2f& size)
+Rectangle::Rectangle(const Vector2f& size, const Color& color)
 {
 	setSize(size);
+	setFillColor(color);
 }
 
-Rectangle::Rectangle(const Vector2f& position, const Vector2f& size)
+Rectangle::Rectangle(const Vector2f& position, const Vector2f& size, const Color& color)
 {
 	setSize(size);
 	setPosition(position);
+	setFillColor(color);
 }
 
 void Rectangle::setFillColor(const Color& fillColor)

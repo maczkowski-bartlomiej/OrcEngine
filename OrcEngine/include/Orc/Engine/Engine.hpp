@@ -2,7 +2,7 @@
 
 #include "Engine/Core.hpp"
 #include "Engine/GameSettings.hpp"
-#include "Engine/GameLayerStack.hpp"
+#include "Engine/GameLayerManager.hpp"
 
 #include "Audio/Audio.hpp"
 
@@ -19,13 +19,12 @@ public:
 	
 	void run();
 
-	void pushGameLayer(GameLayer* gameLayer);
-	void pushGameOverlay(GameLayer* gameLayer);
-
 	Audio& getAudio();
 	Window& getWindow();
 	Renderer& getRenderer();
+	GameLayerManager& getGameLayerManager();
 
+	FontHolder& getFontHolder();
 	ShaderHolder& getShaderHolder();
 	TextureHolder& getTextureHolder();
 	SoundBufferHolder& getSoundBufferHolder();
@@ -40,8 +39,9 @@ private:
 	UniquePtr<Audio> m_audio;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
-	UniquePtr<GameLayerStack> m_gameLayerStack;
+	UniquePtr<GameLayerManager> m_gameLayerManager;
 
+	UniquePtr<FontHolder> m_fontHolder;
 	UniquePtr<ShaderHolder> m_shaderHolder;
 	UniquePtr<TextureHolder> m_textureHolder;
 	UniquePtr<SoundBufferHolder> m_soundBufferHolder;
