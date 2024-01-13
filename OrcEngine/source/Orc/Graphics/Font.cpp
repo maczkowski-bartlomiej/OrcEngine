@@ -68,22 +68,22 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	}
 
 	constexpr size_t CHARACTER_COUNT = 128;
-	int fontHeightInPixels = m_face->size->metrics.height >> 6;
-	int charactersPerRow = std::ceilf(sqrtf((float)CHARACTER_COUNT));
-	int maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
+	uint32_t fontHeightInPixels = m_face->size->metrics.height >> 6;
+	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(CHARACTER_COUNT)));
+	uint32_t maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
 
 	// Find the smallest power of 2 greater than or equal to maxDimension
-	int textureWidth = 1;
+	uint32_t textureWidth = 1;
 	while (textureWidth < maxDimension)
 		textureWidth <<= 1;
 
-	int textureHeight = textureWidth;
+	uint32_t textureHeight = textureWidth;
 
 	std::vector<unsigned char> pixels(textureWidth * textureHeight);
 	std::vector<unsigned char> buffer;
 
-	int currentX = 0, currentY = 0;
-	for (int i = 0; i < CHARACTER_COUNT; ++i)
+	int32_t currentX = 0, currentY = 0;
+	for (int32_t i = 0; i < CHARACTER_COUNT; ++i)
 	{
 		FT_Load_Char(m_face, i, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 		FT_Bitmap* bitmap = &m_face->glyph->bitmap;
@@ -113,7 +113,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	}
 
 	m_bitmap = createRef<Texture>();
-	m_bitmap->loadFromMemory(pixels.data(), textureWidth, textureHeight);
+	m_bitmap->loadFromMemory(pixels.data(), textureWidth, textureHeight, Texture::TextureMode::RED);
 }
 
 }

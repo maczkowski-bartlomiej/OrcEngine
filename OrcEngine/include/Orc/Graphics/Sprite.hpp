@@ -15,6 +15,7 @@ class Sprite : public Texturable<SpriteVertex, 4>
 public:
 	Sprite();
 	Sprite(Ref<Texture> texture);
+	Sprite(Ref<Texture> texture, const Vector2f& position);
 
 	void setColor(const Color& color);
 

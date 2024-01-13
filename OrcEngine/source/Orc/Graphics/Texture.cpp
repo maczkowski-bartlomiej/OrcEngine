@@ -88,12 +88,23 @@ bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 	return true;
 }
 
-bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, bool repeat)
+bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode, bool repeat)
 {
 	if (!data)
 	{
 		ORC_ERROR("Failed to load texture from memory\n\treason: Data is null");
 		return false;
+	}
+
+	GLenum openGLTextureMode = 0;
+	switch (textureMode)
+	{
+		case TextureMode::RED:   openGLTextureMode = GL_RED;   break;
+		case TextureMode::GREEN: openGLTextureMode = GL_GREEN; break;
+		case TextureMode::BLUE:  openGLTextureMode = GL_BLUE;  break;
+		case TextureMode::RGB:   openGLTextureMode = GL_RGB;   break;
+		case TextureMode::RGBA:  openGLTextureMode = GL_RGBA;  break;
+		default:                 openGLTextureMode = GL_RGBA;  break;
 	}
 
 	m_size = Vector2f(width, height);
@@ -106,7 +117,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 
 	setTextureWrapping(repeat);
 
-	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
+	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, openGLTextureMode, GL_UNSIGNED_BYTE, data);
 
 	return true;
 }

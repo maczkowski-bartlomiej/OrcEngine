@@ -316,7 +316,7 @@ void Renderer::initSpritesVertices()
 		{ BufferLayout::ShaderDataType::Float2, "a_position" },
 		{ BufferLayout::ShaderDataType::Float2, "a_textureCoord" },
 		{ BufferLayout::ShaderDataType::Float,  "a_textureIndex" }
-		});
+	});
 
 	std::vector<uint32_t> spriteIndices(MAX_SPRITES_INDICES); //Use std::vector instead of std::array to do not exeed stack memory limit
 	uint32_t offset = 0;

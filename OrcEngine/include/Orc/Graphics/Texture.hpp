@@ -7,6 +7,15 @@ namespace orc {
 class Texture
 {
 public:
+	enum class TextureMode
+	{
+		RED,
+		GREEN,
+		BLUE,
+		RGB,
+		RGBA
+	};
+
 	Texture();
 	Texture(const FilePath& filePath, bool repeat = false);
 	~Texture();
@@ -19,7 +28,7 @@ public:
 	void setTextureWrapping(bool repeat);
 
 	bool loadFromFile(const FilePath& filePath, bool repeat = false);
-	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, bool repeat = false);
+	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode, bool repeat = false);
 
 	void bind(uint32_t slot = 0);
 

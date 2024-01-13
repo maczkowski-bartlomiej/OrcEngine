@@ -12,6 +12,7 @@ public:
 
 	void rotate(float angle);
 
+	void scale(float value);
 	void scale(float x, float y);
 	void scale(const Vector2f& size);
 

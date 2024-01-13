@@ -2,8 +2,6 @@
 
 #include <Orc/Orc.hpp>
 
-#include <Orc/Graphics/Font.hpp>
-
 class Game : public orc::GameLayer
 {
 public:

@@ -13,6 +13,12 @@ Sprite::Sprite(Ref<Texture> texture)
 {
 }
 
+Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
+	: Texturable(texture)
+{
+	setPosition(position);
+}
+
 void Sprite::setColor(const Color& color)
 {
 	m_color = color;

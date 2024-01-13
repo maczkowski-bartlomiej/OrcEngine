@@ -16,6 +16,11 @@ void Transformable::rotate(float angle)
 	setRotation(m_rotation + angle);
 }
 
+void Transformable::scale(float value)
+{
+	setScale(m_scale + Vector2f(value, value));
+}
+
 void Transformable::scale(float x, float y)
 {
 	setScale(m_scale + Vector2f(x, y));
