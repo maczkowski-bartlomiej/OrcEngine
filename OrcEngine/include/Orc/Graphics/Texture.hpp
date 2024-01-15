@@ -17,7 +17,7 @@ public:
 	};
 
 	Texture();
-	Texture(const FilePath& filePath, bool repeat = false);
+	Texture(const FilePath& filePath);
 	~Texture();
 
 	Texture(Texture&&) = delete;
@@ -25,17 +25,14 @@ public:
 	Texture operator=(Texture&&) = delete;
 	Texture operator=(const Texture&) = delete;
 
-	void setTextureWrapping(bool repeat);
-
-	bool loadFromFile(const FilePath& filePath, bool repeat = false);
-	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode, bool repeat = false);
+	bool loadFromFile(const FilePath& filePath);
+	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode);
 
 	void bind(uint32_t slot = 0);
 
 	float getWidth() const;
 	float getHeight() const;
 	Vector2f getSize() const;
-	bool getTextureWrapping() const;
 
 private:
 	Vector2f m_size;

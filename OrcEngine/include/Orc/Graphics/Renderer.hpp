@@ -60,22 +60,22 @@ private:
 	void batchFlushSprites();
 	void batchFlushRectangles();
 
-	static constexpr uint32_t MAX_LINES_COUNT = 5000;
+	static constexpr uint32_t MAX_LINES_COUNT = 500;
 	static constexpr uint32_t MAX_LINES_VERTICES = MAX_LINES_COUNT * 2;
 
-	static constexpr uint32_t MAX_CIRCLES_COUNT = 1000;
+	static constexpr uint32_t MAX_CIRCLES_COUNT = 500;
 	static constexpr uint32_t MAX_CIRCLES_INDICES = MAX_CIRCLES_COUNT * 6;
 	static constexpr uint32_t MAX_CIRCLES_VERTICES = MAX_CIRCLES_COUNT * 4;
 
-	static constexpr uint32_t MAX_SPRITES_COUNT = 1000;
+	static constexpr uint32_t MAX_SPRITES_COUNT = 500;
 	static constexpr uint32_t MAX_SPRITES_INDICES = MAX_SPRITES_COUNT * 6;
 	static constexpr uint32_t MAX_SPRITES_VERTICES = MAX_SPRITES_COUNT * 4;
 
-	static constexpr uint32_t MAX_RECTANGLES_COUNT = 1000;
+	static constexpr uint32_t MAX_RECTANGLES_COUNT = 500;
 	static constexpr uint32_t MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
 	static constexpr uint32_t MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
 
-	static constexpr uint32_t MAX_GLYPHS_COUNT = 1000;
+	static constexpr uint32_t MAX_GLYPHS_COUNT = 500;
 	static constexpr uint32_t MAX_GLYPHS_INDICES = MAX_GLYPHS_COUNT * 6;
 	static constexpr uint32_t MAX_GLYPHS_VERTICES = MAX_GLYPHS_COUNT * 4;
 
@@ -141,6 +141,8 @@ private:
 		uint32_t verticesCount = 0;
 		uint32_t texturesCount = 0;
 	} m_glyphs;
+
+	uint32_t zIndex = 1;
 };
 
 }

@@ -10,10 +10,10 @@ public:
         m_time = std::chrono::steady_clock::now();
     }
 
-    double elapsed() const
+    float elapsed() const
     {
         auto currentTime = std::chrono::steady_clock::now();
-        return std::chrono::duration<double>(currentTime - m_time).count();
+        return std::chrono::duration<float>(currentTime - m_time).count();
     }
 
     void reset() 

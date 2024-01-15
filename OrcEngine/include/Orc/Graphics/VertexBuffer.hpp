@@ -23,7 +23,7 @@ public:
 	const BufferLayout& getLayout() const;
 
 private:
-	RendererID m_rendererID;
+	RendererID m_rendererID = 0;
 	BufferLayout m_bufferLayout;
 };
 

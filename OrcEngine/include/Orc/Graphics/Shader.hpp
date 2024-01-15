@@ -9,7 +9,7 @@ namespace orc {
 class Shader
 {
 public:
-	Shader();
+	Shader() = default;
 	Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
 	~Shader();
 
@@ -37,7 +37,7 @@ private:
 	bool readShader(std::string* shader, const FilePath& filePath);
 	bool compile(const std::string& vertexShaderSource, const std::string& fragmentShaderSource);
 
-	RendererID m_rendererID;
+	RendererID m_rendererID = 0;
 };
 
 }

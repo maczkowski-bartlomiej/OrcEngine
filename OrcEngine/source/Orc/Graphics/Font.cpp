@@ -34,24 +34,25 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 {
 	FT_Library& ftLibrary = FTLibrary::getLibrary();
 
+	FT_Face face;
 	FT_Error error;
-	error = FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &m_face);
+	error = FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face);
 	if (error)
 	{
 		ORC_ERROR("Failed to load font {}\n\treason: {}", filePath.string(), FT_Error_String(error));
 		return false;
 	}
 
-	error = FT_Set_Pixel_Sizes(m_face, 0, size);
+	error = FT_Set_Pixel_Sizes(face, 0, size);
 	if (error == FT_Err_Invalid_Pixel_Size)
 	{
-		if (!FT_IS_SCALABLE(m_face))
+		if (!FT_IS_SCALABLE(face))
 		{
 			ORC_LOG_ERROR("Failed to set font size {}\n\treason: {}", size, FT_Error_String(error));
 			ORC_LOG_ERROR("Available sizes are: ");
-			for (int i = 0; i < m_face->num_fixed_sizes; ++i)
+			for (int i = 0; i < face->num_fixed_sizes; ++i)
 			{
-				const long size = (m_face->available_sizes[i].y_ppem + 32) >> 6;
+				const long size = (face->available_sizes[i].y_ppem + 32) >> 6;
 				ORC_LOG_ERROR("{}", size);
 			}
 		}
@@ -66,6 +67,12 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 		ORC_ERROR("Failed to set font size {}\n\treason: {}", size, FT_Error_String(error));
 		return false;
 	}
+
+	if (m_face)
+		FT_Done_Face(m_face);
+
+	m_face = face;
+	m_size = size;
 
 	constexpr size_t CHARACTER_COUNT = 128;
 	uint32_t fontHeightInPixels = m_face->size->metrics.height >> 6;
@@ -114,6 +121,23 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 
 	m_bitmap = createRef<Texture>();
 	m_bitmap->loadFromMemory(pixels.data(), textureWidth, textureHeight, Texture::TextureMode::RED);
+
+	return true;
+}
+
+uint32_t Font::getSize() const
+{
+	return m_size;
+}
+
+Ref<Texture> Font::getBitmap() const
+{
+	return m_bitmap;
+}
+
+Character Font::getCharacter(char character) const
+{
+	return m_characters.at(character);
 }
 
 }

@@ -9,6 +9,29 @@ InputsTest::InputsTest()
 	m_player.setTexture(soldierTexture);
 	m_player.setOrigin(m_player.getGlobalRect().getSize() / 2.0f);
 	m_player.setPosition(orc::Vector2f(400.0f, 300.0f));
+	
+	m_sprite2.setTexture(zombieTexture);
+	m_sprite2.setOrigin(m_sprite2.getGlobalRect().getSize() / 2.0f);
+	m_sprite2.setPosition(orc::Vector2f(400.0f, 300.0f));
+
+	m_sprite3.setTexture(soldierTexture);
+	m_sprite3.setColor(orc::Color(255, 0, 0, 255));
+	m_sprite3.setOrigin(m_sprite3.getGlobalRect().getSize() / 2.0f);
+	m_sprite3.setPosition(orc::Vector2f(400.0f, 300.0f));
+
+	m_sprite3.setScale(0.5f);
+
+	m_text1.setFont(font);
+	m_text1.setString("Na dole");
+	m_text1.setPosition(orc::Vector2f(310.0f, 220.0f));
+
+	m_text2.setFont(font);
+	m_text2.setString("Na gorze\nOJ NA GORZE");
+	m_text2.setPosition(orc::Vector2f(250.0f, 200.0f));
+	m_text2.setColor(orc::Color(255, 0, 0, 255));
+
+	m_rectangle1 = orc::Rectangle(orc::Vector2f(400.0f, 200.0f), orc::Vector2f(175.0f, 175.0f), orc::Color(0, 0, 255));
+	m_rectangle1.setOrigin(m_rectangle1.getSize() / 2.0f);
 }
 
 InputsTest::~InputsTest()
@@ -58,7 +81,13 @@ void InputsTest::onUpdate(float deltaTime)
 
 	renderer.begin(camera);
 
+	renderer.draw(m_text1);
 	renderer.draw(m_player);
+	renderer.draw(m_sprite2);
+	renderer.draw(m_rectangle1);
+	renderer.draw(m_sprite3);
+	renderer.draw(m_text2);
+
 
 	renderer.end();
 }
@@ -68,13 +97,16 @@ void InputsTest::onEvent(orc::Event& event)
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
 		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		if (newEvent->key == orc::Keyboard::Key::Right)
+		switch (newEvent->key)
 		{
-			gameLayerManager.setActiveGameLayer("game");
-		}
-		else if (newEvent->key == orc::Keyboard::Key::Left)
-		{
-			gameLayerManager.setActiveGameLayer("sprites_test");
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("game"); break;
+			case orc::Keyboard::Key::Left:  gameLayerManager.setActiveGameLayer("sprites_test"); break;
+			case orc::Keyboard::Key::Q:     camera.rotate(0.1f); break;
+			case orc::Keyboard::Key::E:     camera.rotate(-0.1f); break;
+			case orc::Keyboard::Key::I:     camera.move(0.0f, -10.0f); break;
+			case orc::Keyboard::Key::K:     camera.move(0.0f, 10.0f); break;
+			case orc::Keyboard::Key::J:     camera.move(-10.0f, 0.0f); break;
+			case orc::Keyboard::Key::L:     camera.move(10.0f, 0.0f); break;
 		}
 	}
 	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)

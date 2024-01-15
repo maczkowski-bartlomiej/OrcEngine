@@ -15,9 +15,12 @@ public:
 
 	orc::Sprite m_player;
 	orc::Sprite m_sprite2;
+	orc::Sprite m_sprite3;
 
-	//orc::Text m_text1;
-	//orc::Text m_text2;
+	orc::Text m_text1;
+	orc::Text m_text2;
+
+	orc::Rectangle m_rectangle1;
 	//orc::Text m_text3;
 	//orc::Text m_text4;
 };

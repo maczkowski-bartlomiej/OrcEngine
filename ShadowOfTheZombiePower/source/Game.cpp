@@ -5,31 +5,12 @@
 #include "SpritesTest.hpp"
 #include "InputsTest.hpp"
 
-
-
 Game::Game()
 {
 	/*
-	* 		Z-ordering
-		After z-ordering check for particular type batching
-		Text special characters handling \n \t
-
-		Rework texture wrapping, clamping, repeating...
-
-		updateVerticesPositions: 1.0 vs 0.0 z values
-
-
-		Shaders in Renderer - use project path, move to Engine folder
-		Check all loadFromFile, loadFromMemory, loadFromStream methods in case of invalid cleanup
 		Add music streaming support
-
 		Disable openAl internal logging
 		Rethink of AudioHolder name
-		Delta time fix
-
-		Boolean init of all systems instead constructor? - Rethink it
-
-		Move implementation of OpenAll.hpp, Texturable.hpp to tpp files
 
 		Rework event system to avoid dynamic casting
 		

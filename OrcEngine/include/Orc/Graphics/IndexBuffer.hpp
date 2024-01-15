@@ -7,7 +7,7 @@ namespace orc {
 class IndexBuffer
 {
 public:
-	IndexBuffer();
+	IndexBuffer() = default;
 	IndexBuffer(uint32_t* indices, uint32_t count);
 	~IndexBuffer();
 	
@@ -20,8 +20,8 @@ public:
 	RendererID getRendererID() const;
 
 private:
-	uint32_t m_count;
-	RendererID m_rendererID;
+	uint32_t m_count = 0;
+	RendererID m_rendererID = 0;
 };
 
 };

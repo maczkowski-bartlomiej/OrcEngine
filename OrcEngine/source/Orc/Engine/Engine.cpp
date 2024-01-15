@@ -99,23 +99,17 @@ Engine::~Engine()
 void Engine::run()
 {
 	DeltaTime deltaTime;
-	constexpr double fixedTimestep = 1.0 / 60.0;
-	double accumulatedTime = 0.0;
 
 	while (m_running)
 	{
-		double elapsedTime = deltaTime.elapsed();
-		accumulatedTime += elapsedTime;
+		float elapsed = deltaTime.elapsed();
 		deltaTime.reset();
 
-		while (accumulatedTime >= fixedTimestep)
-		{
-			m_gameLayerManager->getActiveGameLayer()->onUpdate((float)fixedTimestep);
-			accumulatedTime -= fixedTimestep;
-		}
-
+		m_gameLayerManager->getActiveGameLayer()->onUpdate(elapsed);
 		m_audio->update();
 		m_window->display();
+
+		//ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
 	}
 }
 

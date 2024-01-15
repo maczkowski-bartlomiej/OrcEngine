@@ -6,11 +6,6 @@
 
 namespace orc {
 
-IndexBuffer::IndexBuffer() 
-	: m_count(0), m_rendererID(0)
-{
-}
-
 IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) 
 	: m_count(count)
 {

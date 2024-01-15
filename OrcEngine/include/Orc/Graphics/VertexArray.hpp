@@ -27,7 +27,7 @@ public:
 	RendererID getRendererID() const;
 
 private:
-	RendererID m_rendererID;
+	RendererID m_rendererID = 0;
 	Ref<IndexBuffer> m_indexBuffer;
 	std::vector<Ref<VertexBuffer>> m_vertexBuffers;
 };

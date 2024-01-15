@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec4 a_fillColor;
 layout (location = 1) in vec4 a_borderColor;
-layout (location = 2) in vec2 a_position;
+layout (location = 2) in vec3 a_position;
 layout (location = 3) in vec2 a_textureCoords;
 layout (location = 4) in float a_textureIndex;
 layout (location = 5) in float a_borderThickness;
@@ -23,5 +23,5 @@ void main()
 	v_textureCoords = a_textureCoords;
 	v_borderThickness = a_borderThickness;
 
-	gl_Position = u_viewProjectionMatrix * vec4(a_position, 0.0, 1.0);
+	gl_Position = u_viewProjectionMatrix * vec4(a_position, 1.0);
 }

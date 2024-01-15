@@ -9,7 +9,7 @@ struct SpriteVertex
 {
 	Vector4f color = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	Vector2f position;
+	Vector3f position;
 	Vector2f textureCoord;
 
 	float textureIndex;
@@ -20,7 +20,7 @@ struct RectangleVertex
 	Vector4f fillColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	Vector4f borderColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
-	Vector2f position;
+	Vector3f position;
 	Vector2f textureCoord;
 
 	float textureIndex;
@@ -32,8 +32,8 @@ struct CircleVertex
 	Vector4f fillColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	Vector4f borderColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	
+	Vector3f globalPosition;
 	Vector2f localPosition;
-	Vector2f globalPosition;
 	Vector2f textureCoord;
 
 	float textureIndex;
@@ -47,7 +47,7 @@ struct GlyphVertex
 {
 	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	
-	Vector2f position;
+	Vector3f position;
 	Vector2f textureCoord;
 
 	float textureIndex;
@@ -56,8 +56,7 @@ struct GlyphVertex
 struct LineVertex
 {
 	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-	Vector2f position;
+	Vector3f position;
 };
 
 }

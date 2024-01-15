@@ -12,10 +12,10 @@ Texture::Texture()
 {
 }
 
-Texture::Texture(const FilePath& filePath, bool repeat)
+Texture::Texture(const FilePath& filePath)
 	: m_rendererID(0)
 {
-	loadFromFile(filePath, repeat);
+	loadFromFile(filePath);
 }
 
 Texture::~Texture()
@@ -23,21 +23,7 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_rendererID);
 }
 
-void Texture::setTextureWrapping(bool repeat)
-{
-	if (repeat)
-	{
-		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-	else
-	{
-		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-}
-
-bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
+bool Texture::loadFromFile(const FilePath& filePath)
 {
 	if (m_rendererID)
 	{
@@ -79,7 +65,8 @@ bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	setTextureWrapping(repeat);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, (void*)pixels);
 
@@ -88,12 +75,17 @@ bool Texture::loadFromFile(const FilePath& filePath, bool repeat)
 	return true;
 }
 
-bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode, bool repeat)
+bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode)
 {
 	if (!data)
 	{
 		ORC_ERROR("Failed to load texture from memory\n\treason: Data is null");
 		return false;
+	}
+
+	if (m_rendererID)
+	{
+		glDeleteTextures(1, &m_rendererID);
 	}
 
 	GLenum openGLTextureMode = 0;
@@ -115,7 +107,8 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	setTextureWrapping(repeat);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, openGLTextureMode, GL_UNSIGNED_BYTE, data);
 

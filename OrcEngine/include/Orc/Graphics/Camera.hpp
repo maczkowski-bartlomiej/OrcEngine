@@ -9,11 +9,13 @@ class Camera
 public:
 	Camera(float left, float right, float bottom, float top);
 
-	void move(const Vector2f& offset);
-
-	void setRotation(float rotation);
+	void setRotation(float angle);
 	void setPosition(float x, float y);
 	void setPosition(const Vector2f& position);
+
+	void rotate(float angle);
+	void move(float x, float y);
+	void move(const Vector2f& offset);
 
 	float getRotation() const;
 	Vector2f getPosition() const;

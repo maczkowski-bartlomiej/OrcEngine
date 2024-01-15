@@ -98,12 +98,20 @@ void Text::updateVertices() const
 	{
 		Character character = m_font->getCharacter(m_string[i]);
 
+		if (m_string[i] == '\n')
+		{
+			position.x = 0.0f;
+			position.y += m_font->getSize();
+			continue;
+		}
+
 		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
 		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
 		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
 
+		float positionyY = position.y;
 		position.y -= character.offset.y;
 
 		m_vertices[static_cast<size_t>(i) * 4 + 0].color = m_color.normalized();
@@ -122,7 +130,7 @@ void Text::updateVertices() const
 		m_vertices[static_cast<size_t>(i) * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
 		m_vertices[static_cast<size_t>(i) * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
 
-		position.y = 0.0f;
+		position.y = positionyY;
 		position.x += character.advance;
 
 		m_localRect.width = std::max(m_localRect.width, position.x);

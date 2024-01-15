@@ -8,11 +8,6 @@
 
 namespace orc {
 
-Shader::Shader()
-	: m_rendererID(0)
-{
-}
-
 Shader::Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
 {
 	loadFromFile(vertexFilePath, fragmentFilePath);
@@ -156,6 +151,7 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 		return false;
 	}
 
+	glDeleteProgram(m_rendererID);
 	m_rendererID = glCreateProgram();
 	glAttachShader(m_rendererID, vertexShader);
 	glAttachShader(m_rendererID, fragmentShader);

@@ -10,4 +10,7 @@ out vec4 color;
 void main()
 {
     color = v_color * vec4(1.0, 1.0, 1.0, texture(u_textures[int(v_textureIndex)], v_textureCoords).r);
+    
+	if (color.a == 0.0)
+		discard;
 }

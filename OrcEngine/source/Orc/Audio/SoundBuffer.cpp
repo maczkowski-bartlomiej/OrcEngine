@@ -225,6 +225,9 @@ bool SoundBuffer::loadFromFile(const FilePath& filePath)
         return 0;
     }
 
+    if (m_audioID)
+        alCall(alDeleteBuffers, 1, &m_audioID);
+
     ALuint buffer = 0;
     alCall(alGenBuffers, 1, &buffer);
 

@@ -26,21 +26,16 @@ public:
 
 	bool loadFromFile(const FilePath& filePath, uint32_t size = 48);
 
-	Ref<Texture> getBitmap() const
-	{
-		return m_bitmap;
-	}
-
-	Character getCharacter(char c) const
-	{
-		return m_characters.at(c);
-	}
+	uint32_t getSize() const;
+	Ref<Texture> getBitmap() const;
+	Character getCharacter(char character) const;
 
 private:
-	std::unordered_map<char, Character> m_characters;
+	uint32_t m_size = 0;
+	FT_Face m_face = nullptr;
 
-	FT_Face m_face;
 	Ref<Texture> m_bitmap;
+	std::unordered_map<char, Character> m_characters;
 };
 
 }
