@@ -50,6 +50,10 @@ project "OrcEngine"
 		"%{prj.name}/dependecies"
 	}
 
+	filter "action:vs*"
+		buildoptions
+			"/external:anglebrackets /external:W0 /wd4100"
+		
 	filter "system:windows"
 		systemversion "latest"
 

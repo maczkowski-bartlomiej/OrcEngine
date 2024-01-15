@@ -145,7 +145,7 @@ void Renderer::draw(const Circle& circle)
 	for (uint64_t i = 0; i < 4; i++)
 	{
 		m_circles.vertices[(uint64_t)m_circles.verticesCount + i] = circleVertices[i];
-		m_circles.vertices[(uint64_t)m_circles.verticesCount + i].globalPosition.z = 1.0;
+		m_circles.vertices[(uint64_t)m_circles.verticesCount + i].globalPosition.z = zValue;
 		m_circles.vertices[(uint64_t)m_circles.verticesCount + i].textureIndex = textureIndex;
 	}
 

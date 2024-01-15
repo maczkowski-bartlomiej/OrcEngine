@@ -52,8 +52,8 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 			ORC_LOG_ERROR("Available sizes are: ");
 			for (int i = 0; i < face->num_fixed_sizes; ++i)
 			{
-				const long size = (face->available_sizes[i].y_ppem + 32) >> 6;
-				ORC_LOG_ERROR("{}", size);
+				const long availableSize = (face->available_sizes[i].y_ppem + 32) >> 6;
+				ORC_LOG_ERROR("{}", availableSize);
 			}
 		}
 		else
@@ -111,10 +111,10 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 			}
 		}
 
-		m_characters[i].bitmapCoordStart = Vector2f(currentX, currentY);
-		m_characters[i].bitmapCoordEnd = Vector2f(currentX + bitmap->width, currentY + bitmap->rows);
-		m_characters[i].offset = Vector2f(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
-		m_characters[i].advance = m_face->glyph->advance.x >> 6;
+		m_characters[static_cast<int32_t>(i)].bitmapCoordStart = Vector2f(currentX, currentY);
+		m_characters[static_cast<int32_t>(i)].bitmapCoordEnd = Vector2f(currentX + bitmap->width, currentY + bitmap->rows);
+		m_characters[static_cast<int32_t>(i)].offset = Vector2f(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
+		m_characters[static_cast<int32_t>(i)].advance = m_face->glyph->advance.x >> 6;
 
 		currentX += bitmap->width + 1;
 	}

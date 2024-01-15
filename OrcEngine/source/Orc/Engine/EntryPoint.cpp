@@ -4,7 +4,7 @@
 
 #ifdef ORC_PLATFORM_WINDOWS
 
-int main(int argc, char** argv)
+int main(int, char**)
 {
 	orc::Engine* engine = nullptr;
 	engine = orc::startEngine();
