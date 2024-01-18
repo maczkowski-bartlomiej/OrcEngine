@@ -13,13 +13,7 @@
 
 namespace orc {
 
-SoundBuffer::SoundBuffer()
-    : m_audioID(0)
-{
-}
-
 SoundBuffer::SoundBuffer(const FilePath& filePath)
-    : m_audioID(0)
 {
     loadFromFile(filePath);
 }

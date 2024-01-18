@@ -42,6 +42,8 @@ InputsTest::~InputsTest()
 void InputsTest::onAttach()
 {
 	window.setTitle("InputsTest");
+
+	audio.playMusic(soundBufferHolder.getResource("music"), {0, 0});
 }
 
 void InputsTest::onDetach()
@@ -96,8 +98,8 @@ void InputsTest::onEvent(orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
-		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		switch (newEvent->key)
+		auto& newEvent = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (newEvent.key)
 		{
 			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("game"); break;
 			case orc::Keyboard::Key::Left:  gameLayerManager.setActiveGameLayer("sprites_test"); break;
@@ -111,12 +113,12 @@ void InputsTest::onEvent(orc::Event& event)
 	}
 	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)
 	{
-		auto newEvent = (orc::MouseWheelScrolledEvent*)&event;
-		if (newEvent->yDelta > 0)
+		auto& newEvent = orc::getEvent<orc::MouseWheelScrolledEvent>(event);
+		if (newEvent.yDelta > 0)
 		{
 			m_player.scale(0.1f);
 		}
-		else if (newEvent->yDelta < 0)
+		else if (newEvent.yDelta < 0)
 		{
 			m_player.scale(-0.1f);
 		}

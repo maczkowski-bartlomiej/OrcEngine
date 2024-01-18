@@ -105,11 +105,13 @@ void Engine::run()
 		float elapsed = deltaTime.elapsed();
 		deltaTime.reset();
 
-		m_gameLayerManager->getActiveGameLayer()->onUpdate(elapsed);
+		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveGameLayer();
+		gameLayer->onUpdate(elapsed);
+
 		m_audio->update();
 		m_window->display();
 
-		//ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
+		ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
 	}
 }
 

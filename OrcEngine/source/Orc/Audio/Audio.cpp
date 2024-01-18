@@ -12,7 +12,6 @@ namespace orc {
 Audio* Audio::m_instance = nullptr;
 
 Audio::Audio()
-	: m_device(nullptr), m_context(nullptr)
 {
 	if (m_instance)
 	{
@@ -29,6 +28,7 @@ Audio::~Audio()
 {
 	if (m_instance == this)
 	{
+		alCall(alDeleteSources, 1, &m_musicID);
 		stopAllSounds();
 		alcCall(alcDestroyContext, m_device, m_context);
 		alcCall(alcCloseDevice, m_device, m_device);
@@ -73,6 +73,30 @@ AudioID Audio::playSound(Ref<SoundBuffer> soundBuffer, const Vector2f& position,
 	return soundID;
 }
 
+AudioID Audio::playMusic(Ref<SoundBuffer> soundBuffer, const Vector2f& position, float volume, bool looping)
+{
+	if (alCall(alIsSource, m_musicID))
+		alCall(alDeleteSources, 1, &m_musicID);
+
+	alCall(alGenSources, 1, &m_musicID);
+	alCall(alSourcef, m_musicID, AL_GAIN, volume);
+	alCall(alSource3f, m_musicID, AL_POSITION, position.x, position.y, 0.0f);
+	alCall(alSourcei, m_musicID, AL_BUFFER, soundBuffer->getAudioID());
+	alCall(alSourcei, m_musicID, AL_LOOPING, looping);
+
+	alCall(alSourcePlay, m_musicID);
+
+	return m_musicID;
+}
+
+void Audio::stopSound(AudioID soundID)
+{
+	if (alCall(alIsSource, soundID))
+	{
+		alCall(alSourceStop, soundID);
+	}
+}
+
 void Audio::pauseSound(AudioID soundID)
 {
 	if (alCall(alIsSource, soundID))
@@ -89,12 +113,14 @@ void Audio::resumeSound(AudioID soundID)
 	}
 }
 
-void Audio::stopSound(AudioID soundID)
+void Audio::pauseMusic()
 {
-	if (alCall(alIsSource, soundID))
-	{
-		alCall(alSourceStop, soundID);
-	}
+	pauseSound(m_musicID);
+}
+
+void Audio::resumeMusic()
+{
+	resumeSound(m_musicID);
 }
 
 void Audio::stopAllSounds()

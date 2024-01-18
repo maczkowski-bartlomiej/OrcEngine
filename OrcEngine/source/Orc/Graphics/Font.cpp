@@ -74,7 +74,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	m_face = face;
 	m_size = size;
 
-	constexpr size_t CHARACTER_COUNT = 128;
+	constexpr unsigned char CHARACTER_COUNT = 128;
 	uint32_t fontHeightInPixels = m_face->size->metrics.height >> 6;
 	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(CHARACTER_COUNT)));
 	uint32_t maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
@@ -90,7 +90,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	std::vector<unsigned char> buffer;
 
 	int32_t currentX = 0, currentY = 0;
-	for (int32_t i = 0; i < CHARACTER_COUNT; ++i)
+	for (unsigned char i = 0; i < CHARACTER_COUNT; ++i)
 	{
 		FT_Load_Char(m_face, i, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 		FT_Bitmap* bitmap = &m_face->glyph->bitmap;
@@ -111,10 +111,10 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 			}
 		}
 
-		m_characters[static_cast<int32_t>(i)].bitmapCoordStart = Vector2f(currentX, currentY);
-		m_characters[static_cast<int32_t>(i)].bitmapCoordEnd = Vector2f(currentX + bitmap->width, currentY + bitmap->rows);
-		m_characters[static_cast<int32_t>(i)].offset = Vector2f(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
-		m_characters[static_cast<int32_t>(i)].advance = m_face->glyph->advance.x >> 6;
+		m_characters[i].bitmapCoordStart = Vector2f(currentX, currentY);
+		m_characters[i].bitmapCoordEnd = Vector2f(currentX + bitmap->width, currentY + bitmap->rows);
+		m_characters[i].offset = Vector2f(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
+		m_characters[i].advance = m_face->glyph->advance.x >> 6;
 
 		currentX += bitmap->width + 1;
 	}

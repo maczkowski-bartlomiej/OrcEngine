@@ -13,17 +13,27 @@ public:
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseWheelScrolled
 	};
 
-	Event(const Type& type);
+	Event(const Type& type)
+		: m_type(type)
+	{
+	}
+
 	virtual ~Event() = default;
 
-	void markHandled();
-	bool isHandled() const;
-
-	Type getType() const;
+	Type getType() const
+	{
+		return m_type;
+	}
 
 private:
 	Type m_type;
-	bool m_handled;
 };
+
+
+template<typename EventType>
+const EventType& getEvent(Event& event)
+{
+	return static_cast<EventType&>(event);
+}
 
 }

@@ -42,7 +42,7 @@ public:
 	uint32_t getHeight() const;
 	Vector2u getSize() const;
 
-	void* getNativeWindow();
+	void* getNativeWindow() const;
 
 private:
 	void initGLAD();

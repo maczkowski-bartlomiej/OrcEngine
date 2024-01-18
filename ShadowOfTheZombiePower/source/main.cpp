@@ -21,5 +21,6 @@ orc::Engine* orc::startEngine()
 	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
 	engine->getGameLayerManager().setActiveGameLayer("game");
 
+
 	return engine;
 }

@@ -13,8 +13,7 @@ namespace orc
 {
 
 GameLayer::GameLayer()
-	:
-	  camera(0.0f, (float)Engine::get().getWindow().getWidth(), (float)Engine::get().getWindow().getHeight(), 0.0f),
+	: camera(0.0f, (float)Engine::get().getWindow().getWidth(), (float)Engine::get().getWindow().getHeight(), 0.0f),
 	  audio(Engine::get().getAudio()),
 	  window(Engine::get().getWindow()),
 	  renderer(Engine::get().getRenderer()),

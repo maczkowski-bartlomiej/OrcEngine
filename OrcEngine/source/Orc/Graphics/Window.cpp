@@ -100,7 +100,7 @@ Vector2u Window::getSize() const
 	return Vector2u(m_videoSettings.width, m_videoSettings.height);
 }
 
-void* Window::getNativeWindow()
+void* Window::getNativeWindow() const
 {
 	return m_window;
 }

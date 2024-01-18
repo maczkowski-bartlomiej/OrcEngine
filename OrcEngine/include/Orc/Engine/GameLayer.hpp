@@ -13,6 +13,16 @@ class GameLayerManager;
 
 class GameLayer
 {
+public:
+	GameLayer();
+	virtual ~GameLayer() = default;
+
+	virtual void onAttach() {}
+	virtual void onDetach() {}
+
+	virtual void onEvent(Event& event) {}
+	virtual void onUpdate(float deltaTime) {}
+
 protected:
 	Camera camera;
 
@@ -25,16 +35,6 @@ protected:
 	ShaderHolder& shaderHolder;
 	TextureHolder& textureHolder;
 	SoundBufferHolder& soundBufferHolder;
-
-public:
-	GameLayer();
-	virtual ~GameLayer() = default;
-
-	virtual void onAttach() {}
-	virtual void onDetach() {}
-
-	virtual void onEvent(Event& event) {}
-	virtual void onUpdate(float deltaTime) {}
 };
 
 }

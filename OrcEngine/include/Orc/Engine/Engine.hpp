@@ -35,7 +35,7 @@ private:
 	void onEvent(Event& event);
 
 	bool m_running;
-	
+
 	UniquePtr<Audio> m_audio;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;

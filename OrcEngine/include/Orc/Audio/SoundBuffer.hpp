@@ -7,7 +7,7 @@ namespace orc {
 class SoundBuffer
 {
 public:
-	SoundBuffer();
+	SoundBuffer() = default;
 	SoundBuffer(const FilePath& filePath);
 	~SoundBuffer();
 
@@ -16,7 +16,7 @@ public:
 	AudioID getAudioID() const;
 
 private:
-	AudioID m_audioID;
+	AudioID m_audioID = 0;
 };
 
 }
