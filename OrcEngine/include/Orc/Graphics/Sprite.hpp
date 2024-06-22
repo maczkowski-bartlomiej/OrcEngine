@@ -6,6 +6,7 @@
 #include "Graphics/Color.hpp"
 #include "Graphics/Vertex.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/Animator.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
@@ -22,10 +23,13 @@ public:
 	Color getColor() const;
 	FloatRect getLocalRect() const override;
 
+	Animator& getAnimator();
+
 private:
 	void updateVerticesPositions() const override;
 
 	Color m_color;
+	Animator m_animator;
 
 	//std::array<Ref<Texture>, 8> m_overlays;
 };

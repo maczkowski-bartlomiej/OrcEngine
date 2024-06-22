@@ -79,10 +79,8 @@ private:
 	static constexpr uint32_t MAX_GLYPHS_INDICES = MAX_GLYPHS_COUNT * 6;
 	static constexpr uint32_t MAX_GLYPHS_VERTICES = MAX_GLYPHS_COUNT * 4;
 
-	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32;
+	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32; //glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
 	static constexpr uint32_t EMPTY_TEXTURE_INDEX = 32;
-
-	Matrix4 m_viewProjectionMatrix;
 
 	struct Lines
 	{
@@ -94,55 +92,26 @@ private:
 		uint32_t verticesCount = 0;
 	} m_lines;
 
-	struct Circles
+	template<typename VertexType, uint32_t MAX_VERTICES>
+	struct Shape
 	{
 		Ref<Shader> shader;
 		Ref<VertexArray> vertexArray;
 		Ref<VertexBuffer> vertexBuffer;
-		std::array<CircleVertex, MAX_CIRCLES_VERTICES> vertices;
-		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
+		std::array<VertexType, MAX_VERTICES> vertices;
+		std::unordered_map<RendererID, Ref<Texture>> textures;
 
 		uint32_t verticesCount = 0;
 		uint32_t texturesCount = 0;
-	} m_circles;
+	};
 
-	struct Sprites
-	{
-		Ref<Shader> shader;
-		Ref<VertexArray> vertexArray;
-		Ref<VertexBuffer> vertexBuffer;
-		std::array<SpriteVertex, MAX_SPRITES_VERTICES> vertices;
-		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
-
-		uint32_t verticesCount = 0;
-		uint32_t texturesCount = 0;
-	} m_sprites;
-		
-	struct Rectangles
-	{
-		Ref<Shader> shader;
-		Ref<VertexArray> vertexArray;
-		Ref<VertexBuffer> vertexBuffer;
-		std::array<RectangleVertex, MAX_RECTANGLES_VERTICES> vertices;
-		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
-
-		uint32_t verticesCount = 0;
-		uint32_t texturesCount = 0;
-	} m_rectangles;
-
-	struct Glyphs
-	{
-		Ref<Shader> shader;
-		Ref<VertexArray> vertexArray;
-		Ref<VertexBuffer> vertexBuffer;
-		std::array<GlyphVertex, MAX_GLYPHS_VERTICES> vertices;
-		std::array<Ref<Texture>, MAX_TEXTURE_SLOTS> textures;
-
-		uint32_t verticesCount = 0;
-		uint32_t texturesCount = 0;
-	} m_glyphs;
+	Shape<CircleVertex, MAX_CIRCLES_VERTICES> m_circles;
+	Shape<SpriteVertex, MAX_SPRITES_VERTICES> m_sprites;
+	Shape<RectangleVertex, MAX_RECTANGLES_VERTICES> m_rectangles;
+	Shape<GlyphVertex, MAX_GLYPHS_VERTICES> m_glyphs;
 
 	uint32_t zIndex = 1;
+	Matrix4 m_viewProjectionMatrix;
 };
 
 }

@@ -34,6 +34,8 @@ public:
 	float getHeight() const;
 	Vector2f getSize() const;
 
+	RendererID getRendererID() const;
+
 private:
 	Vector2f m_size;
 	RendererID m_rendererID;

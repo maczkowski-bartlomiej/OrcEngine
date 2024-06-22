@@ -8,21 +8,24 @@
 Game::Game()
 {
 	/*
-		Move to eigen?
-
-		Rethink of AudioHolder name
-
-		Add GUI
+		Animated sprites
 		Add Lua script engine
-
 		Music queing
 
-		resize camera at gameLayer?
+		std::vector<FloatRect> frames;
+		Sprite sprite;
+										    time 
+		sprite.addAnimation("idle", frames, 0.5f);
+		
+		sprite.playAnimation("idle", true);
+		sprite.playAnimation("hit", false);
 
+
+		sprite.update();
 	*/
-
-
-
+	
+	auto anim = animationHolder.getResource("player_animation");
+	anim;
 	gameLayerManager.addGameLayer("circles_test", orc::createRef<CirclesTest>());
 	gameLayerManager.addGameLayer("rectangles_test", orc::createRef<RectanglesTest>());
 	gameLayerManager.addGameLayer("sprites_test", orc::createRef<SpritesTest>());
@@ -36,6 +39,7 @@ Game::~Game()
 
 void Game::onAttach()
 {
+	window.setTitle("Game");
 }
 
 void Game::onDetach()
@@ -44,8 +48,7 @@ void Game::onDetach()
 
 void Game::onUpdate(float deltaTime)
 {
-	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
+
 }
 
 void Game::onEvent(orc::Event& event)
@@ -62,4 +65,17 @@ void Game::onEvent(orc::Event& event)
 			gameLayerManager.setActiveGameLayer("inputs_test");
 		}
 	}
+}
+
+void Game::onRender()
+{
+	renderer.setClearColor(orc::Color(25, 25, 25, 255));
+	renderer.clear();
+
+	//renderer.drawLine(orc::Vector2f(0.0f, 0.0f), orc::Vector2f(100.0f, 100.0f), orc::Color(255, 0, 0));
+}
+
+void Game::onGuiRender()
+{
+	//ImGui::ShowDemoWindow();
 }

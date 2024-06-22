@@ -68,8 +68,13 @@ void Renderer::draw(const Text& text)
 		batchStartGlyphs();
 	}
 
+	orc::Ref<Texture> bitmap = text.getFont()->getBitmap();
+	auto insert = m_glyphs.textures.insert({ bitmap->getRendererID(), bitmap });
+	if (insert.second == true) //Unique texture inserted
+		m_glyphs.texturesCount += 1;
+
 	float zValue = 1.0f / zIndex;
-	m_glyphs.textures[m_glyphs.texturesCount] = text.getFont()->getBitmap();
+
 	for (uint64_t i = 0; i < glyphVertices.size(); i++)
 	{
 		m_glyphs.vertices[(uint64_t)m_glyphs.verticesCount + i] = glyphVertices[i];
@@ -100,8 +105,13 @@ void Renderer::draw(const Sprite& sprite)
 		batchStartSprites();
 	}
 
+	orc::Ref<Texture> bitmap = sprite.getTexture();
+	auto insert = m_glyphs.textures.insert({ bitmap->getRendererID(), bitmap });
+	if (insert.second == true) //Unique texture inserted
+		m_glyphs.texturesCount += 1;
+
 	float zValue = 1.0f / zIndex;
-	m_sprites.textures[m_sprites.texturesCount] = sprite.getTexture();
+
 	std::array<SpriteVertex, 4> spriteVertices = sprite.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{

@@ -4,6 +4,8 @@
 
 #include <tinyxml2.h>
 
+#include <sstream>
+
 namespace orc {
 
 template<typename ResourceType>
@@ -117,6 +119,72 @@ void ResourceHolder<Texture>::loadResources(const FilePath& xmlPath)
 	}
 }
 
+void ResourceHolder<Animation>::loadResources(const FilePath& xmlPath)
+{
+	tinyxml2::XMLDocument resourceFile;
+	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
+
+	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+
+	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while loading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+	for (auto element = resourceFile.FirstChildElement("RESOURCE"); element != nullptr; element = element->NextSiblingElement("RESOURCE"))
+	{
+		const char* name = nullptr;
+		const char* frame = nullptr;
+
+		uint32_t durationMs = 0;
+		std::vector<FloatRect> frames;
+
+		errorResult = element->QueryStringAttribute("name", &name);
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		int frameCount = 1;
+		while (auto attribute = element->FindAttribute(std::string("frame" + std::to_string(frameCount)).c_str()))
+		{
+			frame = attribute->Value();
+			std::stringstream ss(frame);
+			std::vector<std::string> dimensionString;
+
+			while (ss.good())
+			{
+				std::string substr;
+				std::getline(ss, substr, ',');
+				dimensionString.push_back(substr);
+			}
+
+			if (dimensionString.size() != 4)
+			{
+				ORC_LOG_ERROR("Invalid dimension for animation '{}'", name);
+				break;
+			}
+
+			FloatRect rect;
+			rect.x = std::stof(dimensionString[0]);
+			rect.y = std::stof(dimensionString[1]);
+			rect.width = std::stof(dimensionString[2]);
+			rect.height = std::stof(dimensionString[3]);
+
+			frames.push_back(rect);
+			frameCount++;
+		}
+
+		errorResult = element->QueryUnsignedAttribute("durationMs", &durationMs);
+		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Fatal occured while reading XML file\n\tpath: {}\n\treason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
+
+		if (frames.size())
+		{
+			Ref<Animation> animation = createRef<Animation>(frames, durationMs);
+			m_resources[name] = animation;
+		}
+		else
+		{
+			ORC_LOG_ERROR("Couldn't load resource '{}'", name);
+		}
+	}
+}
+
 void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 {
 	tinyxml2::XMLDocument resourceFile;
@@ -149,6 +217,7 @@ void ResourceHolder<SoundBuffer>::loadResources(const FilePath& xmlPath)
 template class ResourceHolder<Font>;
 template class ResourceHolder<Shader>;
 template class ResourceHolder<Texture>;
+template class ResourceHolder<Animation>;
 template class ResourceHolder<SoundBuffer>;
 
 }

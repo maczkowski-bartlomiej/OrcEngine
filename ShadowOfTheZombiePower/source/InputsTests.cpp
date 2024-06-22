@@ -43,7 +43,7 @@ void InputsTest::onAttach()
 {
 	window.setTitle("InputsTest");
 
-	audio.playMusic(soundBufferHolder.getResource("music"), {0, 0});
+//	audio.playMusic(soundBufferHolder.getResource("music"), {0, 0});
 }
 
 void InputsTest::onDetach()
@@ -71,7 +71,7 @@ void InputsTest::onUpdate(float deltaTime)
 		m_player.move(0.0f, speed * deltaTime);
 	}
 
-	orc::Vector2f mouse = orc::Mouse::getMousePosition();
+	orc::Vector2f mouse = orc::Mouse::getPosition();
 	orc::Vector2f playerPos = m_player.getPosition();
 	orc::Vector2f delta(mouse.x - playerPos.x, mouse.y - playerPos.y);
 	float angle = glm::degrees(glm::atan(delta.y, delta.x));
@@ -90,7 +90,8 @@ void InputsTest::onUpdate(float deltaTime)
 	renderer.draw(m_sprite3);
 	renderer.draw(m_text2);
 
-
+	renderer.drawLine(orc::Vector2f(0.0f, 0.0f), orc::Vector2f(100.0f, 100.0f), orc::Color(255, 0, 0));
+	renderer.drawLine(orc::Vector2f(0.0f, 0.0f), orc::Vector2f(800.0f, 600.0f), orc::Color(255, 0, 0));
 	renderer.end();
 }
 
@@ -110,6 +111,19 @@ void InputsTest::onEvent(orc::Event& event)
 			case orc::Keyboard::Key::J:     camera.move(-10.0f, 0.0f); break;
 			case orc::Keyboard::Key::L:     camera.move(10.0f, 0.0f); break;
 		}
+
+		if (newEvent.key == orc::Keyboard::Key::A)
+		{
+			camera.test(x);
+			x++;
+		}
+		else if (newEvent.key == orc::Keyboard::Key::D)
+		{
+			camera.test(x);
+			x--;
+		}
+
+		ORC_LOG_INFO("X: {}", x);
 	}
 	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)
 	{

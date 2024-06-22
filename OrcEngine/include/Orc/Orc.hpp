@@ -5,15 +5,16 @@
 #include "Audio/OpenAL.hpp"
 #include "Audio/SoundBuffer.hpp"
 
+#include "Engine/Clock.hpp"
 #include "Engine/Core.hpp"
 #include "Engine/Debug.hpp"
-#include "Engine/DeltaTime.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/EntryPoint.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/GameLayerManager.hpp"
 #include "Engine/GameSettings.hpp"
 #include "Engine/Logger.hpp"
+#include "Engine/Random.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Engine/Utility.hpp"
 
@@ -27,6 +28,7 @@
 #include "Graphics/Color.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/FTLibrary.hpp"
+#include "Graphics/Gui.hpp"
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/Rect.hpp"
 #include "Graphics/Renderer.hpp"
@@ -46,4 +48,3 @@
 
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"
-

@@ -146,7 +146,7 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 		glGetShaderInfoLog(vertexShader, errorLenght, &errorLenght, &errorMessage[0]);
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
-		ORC_ERROR("Vertex shader compilation\n{}", errorMessage.data());
+		ORC_ERROR("Fragment shader compilation\n{}", errorMessage.data());
 
 		return false;
 	}

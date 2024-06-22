@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Engine/ResourceHolder.hpp"
-#include "Graphics/Camera.hpp"
 #include "Events/Event.hpp"
+#include "Graphics/Camera.hpp"
+#include "Engine/ResourceHolder.hpp"
 
 namespace orc {
 
@@ -20,8 +20,13 @@ public:
 	virtual void onAttach() {}
 	virtual void onDetach() {}
 
+	virtual void onUpdate(float dt) {}
 	virtual void onEvent(Event& event) {}
-	virtual void onUpdate(float deltaTime) {}
+
+	virtual void onRender() {}
+	virtual void onGuiRender() {}
+
+	Camera& getCamera();
 
 protected:
 	Camera camera;
@@ -34,6 +39,7 @@ protected:
 	FontHolder& fontHolder;
 	ShaderHolder& shaderHolder;
 	TextureHolder& textureHolder;
+	AnimationHolder& animationHolder;
 	SoundBufferHolder& soundBufferHolder;
 };
 

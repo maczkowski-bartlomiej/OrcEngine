@@ -35,19 +35,21 @@ project "OrcEngine"
 	{
 		"%{prj.name}/include/Orc/**.hpp",
 		"%{prj.name}/include/Orc/**.cpp",
+		"%{prj.name}/include/Orc/**.inl",
 		"%{prj.name}/source/Orc/**.cpp",
+"		%{prj.name}/source/Orc/**.inl",
 
-		"%{prj.name}/dependecies/**.h",
-		"%{prj.name}/dependecies/**.c",
-		"%{prj.name}/dependecies/**.hpp",
-		"%{prj.name}/dependecies/**.cpp",
+		"%{prj.name}/include/dependencies/**.h",
+		"%{prj.name}/include/dependencies/**.c",
+		"%{prj.name}/include/dependencies/**.hpp",
+		"%{prj.name}/include/dependencies/**.cpp",
 	}	
 
 	includedirs
 	{
 		"%{prj.name}/include/Orc",
 
-		"%{prj.name}/dependecies"
+		"%{prj.name}/include/dependencies"
 	}
 
 	filter "action:vs*"
@@ -76,7 +78,6 @@ project "OrcEngine"
 		defines "ORC_DISTRIBUTION"
 		runtime "Release"
 		optimize "on"
-
 
 	pchheader "%{prj.name}/include/Orc/OrcPch.hpp"
 	pchsource "%{prj.name}/include/Orc/OrcPch.cpp"

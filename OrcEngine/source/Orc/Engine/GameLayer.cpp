@@ -21,8 +21,14 @@ GameLayer::GameLayer()
 	  fontHolder(Engine::get().getFontHolder()),
 	  shaderHolder(Engine::get().getShaderHolder()),
 	  textureHolder(Engine::get().getTextureHolder()),
+	  animationHolder(Engine::get().getAnimationHolder()),
 	  soundBufferHolder(Engine::get().getSoundBufferHolder())
 {
+}
+
+Camera& GameLayer::getCamera()
+{
+	return camera;
 }
 
 }

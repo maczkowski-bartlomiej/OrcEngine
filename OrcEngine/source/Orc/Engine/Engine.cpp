@@ -1,8 +1,10 @@
 #include "OrcPch.hpp"
 
+#include "Engine/Clock.hpp"
 #include "Engine/Engine.hpp"
-#include "Engine/DeltaTime.hpp"
 #include "Engine/ResourceHolder.hpp"
+
+#include "Events/WindowEvents.hpp"
 
 #include "Graphics/Renderer.hpp"
 #include "Graphics/FTLibrary.hpp"
@@ -50,8 +52,14 @@ Engine::Engine(const GameSettings& gameSettings)
 	ORC_LOG_INFO("Loading textures...");
 	m_textureHolder = createUniquePtr<TextureHolder>(m_gameSettings.texturesPath);
 
+	ORC_LOG_INFO("Loading animations...");
+	m_animationHolder = createUniquePtr<AnimationHolder>(m_gameSettings.animationsPath);
+
 	ORC_LOG_INFO("Loading audio...");
 	m_soundBufferHolder = createUniquePtr<SoundBufferHolder>(m_gameSettings.audioPath);
+
+	ORC_LOG_INFO("Initializing gui...");
+	m_gui = createUniquePtr<Gui>();
 
 	ORC_LOG_INFO("Initializing game layer manager...");
 	m_gameLayerManager = createUniquePtr<GameLayerManager>();
@@ -66,6 +74,9 @@ Engine::~Engine()
 		ORC_LOG_INFO("Deinitializing game layer manager...");
 		m_gameLayerManager.reset();
 
+		ORC_LOG_INFO("Deinitializing gui...");
+		m_gui.reset();
+
 		ORC_LOG_INFO("Deinitializing resource holders...");
 		ORC_LOG_INFO("Unloading audio...");
 		m_soundBufferHolder.reset();
@@ -78,6 +89,9 @@ Engine::~Engine()
 
 		ORC_LOG_INFO("Unloading fonts...");
 		m_fontHolder.reset();
+
+		ORC_LOG_INFO("Unloading animiations...");
+		m_animationHolder.reset();
 
 		ORC_LOG_INFO("Deinitializing audio...");
 		m_audio.reset();
@@ -98,20 +112,28 @@ Engine::~Engine()
 
 void Engine::run()
 {
-	DeltaTime deltaTime;
+	Clock clock;
 
 	while (m_running)
 	{
-		float elapsed = deltaTime.elapsed();
-		deltaTime.reset();
+		float elapsed = clock.elapsed();
+		clock.reset();
 
 		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveGameLayer();
 		gameLayer->onUpdate(elapsed);
 
+		m_renderer->begin(gameLayer->getCamera());
+		gameLayer->onRender();
+		m_renderer->end();
+
+		m_gui->begin();
+		gameLayer->onGuiRender();
+		m_gui->end();
+
 		m_audio->update();
 		m_window->display();
 
-		ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
+		//ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
 	}
 }
 
@@ -155,6 +177,11 @@ TextureHolder& Engine::getTextureHolder()
 	return *m_textureHolder;
 }
 
+AnimationHolder& Engine::getAnimationHolder()
+{
+	return *m_animationHolder;
+}
+
 SoundBufferHolder& Engine::getSoundBufferHolder()
 {
 	return *m_soundBufferHolder;
@@ -167,6 +194,15 @@ void Engine::onEvent(Event& event)
 	if (event.getType() == Event::Type::WindowClosed)
 	{
 		m_running = false;
+	}
+	else if (event.getType() == Event::Type::WindowResized)
+	{
+		const WindowResizedEvent& windowResizedEvent = getEvent<WindowResizedEvent>(event);
+		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveGameLayer();
+		if (gameLayer)
+		{
+			gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);
+		}
 	}
 }
 

@@ -12,7 +12,7 @@ public:
 		Extra1, Extra2, Extra3, Extra4, Extra5
 	};
 
-	static Vector2f getMousePosition();
+	static Vector2f getPosition();
 	static bool isButtonPressed(Button button);
 };
 

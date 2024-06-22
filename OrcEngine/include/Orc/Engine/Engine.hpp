@@ -6,6 +6,7 @@
 
 #include "Audio/Audio.hpp"
 
+#include "Graphics/Gui.hpp"
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
 
@@ -27,6 +28,7 @@ public:
 	FontHolder& getFontHolder();
 	ShaderHolder& getShaderHolder();
 	TextureHolder& getTextureHolder();
+	AnimationHolder& getAnimationHolder();
 	SoundBufferHolder& getSoundBufferHolder();
 
 	static Engine& get();
@@ -36,6 +38,7 @@ private:
 
 	bool m_running;
 
+	UniquePtr<Gui> m_gui;
 	UniquePtr<Audio> m_audio;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
@@ -44,6 +47,7 @@ private:
 	UniquePtr<FontHolder> m_fontHolder;
 	UniquePtr<ShaderHolder> m_shaderHolder;
 	UniquePtr<TextureHolder> m_textureHolder;
+	UniquePtr<AnimationHolder> m_animationHolder;
 	UniquePtr<SoundBufferHolder> m_soundBufferHolder;
 
 	GameSettings m_gameSettings;

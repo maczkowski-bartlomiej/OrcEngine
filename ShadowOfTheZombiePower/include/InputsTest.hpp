@@ -23,4 +23,5 @@ public:
 	orc::Rectangle m_rectangle1;
 	//orc::Text m_text3;
 	//orc::Text m_text4;
+	float x = 0.0f;
 };

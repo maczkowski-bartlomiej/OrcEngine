@@ -13,6 +13,6 @@ public:
 	void onUpdate(float deltaTime)  override;
 	void onEvent(orc::Event& event)  override;
 
-private:
-
+	void onRender() override;
+	void onGuiRender() override;
 };

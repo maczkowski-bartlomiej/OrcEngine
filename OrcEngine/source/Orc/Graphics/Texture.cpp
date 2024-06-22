@@ -135,4 +135,9 @@ Vector2f Texture::getSize() const
 	return m_size;
 }
 
+RendererID Texture::getRendererID() const
+{
+	return m_rendererID;
+}
+
 }

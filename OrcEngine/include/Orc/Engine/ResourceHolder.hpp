@@ -5,6 +5,7 @@
 #include "Graphics/Font.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Texture.hpp"
+#include "Graphics/Animator.hpp"
 
 #include "Audio/SoundBuffer.hpp"
 
@@ -32,6 +33,7 @@ private:
 using FontHolder = ResourceHolder<Font>;
 using ShaderHolder = ResourceHolder<Shader>;
 using TextureHolder = ResourceHolder<Texture>;
+using AnimationHolder = ResourceHolder<Animation>;
 using SoundBufferHolder = ResourceHolder<SoundBuffer>;
 
 }

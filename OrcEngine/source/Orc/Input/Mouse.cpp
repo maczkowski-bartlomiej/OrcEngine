@@ -8,7 +8,7 @@
 
 namespace orc {
 
-Vector2f Mouse::getMousePosition()
+Vector2f Mouse::getPosition()
 {
 	Vector2d mousePosition;
 	GLFWwindow* window = static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow());

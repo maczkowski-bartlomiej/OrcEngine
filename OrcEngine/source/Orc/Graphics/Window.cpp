@@ -31,13 +31,13 @@ Window::Window(const VideoSettings& videoSettings)
 	if (m_instance)
 	{
 		ORC_FATAL("Window instance already exist!!!");
+		return;
 	}
-	else
-	{
-		ORC_LOG_INFO("Window info...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
-		m_instance = this;
-		initGLAD();
-	}
+
+	ORC_LOG_INFO("Window info...\n\tresolution: {}x{}\n\ttitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
+	m_instance = this;
+	initGLAD();
+
 }
 
 Window::~Window() 

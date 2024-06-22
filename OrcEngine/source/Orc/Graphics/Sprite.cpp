@@ -5,16 +5,17 @@
 namespace orc {
 
 Sprite::Sprite()
+	: m_animator(this)
 {
 }
 
 Sprite::Sprite(Ref<Texture> texture)
-	: Texturable(texture)
+	: m_animator(this), Texturable(texture)
 {
 }
 
 Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
-	: Texturable(texture)
+	: m_animator(this), Texturable(texture)
 {
 	setPosition(position);
 }
@@ -35,6 +36,11 @@ Color Sprite::getColor() const
 FloatRect Sprite::getLocalRect() const
 {
 	return getTextureRect();
+}
+
+Animator& Sprite::getAnimator()
+{
+	return m_animator;
 }
 
 void Sprite::updateVerticesPositions() const

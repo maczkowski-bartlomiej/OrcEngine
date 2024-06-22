@@ -28,6 +28,11 @@ public:
 		return Vector2<T>(width, height);
 	}
 
+	bool intersects(const Rect<T>& other) const
+	{
+		return x < other.x + other.width && x + width > other.x && y < other.y + other.height && y + height > other.y;
+	}
+
 	T x, y, width, height;
 };
 
