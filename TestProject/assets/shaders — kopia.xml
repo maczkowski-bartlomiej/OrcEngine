@@ -1,0 +1,2 @@
+<RESOURCE name="texture_shader" path="assets/shaders/texture.vert.glsl" path2="assets/shaders/texture.frag.glsl"/>
+<RESOURCE name="flatColor_shader" path="assets/shaders/flatColor.vert.glsl" path2="assets/shaders/flatColor.frag.glsl"/>

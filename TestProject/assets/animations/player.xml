@@ -1,0 +1,2 @@
+<RESOURCE name="idle" frame1="0, 0, 100, 100" frame2="100, 100, 100, 100" durationMs="30"/>
+<RESOURCE name="walk" frame1="0, 0, 100, 100" frame2="100, 100, 100, 100" durationMs="30"/>
