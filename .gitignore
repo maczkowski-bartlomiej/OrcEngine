@@ -10,7 +10,7 @@ binaries/
 binaries-temp/
 
 # Project files
-*.snl
+*.sln
 *.vcxproj
 *.vcxproj.user
 *.vcxproj.filters
