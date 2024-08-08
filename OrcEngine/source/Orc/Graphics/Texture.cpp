@@ -35,7 +35,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	if (!pixels)
 	{
-		ORC_ERROR("Failed to load texture at path '{}'\n\treason: {}", filePath.string(), stbi_failure_reason());
+		ORC_ERROR("Failed to load texture at path '{}'\n\tReason: {}", filePath.string(), stbi_failure_reason());
 		return false;
 	}
 
@@ -53,7 +53,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	if (!dataFormat && !internalFormat)
 	{
-		ORC_ERROR("Failed to load texture at path '{}'\n\treason: Texture format not supported", filePath.string());
+		ORC_ERROR("Failed to load texture at path '{}'\n\tReason: Texture format not supported", filePath.string());
 		return false;
 	}
 
@@ -79,7 +79,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 {
 	if (!data)
 	{
-		ORC_ERROR("Failed to load texture from memory\n\treason: Data is null");
+		ORC_ERROR("Failed to load texture from memory\n\tReason: Data is null");
 		return false;
 	}
 

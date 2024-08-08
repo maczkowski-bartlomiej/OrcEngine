@@ -8,9 +8,13 @@ int main(int, char**)
 {
 	orc::Engine* engine = nullptr;
 	engine = orc::startEngine();
-	engine->run();
 
-	delete engine;
+	if (engine)
+	{
+		engine->run();
+		engine->deinit();
+		delete engine;
+	}
 }
 
 #endif

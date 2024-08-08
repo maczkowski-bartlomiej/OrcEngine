@@ -15,6 +15,11 @@ Bus::Bus(FMOD::Studio::Bus* bus)
 {
 }
 
+void Bus::setBus(FMOD::Studio::Bus* bus)
+{
+	m_bus = bus;
+}
+
 void Bus::stop()
 {
 	FMOD_CALL(m_bus->stopAllEvents(FMOD_STUDIO_STOP_IMMEDIATE));

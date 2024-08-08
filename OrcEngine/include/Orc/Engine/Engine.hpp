@@ -9,15 +9,16 @@
 #include "Graphics/Gui.hpp"
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
+#include "Graphics/FTLibrary.hpp"
 
 namespace orc {
 
 class Engine
 {
 public:
-	Engine(const GameSettings& gameSettings);
-	virtual ~Engine();
-	
+	bool init(const GameSettings& gameSettings);
+	void deinit();
+
 	void run();
 
 	Audio& getAudio();
@@ -25,8 +26,8 @@ public:
 	Renderer& getRenderer();
 	GameLayerManager& getGameLayerManager();
 
+	FTLibrary& getFTLibary();
 	FontHolder& getFontHolder();
-	ShaderHolder& getShaderHolder();
 	TextureHolder& getTextureHolder();
 	AnimationHolder& getAnimationHolder();
 
@@ -35,18 +36,20 @@ public:
 private:
 	void onEvent(Event& event);
 
-	bool m_running;
+	bool m_running = false;
 
-	UniquePtr<Gui> m_gui;
-	UniquePtr<Audio> m_audio;
-	UniquePtr<Window> m_window;
-	UniquePtr<Renderer> m_renderer;
-	UniquePtr<GameLayerManager> m_gameLayerManager;
+	FTLibrary m_ftLibary;
 
-	UniquePtr<FontHolder> m_fontHolder;
-	UniquePtr<ShaderHolder> m_shaderHolder;
-	UniquePtr<TextureHolder> m_textureHolder;
-	UniquePtr<AnimationHolder> m_animationHolder;
+	Window m_window;
+	Renderer m_renderer;
+	Audio m_audio;
+
+	Gui m_gui;
+	GameLayerManager m_gameLayerManager;
+
+	FontHolder m_fontHolder;
+	TextureHolder m_textureHolder;
+	AnimationHolder m_animationHolder;
 
 	GameSettings m_gameSettings;
 

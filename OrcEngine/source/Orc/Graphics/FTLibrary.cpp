@@ -4,30 +4,33 @@
 
 #include "Engine/Debug.hpp"
 
+#define FT_CONFIG_OPTION_ERROR_STRINGS 
+#include <freetype/freetype.h>
+
 namespace orc {
 
-FT_Library FTLibrary::m_ft = nullptr;
-
-void FTLibrary::init()
+bool FTLibrary::init()
 {
-	static bool initialized = false;
-	if (initialized)
+	ORC_LOG_INFO("Initializing FreeType Libary...");
+	if (FT_Init_FreeType(&m_ft) != 0)
 	{
-		ORC_FATAL("FTLibrary already initialized!!!");
-		return;
+		ORC_FATAL("Failed to initialize FreeType Library");
+		return false;
 	}
 
-	initialized = true;
-
-	ORC_FATAL_CHECK(!FT_Init_FreeType(&m_ft), "Fatal occured while initializing FreeType Library");
+	return true;
 }
 
-void FTLibrary::shutdown()
+void FTLibrary::deinit()
 {
-	ORC_FATAL_CHECK(!FT_Done_FreeType(m_ft), "Fatal occured while deinitializing FreeType Library");
+	ORC_LOG_INFO("Deinitializing FreeType Libary...");
+	if (FT_Done_FreeType(m_ft) != 0)
+	{
+		ORC_FATAL("Failed to deinitialize FreeType Library");
+	}
 }
 
-FT_Library& FTLibrary::getLibrary()
+FT_Library FTLibrary::getNativeLibrary()
 {
 	return m_ft;
 }

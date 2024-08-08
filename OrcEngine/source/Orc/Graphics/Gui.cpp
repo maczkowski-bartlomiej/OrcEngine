@@ -1,6 +1,6 @@
 #include "OrcPch.hpp"
 #include "Graphics/Gui.hpp"
-
+#include "Engine/Debug.hpp"
 #include "Engine/Engine.hpp"
 
 #include <imgui_impl_glfw.h>
@@ -8,20 +8,18 @@
 
 namespace orc {
 
-Gui* Gui::m_instance = nullptr;
-
-Gui::Gui()
+bool Gui::init()
 {
-	if (m_instance)
-	{
-		ORC_FATAL("Gui instance already exist!!!");
-		return;
-	}
-
-	m_instance = this;
+	ORC_LOG_INFO("Initializing GUI...");
 
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	ImGuiContext* context = ImGui::CreateContext();
+	if (!context)
+	{
+		ORC_LOG_FATAL("Failed to initialize GUI");
+		return false;
+	}
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
@@ -32,18 +30,28 @@ Gui::Gui()
 	*/
 
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow()), true);
-	ImGui_ImplOpenGL3_Init("#version 460");
+	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow()), true))
+	{
+		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW");
+		return false;
+	}
+
+	if (!ImGui_ImplOpenGL3_Init("#version 460"))
+	{
+		ORC_LOG_FATAL("Failed to initialize ImGUI for OpenGL");
+		return false;
+	}
+
+	return true;
 }
 
-Gui::~Gui()
+void Gui::deinit()
 {
-	if (m_instance == this)
-	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-	}
+	ORC_LOG_INFO("Deinitializing GUI...");
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void Gui::begin()

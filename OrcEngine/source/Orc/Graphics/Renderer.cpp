@@ -1,13 +1,16 @@
 #include "OrcPch.hpp"
 
 #include "Graphics/Renderer.hpp"
+#include "Engine/Debug.hpp"
 
 #include <glad/glad.h>
 
 namespace orc {
 
-Renderer::Renderer()
+bool Renderer::init()
 {
+	ORC_LOG_INFO("Initializing renderer...");
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -20,6 +23,13 @@ Renderer::Renderer()
 	initCircleVertices();
 	initSpritesVertices();
 	initRectanglesVertices();
+
+	return true;
+}
+
+void Renderer::deinit()
+{
+	ORC_LOG_INFO("Deinitializing renderer...");
 }
 
 void Renderer::clear()

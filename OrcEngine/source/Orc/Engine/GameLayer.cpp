@@ -19,7 +19,6 @@ GameLayer::GameLayer()
 	  renderer(Engine::get().getRenderer()),
 	  gameLayerManager(Engine::get().getGameLayerManager()),
 	  fontHolder(Engine::get().getFontHolder()),
-	  shaderHolder(Engine::get().getShaderHolder()),
 	  textureHolder(Engine::get().getTextureHolder()),
 	  animationHolder(Engine::get().getAnimationHolder())
 {

@@ -3,9 +3,9 @@
 #include "Engine/Core.hpp"
 
 #include "Graphics/Texture.hpp"
-#include "Graphics/FTLibrary.hpp"
 
-#include <freetype/freetype.h>
+struct FT_FaceRec_;
+typedef FT_FaceRec_* FT_Face;
 
 namespace orc {
 
@@ -20,7 +20,7 @@ struct Character
 class Font
 {
 public:
-	Font();
+	Font() = default;
 	Font(const FilePath& filePath, uint32_t size = 48);
 	~Font();
 

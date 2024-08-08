@@ -7,14 +7,11 @@ namespace orc {
 class Gui
 {
 public:
-	Gui();
-	~Gui();
+	bool init();
+	void deinit();
 
 	void begin();
 	void end();
-
-private:
-	static Gui* m_instance;
 };
 
 }

@@ -21,8 +21,8 @@ public:
 		std::string musicBusName = "bus:/Music";
 	};	
 
-	Audio(const AudioSettings& audioSettings, const std::vector<std::string>& audioBanks);
-	~Audio();
+	bool init(const AudioSettings& audioSettings, const std::vector<std::string>& audioBanks);
+	void deinit();
 
 	bool loadBank(const FilePath& filePath);
 
@@ -35,9 +35,9 @@ public:
 	Bus& getMasterBus();
 
 private:
-	UniquePtr<Bus> m_sfxBus;
-	UniquePtr<Bus> m_musicBus;
-	UniquePtr<Bus> m_masterBus;
+	Bus m_sfxBus;
+	Bus m_musicBus;
+	Bus m_masterBus;
 	FMOD::Studio::System* m_system = nullptr;
 
 };

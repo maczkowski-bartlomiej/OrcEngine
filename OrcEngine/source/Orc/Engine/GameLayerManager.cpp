@@ -5,6 +5,17 @@
 
 namespace orc {
 
+void GameLayerManager::clear()
+{
+	if (m_activeGameLayer)
+	{
+		m_activeGameLayer->onDetach();
+		m_activeGameLayer.reset();
+	}
+
+	m_gameLayers.clear();
+}
+
 void GameLayerManager::setActiveGameLayer(const std::string& name)
 {
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty");

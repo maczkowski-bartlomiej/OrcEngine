@@ -27,8 +27,8 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	Window(const VideoSettings& properties);
-	~Window();
+	bool init(const VideoSettings& videoSettings);
+	void deinit();
 
 	void display();
 	
@@ -45,13 +45,11 @@ public:
 	void* getNativeWindow() const;
 
 private:
-	void initGLAD();
+	bool initGLAD();
 	void setCallbacks();
 
-	GLFWwindow* m_window;
+	GLFWwindow* m_glfwWindow = nullptr;
 	VideoSettings m_videoSettings;
-
-	static Window* m_instance;
 };
 
 }

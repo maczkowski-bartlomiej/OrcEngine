@@ -37,7 +37,6 @@ protected:
 	GameLayerManager& gameLayerManager;
 
 	FontHolder& fontHolder;
-	ShaderHolder& shaderHolder;
 	TextureHolder& textureHolder;
 	AnimationHolder& animationHolder;
 };

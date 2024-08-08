@@ -19,8 +19,8 @@ public:
 		Fatal
 	};
 
-	static void init(const std::string& logPath);
-	static void shutdown();
+	static bool init(const std::string& logPath);
+	static void deinit();
 
 	template<typename... Arguments>
 	static void log(Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments) 

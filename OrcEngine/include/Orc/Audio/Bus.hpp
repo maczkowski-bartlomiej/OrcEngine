@@ -9,7 +9,10 @@ namespace orc {
 class Bus
 {
 public:
+	Bus() = default;
 	Bus(FMOD::Studio::Bus* bus);
+
+	void setBus(FMOD::Studio::Bus* bus);
 
 	void stop();
 	void pause();

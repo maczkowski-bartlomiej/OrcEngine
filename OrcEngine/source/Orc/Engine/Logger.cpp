@@ -8,6 +8,7 @@
 #include <spdlog\sinks\stdout_color_sinks.h>
 
 #include <array>
+#include <iostream>
 
 namespace orc {
 
@@ -28,39 +29,40 @@ public:
 	}
 };
 
-void Logger::init(const std::string& logPath)
+bool Logger::init(const std::string& logPath)
 {
-	static bool initialized = false;
+	try {
+		spdlog::init_thread_pool(8192, 1);
+		std::vector<spdlog::sink_ptr> sinks
+		{
+			std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
+			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)
+		};
 
-	if (initialized)
+		std::string pattern = "[%H:%M:%S %s:%#] [%^%*%$] %v";
+
+		auto formatter = std::make_unique<spdlog::pattern_formatter>();
+		formatter->add_flag<CapitalizedLevelNamesFormatter>('*').set_pattern(pattern);
+
+		sinks[0]->set_formatter(formatter->clone());
+		sinks[1]->set_formatter(formatter->clone());
+
+		m_logger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+		m_logger->set_level(spdlog::level::info);
+		m_logger->flush_on(spdlog::level::err);
+
+		return true;
+	}
+	catch (const spdlog::spdlog_ex& exception)
 	{
-		ORC_FATAL("Logger already initialized!!!");
-		return;
+		std::cerr << "[FATAL] Failed to initialize Logger\n\tReason: " << exception.what() << std::endl;
+		ORC_DEBUGBREAK();
 	}
 
-	initialized = true;
-
-	spdlog::init_thread_pool(8192, 1);
-	std::vector<spdlog::sink_ptr> sinks
-	{
-		std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-		std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)
-	};
-
-	std::string pattern = "[%H:%M:%S %s:%#] [%^%*%$] %v";
-
-	auto formatter = std::make_unique<spdlog::pattern_formatter>();
-	formatter->add_flag<CapitalizedLevelNamesFormatter>('*').set_pattern(pattern);
-
-	sinks[0]->set_formatter(formatter->clone());
-	sinks[1]->set_formatter(formatter->clone());
-
-	m_logger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-	m_logger->set_level(spdlog::level::info);
-	m_logger->flush_on(spdlog::level::err);
+	return false;
 }
 
-void Logger::shutdown() 
+void Logger::deinit() 
 {
 	spdlog::shutdown();
 }

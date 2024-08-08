@@ -2,20 +2,18 @@
 
 #include "Graphics/Font.hpp"
 
+#include "Engine/Engine.hpp"
 #include "Engine/Debug.hpp"
 
 #include <vector>
 #include <algorithm>
 
+#include <freetype/freetype.h>
+
 //Credits for help
 //https://gist.github.com/baines/b0f9e4be04ba4e6f56cab82eef5008ff and https://github.com/SFML/SFML/blob/master/src/SFML/Graphics/Font.cpp#L352
 
 namespace orc {
-
-Font::Font()
-{
-		
-}
 
 Font::Font(const FilePath& filePath, uint32_t size)
 {
@@ -26,20 +24,23 @@ Font::~Font()
 {
 	if (m_face)
 	{
-		FT_Done_Face(m_face);
+		if (FT_Done_Face(m_face) != 0)
+		{
+			ORC_LOG_WARNING("Failed to deinitialize font");
+		}
 	}
 }
 
 bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 {
-	FT_Library& ftLibrary = FTLibrary::getLibrary();
+	FT_Library ftLibrary = Engine::get().getFTLibary().getNativeLibrary();
 
 	FT_Face face;
 	FT_Error error;
 	error = FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face);
 	if (error)
 	{
-		ORC_ERROR("Failed to load font {}\n\treason: {}", filePath.string(), FT_Error_String(error));
+		ORC_ERROR("Failed to load font {}\n\tReason: {}", filePath.string(), FT_Error_String(error));
 		return false;
 	}
 
@@ -48,7 +49,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	{
 		if (!FT_IS_SCALABLE(face))
 		{
-			ORC_LOG_ERROR("Failed to set font size {}\n\treason: {}", size, FT_Error_String(error));
+			ORC_LOG_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
 			ORC_LOG_ERROR("Available sizes are: ");
 			for (int i = 0; i < face->num_fixed_sizes; ++i)
 			{
@@ -58,13 +59,13 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 		}
 		else
 		{
-			ORC_ERROR("Failed to set font size {}\n\treason: {}", size, FT_Error_String(error));
+			ORC_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
 			return false;
 		}
 	}
 	else if (error)
 	{
-		ORC_ERROR("Failed to set font size {}\n\treason: {}", size, FT_Error_String(error));
+		ORC_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
 		return false;
 	}
 

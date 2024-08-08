@@ -14,6 +14,8 @@ public:
 	void setActiveGameLayer(const std::string& name);
 	void addGameLayer(const std::string& name, Ref<GameLayer> gameLayer);
 
+	void clear();
+
 	Ref<GameLayer> getActiveGameLayer();
 
 private:

@@ -15,7 +15,12 @@ orc::Engine* orc::startEngine()
 	gameSettings.videoSettings.height = 600;
 	gameSettings.videoSettings.vsync = true;
 
-	orc::Engine* engine = new Engine(gameSettings);
+	gameSettings.audioSettings.maxChannels = 512;
+
+	orc::Engine* engine = new Engine();
+	if (!engine->init(gameSettings))
+		return nullptr;
+
 	ORC_LOG_INFO("Test Project v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
 
 	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());

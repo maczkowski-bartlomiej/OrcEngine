@@ -18,13 +18,15 @@ template<typename ResourceType>
 class ResourceHolder
 {
 public:
+	ResourceHolder() = default;
 	ResourceHolder(const FilePath& xmlPath);
 
 	Ref<ResourceType> getResource(std::string_view name);
 
+	bool loadResources(const FilePath& xmlPath);
+	void clear();
+
 private:
-	void loadResources(const FilePath& xmlPath);
-	
 	std::unordered_map<std::string, Ref<ResourceType>, utility::string_view_hash, std::equal_to<>> m_resources;
 };
 

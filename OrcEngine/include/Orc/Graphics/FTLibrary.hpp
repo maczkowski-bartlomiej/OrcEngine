@@ -1,21 +1,20 @@
 #pragma once
 
-#define FT_CONFIG_OPTION_ERROR_STRINGS 
-#include <freetype/freetype.h>
+struct FT_LibraryRec_;
+typedef FT_LibraryRec_* FT_Library;
 
-namespace orc
-{
+namespace orc {
 
 class FTLibrary
 {
 public:
-	static void init();
-	static void shutdown();
+	bool init();
+	void deinit();
 
-	static FT_Library& getLibrary();
+	FT_Library getNativeLibrary();
 
 private:
-	static FT_Library m_ft;
+	FT_Library m_ft;
 };
 
 }

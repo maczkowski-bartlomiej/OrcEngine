@@ -20,7 +20,8 @@ namespace orc {
 class Renderer
 {
 public:
-	Renderer();
+	bool init();
+	void deinit();
 
 	void clear();
 	void setClearColor(const Color& color);
@@ -90,7 +91,7 @@ private:
 		std::array<LineVertex, MAX_LINES_VERTICES> vertices;
 
 		uint32_t verticesCount = 0;
-	} m_lines;
+	};
 
 	template<typename VertexType, uint32_t MAX_VERTICES>
 	struct Shape
@@ -105,6 +106,7 @@ private:
 		//uint32_t texturesCount = 0;
 	};
 
+	Lines m_lines;
 	Shape<CircleVertex, MAX_CIRCLES_VERTICES> m_circles;
 	Shape<SpriteVertex, MAX_SPRITES_VERTICES> m_sprites;
 	Shape<RectangleVertex, MAX_RECTANGLES_VERTICES> m_rectangles;

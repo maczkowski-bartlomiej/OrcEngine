@@ -13,123 +13,83 @@ namespace orc {
 
 Engine* Engine::m_instance = nullptr;
 
-Engine::Engine(const GameSettings& gameSettings)
-	: m_running(true), m_gameSettings(gameSettings)
+bool Engine::init(const GameSettings& gameSettings)
 {
 	if (m_instance)
 	{
-		ORC_FATAL("Engine instance already exist!!!");
-		return;
+		ORC_FATAL("Engine already initialized");
+		return false;
 	}
 
+	m_running = true;
 	m_instance = this;
+	m_gameSettings = gameSettings;
 
-	Logger::init(gameSettings.logPath);
+	if (!Logger::init(gameSettings.logPath))
+		return false;
 
+	ORC_LOG_INFO("Starting...");
 	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
-	ORC_LOG_INFO("Initializing FreeType Library...");
-	FTLibrary::init();
+	if (!m_ftLibary.init()) return false;
+	if (!m_window.init(m_gameSettings.videoSettings)) return false;
+	m_window.setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
-	ORC_LOG_INFO("Initializing window...");
-	m_window = createUniquePtr<Window>(m_gameSettings.videoSettings);
-	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
+	if (!m_renderer.init()) return false;
+	if (!m_gui.init()) return false;
 
-	ORC_LOG_INFO("Initializing renderer...");
-	m_renderer = createUniquePtr<Renderer>();
-
-	ORC_LOG_INFO("Initializing audio...");
 	std::vector<std::string> banks; //Temporary
 	banks.push_back("assets/audio/Master.bank");
 	banks.push_back("assets/audio/Master.strings.bank");
 	banks.push_back("assets/audio/Music.bank");
 	banks.push_back("assets/audio/SFX.bank");
-	m_audio = createUniquePtr<Audio>(m_gameSettings.audioSettings, banks);
+	if (!m_audio.init(m_gameSettings.audioSettings, banks)) return false;
 
-	ORC_LOG_INFO("Initializing resource holders...");
+	m_fontHolder.loadResources(m_gameSettings.fontsPath);
+	m_textureHolder.loadResources(m_gameSettings.texturesPath);
+	m_animationHolder.loadResources(m_gameSettings.animationsPath);
 
-	ORC_LOG_INFO("Loading fonts...");
-	m_fontHolder = createUniquePtr<FontHolder>(m_gameSettings.fontsPath);
-
-	ORC_LOG_INFO("Loading shaders...");
-	m_shaderHolder = createUniquePtr<ShaderHolder>(m_gameSettings.shadersPath);
-
-	ORC_LOG_INFO("Loading textures...");
-	m_textureHolder = createUniquePtr<TextureHolder>(m_gameSettings.texturesPath);
-
-	ORC_LOG_INFO("Loading animations...");
-	m_animationHolder = createUniquePtr<AnimationHolder>(m_gameSettings.animationsPath);
-
-	ORC_LOG_INFO("Initializing gui...");
-	m_gui = createUniquePtr<Gui>();
-
-	ORC_LOG_INFO("Initializing game layer manager...");
-	m_gameLayerManager = createUniquePtr<GameLayerManager>();
+	return true;
 }
 
-Engine::~Engine()
+void Engine::deinit()
 {
-	if (m_instance == this)
-	{
-		ORC_LOG_INFO("Deinitializing game layer manager...");
-		m_gameLayerManager.reset();
+	if (m_instance != this) return;
 
-		ORC_LOG_INFO("Deinitializing gui...");
-		m_gui.reset();
+	m_gameLayerManager.clear();
+	m_animationHolder.clear();
+	m_textureHolder.clear();
+	m_fontHolder.clear();
 
-		ORC_LOG_INFO("Deinitializing resource holders...");
-
-		ORC_LOG_INFO("Unloading textures...");
-		m_textureHolder.reset();
-
-		ORC_LOG_INFO("Unloading shaders...");
-		m_shaderHolder.reset();
-
-		ORC_LOG_INFO("Unloading fonts...");
-		m_fontHolder.reset();
-
-		ORC_LOG_INFO("Unloading animiations...");
-		m_animationHolder.reset();
-
-		ORC_LOG_INFO("Deinitializing audio...");
-		m_audio.reset();
-
-		ORC_LOG_INFO("Deinitializing renderer...");
-		m_renderer.reset();
-
-		ORC_LOG_INFO("Deinitializing window...");
-		m_window.reset();
-
-		ORC_LOG_INFO("Deinitializing FreeType Library...");
-		FTLibrary::shutdown();
-
-		ORC_LOG_INFO("Engine shutting down...");
-		Logger::shutdown();
-	}
+	m_audio.deinit();
+	m_gui.deinit();
+	m_renderer.deinit();
+	m_window.deinit();
+	m_ftLibary.deinit();
+	Logger::deinit();
 }
 
 void Engine::run()
 {
 	Clock clock;
-
 	while (m_running)
 	{
 		float elapsed = clock.elapsed();
 		clock.reset();
 
-		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveGameLayer();
+		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveGameLayer();
 		gameLayer->onUpdate(elapsed);
 
-		m_renderer->begin(gameLayer->getCamera());
+		m_renderer.begin(gameLayer->getCamera());
 		gameLayer->onRender();
-		m_renderer->end();
+		m_renderer.end();
 
-		m_gui->begin();
+		m_gui.begin();
 		gameLayer->onGuiRender();
-		m_gui->end();
+		m_gui.end();
 
-		m_audio->update();
-		m_window->display();
+		m_audio.update();
+		m_window.display();
 
 		//ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
 	}
@@ -142,47 +102,47 @@ Engine& Engine::get()
 
 FontHolder& Engine::getFontHolder()
 {
-	return *m_fontHolder;
+	return m_fontHolder;
 }
 
 Audio& Engine::getAudio()
 {
-	return *m_audio;
+	return m_audio;
 }
 
 Window& Engine::getWindow()
 {
-	return *m_window;
+	return m_window;
 }
 
 Renderer& Engine::getRenderer()
 {
-	return *m_renderer;
+	return m_renderer;
 }
 
 GameLayerManager& Engine::getGameLayerManager()
 {
-	return *m_gameLayerManager;
+	return m_gameLayerManager;
 }
 
-ShaderHolder& Engine::getShaderHolder()
+FTLibrary& Engine::getFTLibary()
 {
-	return *m_shaderHolder;
+	return m_ftLibary;
 }
 
 TextureHolder& Engine::getTextureHolder()
 {
-	return *m_textureHolder;
+	return m_textureHolder;
 }
 
 AnimationHolder& Engine::getAnimationHolder()
 {
-	return *m_animationHolder;
+	return m_animationHolder;
 }
 
 void Engine::onEvent(Event& event) 
 {
-	m_gameLayerManager->getActiveGameLayer()->onEvent(event);
+	m_gameLayerManager.getActiveGameLayer()->onEvent(event);
 
 	if (event.getType() == Event::Type::WindowClosed)
 	{
@@ -191,7 +151,7 @@ void Engine::onEvent(Event& event)
 	else if (event.getType() == Event::Type::WindowResized)
 	{
 		const WindowResizedEvent& windowResizedEvent = getEvent<WindowResizedEvent>(event);
-		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveGameLayer();
+		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveGameLayer();
 		if (gameLayer)
 		{
 			gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);

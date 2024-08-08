@@ -93,12 +93,12 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 	std::ifstream shaderFile(filePath, std::ios::in | std::ios::binary);
 	if (!shaderFile.is_open())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\treason: {}", filePath.string(), utility::getErrnoMessage(errno));
+		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), utility::getErrnoMessage(errno));
 		success = false;
 	}
 	else if (!shaderFile.good())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\treason: {}", filePath.string(), utility::getErrnoMessage(errno));
+		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), utility::getErrnoMessage(errno));
 		success = false;
 	}
 	else
