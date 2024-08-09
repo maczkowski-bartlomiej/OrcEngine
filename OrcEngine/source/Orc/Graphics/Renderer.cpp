@@ -211,6 +211,16 @@ void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matr
 	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 }
 
+void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
+{
+	shader->bind();
+	shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+	shader->uploadUniformMatrix3("u_transform", transform);
+
+	glBindVertexArray(vertexArray->getRendererID());
+	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+}
+
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color)
 {
 	if (m_lines->verticesCount >= MAX_LINES_VERTICES)

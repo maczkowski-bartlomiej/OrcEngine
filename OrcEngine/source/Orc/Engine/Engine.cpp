@@ -29,7 +29,13 @@ bool Engine::init(const Config& config)
 	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
 	if (!m_ftLibary.init()) return false;
+<<<<<<< ours
 	if (!m_window.init(config.videoSettings)) return false;
+||||||| ancestor
+	if (!m_window.init(m_gameSettings.videoSettings)) return false;
+=======
+	if (!m_window.init(gameSettings.videoSettings)) return false;
+>>>>>>> theirs
 	m_window.setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
 	if (!m_renderer.init()) return false;
@@ -40,11 +46,27 @@ bool Engine::init(const Config& config)
 	banks.push_back("assets/audio/Master.strings.bank");
 	banks.push_back("assets/audio/Music.bank");
 	banks.push_back("assets/audio/SFX.bank");
+<<<<<<< ours
 	if (!m_audio.init(config.audioSettings, banks)) return false;
+||||||| ancestor
+	if (!m_audio.init(m_gameSettings.audioSettings, banks)) return false;
+=======
+	if (!m_audio.init(gameSettings.audioSettings, banks)) return false;
+>>>>>>> theirs
 
+<<<<<<< ours
 	m_fontHolder.loadResources(config.fontsPath);
 	m_textureHolder.loadResources(config.texturesPath);
 	m_animationHolder.loadResources(config.animationsPath);
+||||||| ancestor
+	m_fontHolder.loadResources(m_gameSettings.fontsPath);
+	m_textureHolder.loadResources(m_gameSettings.texturesPath);
+	m_animationHolder.loadResources(m_gameSettings.animationsPath);
+=======
+	m_fontHolder.loadResources(gameSettings.fontsPath);
+	m_textureHolder.loadResources(gameSettings.texturesPath);
+	m_animationHolder.loadResources(gameSettings.animationsPath);
+>>>>>>> theirs
 
 	return true;
 }

@@ -7,11 +7,20 @@
 #include "Graphics/Renderer.hpp"
 #include "Graphics/FTLibrary.hpp"
 
+<<<<<<< ours
 #include "Events/Event.hpp"
 #include "Engine/Config.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Engine/GameLayerManager.hpp"
 
+||||||| ancestor
+=======
+#include "Events/Event.hpp"
+#include "Engine/GameSettings.hpp"
+#include "Engine/ResourceHolder.hpp"
+#include "Engine/GameLayerManager.hpp"
+
+>>>>>>> theirs
 namespace orc {
 
 class Engine
