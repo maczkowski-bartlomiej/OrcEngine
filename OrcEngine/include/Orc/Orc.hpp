@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Audio/Audio.hpp"
+#include "Audio/FmodCall.hpp"
+#include "Audio/Bus.hpp"
 
 #include "Engine/Clock.hpp"
 #include "Engine/Core.hpp"
@@ -20,6 +22,7 @@
 #include "Events/MouseEvents.hpp"
 #include "Events/WindowEvents.hpp"
 
+#include "Graphics/Animator.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Color.hpp"

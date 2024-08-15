@@ -1,7 +1,5 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Text.hpp"
-
 
 namespace orc {
 

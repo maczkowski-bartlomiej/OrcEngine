@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Engine/ResourceHolder.hpp"
 
 #include <tinyxml2.h>

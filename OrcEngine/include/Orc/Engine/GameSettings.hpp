@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include "Audio/Audio.hpp"
 #include "Graphics/Window.hpp"
 
 #include <string>
+#include <cstdint>
 
 namespace orc {
 

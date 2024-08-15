@@ -1,11 +1,11 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Camera.hpp"
+#include "Engine/Core.hpp"
 
 namespace orc {
 
 Camera::Camera(float left, float right, float bottom, float top) 
-	: m_scale(1.0f), m_rotation(0.0f), m_position(0.0f, 0.0f), m_viewMatrix(1.0f), m_projectionMatrix(glm::ortho(left, right, bottom, top, 1.0f, -1.0f))
+	: m_viewMatrix(1.0f), m_projectionMatrix(glm::ortho(left, right, bottom, top, 1.0f, -1.0f))
 {
 	setViewportSize(left, right, bottom, top);
 }
@@ -66,19 +66,11 @@ const Matrix4& Camera::getViewProjectionMatrix() const
 
 void Camera::recalculateViewMatrix() 
 {
-	glm::mat4 translate = glm::translate(glm::mat4(1.0f), glm::vec3(m_position, 0.0f));
-	glm::mat4 rotate = glm::rotate(glm::mat4(1.0f), m_rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(m_scale, m_scale, 1.0f));
-
-	m_viewMatrix = translate * rotate * scale;
-	m_viewMatrix = glm::inverse(m_viewMatrix);
+	m_viewMatrix = glm::inverse(glm::translate(Matrix4(1.0f), Vector3f(m_position, 0.0f)) *
+		glm::rotate(Matrix4(1.0f), m_rotation, Vector3f(0.0f, 0.0f, 1.0f)) *
+		glm::scale(Matrix4(1.0f), Vector3f(m_scale, m_scale, 1.0f)));
 
 	m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
-}
-
-void Camera::test(float x)
-{
-	glm::translate(m_viewProjectionMatrix, glm::vec3(0, 0.0f, x));
 }
 
 }

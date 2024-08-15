@@ -2,11 +2,11 @@
 
 #include <Orc/Orc.hpp>
 
-class AnimationTest : public orc::GameLayer
+class InputTest : public orc::GameLayer
 {
 public:
-	AnimationTest();
-	~AnimationTest();
+	InputTest();
+	~InputTest();
 
 	void onAttach() override;
 	void onDetach() override;
@@ -18,4 +18,6 @@ public:
 	void onGuiRender() override;
 
 private:
+	orc::Sprite m_player;
+	static constexpr float M_SPEED = 50.0f;
 };

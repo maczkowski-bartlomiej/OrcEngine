@@ -2,17 +2,18 @@
 
 AudioTest::AudioTest()
 {
-	ORC_LOG_INFO("AudioTest Layer Init");
+	ORC_LOG_INFO("AudioTest init...");
 }
 
 AudioTest::~AudioTest()
 {
-	ORC_LOG_INFO("AudioTest Layer Deinit...");
+	ORC_LOG_INFO("AudioTest deinit...");
 }
 
 void AudioTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to AudioTest");
+	ORC_LOG_INFO("<- AnimationTest | CameraTest ->");
 	window.setTitle("AudioTest");
 }
 
@@ -37,11 +38,11 @@ void AudioTest::onEvent(orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
-		auto kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
 		switch (kbPressed.key)
 		{
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("game"); break;
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("inputs_test"); break;
+			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("AnimationTest"); break;
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("CameraTest"); break;
 		}
 	}
 }
@@ -64,10 +65,10 @@ void AudioTest::onGuiRender()
 			audio.play("event:/Music/music3");
 		if (ImGui::Button("Load wrong bank", { 200, 50 }))
 			audio.loadBank("wrong_bank.bank");
-		if (ImGui::Button("Play wrong event", { 200, 50 }))
+		if (ImGui::Button("Play not existing event", { 200, 50 }))
 			audio.play("bad_event");
-		ImGui::End();
 	}
+	ImGui::End();
 
 	ImGui::Begin("SFX bus control");
 	{
@@ -116,6 +117,27 @@ void AudioTest::onGuiRender()
 
 		ImGui::Text("Volume = %f", audio.getMasterBus().getVolume());
 		ImGui::Text("Is paused = %s", audio.getMasterBus().isPaused() ? "True" : "False");
+	}
+	ImGui::End();
+
+	ImGui::Begin("Navigation Menu");
+	{
+		if (ImGui::Button("AnimationTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AnimationTest");
+		if (ImGui::Button("AudioTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AudioTest");
+		if (ImGui::Button("CameraTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CameraTest");
+		if (ImGui::Button("CirclesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CirclesTest");
+		if (ImGui::Button("Menu", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("Menu");
+		if (ImGui::Button("InputTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("InputTest");
+		if (ImGui::Button("RectanglesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("RectanglesTest");
+		if (ImGui::Button("SpritesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("SpritesTest");
 	}
 	ImGui::End();
 }

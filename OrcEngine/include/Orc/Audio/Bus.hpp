@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 namespace FMOD::Studio { class Bus; }
 
 namespace orc {

@@ -2,6 +2,8 @@
 
 #include "Events/Event.hpp"
 
+#include <cstdint>
+
 namespace orc {
 
 struct WindowResizedEvent : public Event

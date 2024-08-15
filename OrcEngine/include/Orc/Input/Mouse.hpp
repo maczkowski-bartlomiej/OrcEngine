@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Engine/Core.hpp"
+
 namespace orc {
 
 class Mouse

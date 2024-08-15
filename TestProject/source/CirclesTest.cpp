@@ -2,6 +2,8 @@
 
 CirclesTest::CirclesTest()
 {
+	ORC_LOG_INFO("CirclesTest init");
+
 	orc::Ref<orc::Texture> gradientTexture = textureHolder.getResource("gradient_texture");
 	orc::Ref<orc::Texture> smallTexture = textureHolder.getResource("small_texture");
 	orc::Ref<orc::Font> font = fontHolder.getResource("arial_font");
@@ -71,22 +73,41 @@ CirclesTest::CirclesTest()
 
 CirclesTest::~CirclesTest()
 {
-	ORC_LOG_INFO("CirclesTest shutting down...");
+	ORC_LOG_INFO("CirclesTest deinit...");
 }
 
 void CirclesTest::onAttach()
 {
+	ORC_LOG_INFO("Switching to CirclesTest");
+	ORC_LOG_INFO("<- CameraTest | InputTest ->");
 	window.setTitle("CirclesTest");
 }
 
 void CirclesTest::onDetach()
 {
+	ORC_LOG_INFO("Leaving from CirclesTest");
 }
 
 void CirclesTest::onUpdate(float deltaTime)
 {
 	m_circle11.rotate(45.0f * deltaTime);
+}
 
+void CirclesTest::onEvent(orc::Event& event)
+{
+	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	{
+		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (kbPressed.key)
+		{
+			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("CameraTest"); break;
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("InputTest"); break;
+		}
+	}
+}
+
+void CirclesTest::onRender()
+{
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 
@@ -123,20 +144,28 @@ void CirclesTest::onUpdate(float deltaTime)
 	renderer.end();
 }
 
-void CirclesTest::onEvent(orc::Event& event)
+void CirclesTest::onGuiRender()
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	ImGui::Begin("Navigation Menu");
 	{
-		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		if (newEvent->key == orc::Keyboard::Key::Right)
-		{
-			gameLayerManager.setActiveGameLayer("sprites_test");
-		}
-		else if (newEvent->key == orc::Keyboard::Key::Left)
-		{
-			gameLayerManager.setActiveGameLayer("rectangles_test");
-		}
+		if (ImGui::Button("AnimationTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AnimationTest");
+		if (ImGui::Button("AudioTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AudioTest");
+		if (ImGui::Button("CameraTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CameraTest");
+		if (ImGui::Button("CirclesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CirclesTest");
+		if (ImGui::Button("Menu", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("Menu");
+		if (ImGui::Button("InputTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("InputTest");
+		if (ImGui::Button("RectanglesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("RectanglesTest");
+		if (ImGui::Button("SpritesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("SpritesTest");
 	}
+	ImGui::End();
 }
 
 void CirclesTest::drawLines()

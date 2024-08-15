@@ -1,4 +1,6 @@
-#include "Game.hpp"
+#include <Orc/Orc.hpp>
+
+#include "Menu.hpp"
 
 orc::Engine* orc::startEngine()
 {
@@ -23,8 +25,8 @@ orc::Engine* orc::startEngine()
 
 	ORC_LOG_INFO("Test Project v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
 
-	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
-	engine->getGameLayerManager().setActiveGameLayer("game");
+	engine->getGameLayerManager().addGameLayer("Menu", orc::createRef<Menu>());
+	engine->getGameLayerManager().setActiveGameLayer("Menu");
 
 	return engine;
 }

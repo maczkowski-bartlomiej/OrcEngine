@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Texture.hpp"
 
 #include <stb_image.h>

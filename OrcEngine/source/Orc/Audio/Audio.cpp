@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Audio/Audio.hpp"
 #include "Audio/FmodCall.hpp"
 #include "Engine/Debug.hpp"
@@ -8,6 +7,8 @@
 #include <fmod_common.h>
 #include <fmod_studio.hpp>
 #include <fmod_studio_common.h>
+
+#include <vector>
 
 namespace orc {
 

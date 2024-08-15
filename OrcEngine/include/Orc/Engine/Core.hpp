@@ -52,7 +52,6 @@ constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
 
-using AudioID = uint32_t;
 using RendererID = uint32_t;
 
 template<typename T>

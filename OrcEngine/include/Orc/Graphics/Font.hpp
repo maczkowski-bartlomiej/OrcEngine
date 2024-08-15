@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Engine/Core.hpp"
-
 #include "Graphics/Texture.hpp"
+
+#include <cstdint>
+#include <unordered_map>
 
 struct FT_FaceRec_;
 typedef FT_FaceRec_* FT_Face;

@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Engine/EntryPoint.hpp"
 
 #ifdef ORC_PLATFORM_WINDOWS
@@ -15,6 +14,8 @@ int main(int, char**)
 		engine->deinit();
 		delete engine;
 	}
+
+	return 0;
 }
 
 #endif

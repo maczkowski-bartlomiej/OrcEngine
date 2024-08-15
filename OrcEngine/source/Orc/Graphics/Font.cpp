@@ -1,14 +1,12 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Font.hpp"
-
-#include "Engine/Engine.hpp"
 #include "Engine/Debug.hpp"
+#include "Engine/Engine.hpp"
+
+#include <freetype/freetype.h>
 
 #include <vector>
 #include <algorithm>
-
-#include <freetype/freetype.h>
 
 //Credits for help
 //https://gist.github.com/baines/b0f9e4be04ba4e6f56cab82eef5008ff and https://github.com/SFML/SFML/blob/master/src/SFML/Graphics/Font.cpp#L352
@@ -70,7 +68,12 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 	}
 
 	if (m_face)
-		FT_Done_Face(m_face);
+	{
+		if (FT_Done_Face(m_face) != 0)
+		{
+			ORC_LOG_WARNING("Failed to deinitialize font");
+		}
+	}
 
 	m_face = face;
 	m_size = size;

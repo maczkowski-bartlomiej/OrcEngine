@@ -1,11 +1,9 @@
 #pragma once
 
+#include "Audio/Bus.hpp"
 #include "Engine/Core.hpp"
 
-#include "Audio/Bus.hpp"
-
-#include <queue>
-#include <vector>
+#include <string>
 
 namespace FMOD::Studio { class System; class EventInstance; }
 
@@ -39,7 +37,6 @@ private:
 	Bus m_musicBus;
 	Bus m_masterBus;
 	FMOD::Studio::System* m_system = nullptr;
-
 };
 
 }

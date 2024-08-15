@@ -1,7 +1,5 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/FTLibrary.hpp"
-
 #include "Engine/Debug.hpp"
 
 #define FT_CONFIG_OPTION_ERROR_STRINGS 

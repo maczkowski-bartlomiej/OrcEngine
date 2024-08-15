@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <random>
+#include <cstdint>
 
 namespace orc {
 

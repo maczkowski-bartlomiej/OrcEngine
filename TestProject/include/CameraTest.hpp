@@ -2,11 +2,11 @@
 
 #include <Orc/Orc.hpp>
 
-class AnimationTest : public orc::GameLayer
+class CameraTest : public orc::GameLayer
 {
 public:
-	AnimationTest();
-	~AnimationTest();
+	CameraTest();
+	~CameraTest();
 
 	void onAttach() override;
 	void onDetach() override;
@@ -18,4 +18,5 @@ public:
 	void onGuiRender() override;
 
 private:
+	orc::Sprite m_sprite;
 };

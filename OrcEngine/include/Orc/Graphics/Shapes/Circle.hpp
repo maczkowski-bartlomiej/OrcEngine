@@ -5,7 +5,6 @@
 #include "Graphics/Rect.hpp"
 #include "Graphics/Color.hpp"
 #include "Graphics/Vertex.hpp"
-#include "Graphics/Texture.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {

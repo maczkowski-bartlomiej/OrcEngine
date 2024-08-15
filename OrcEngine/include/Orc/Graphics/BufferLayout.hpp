@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace orc {
 

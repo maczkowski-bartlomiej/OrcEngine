@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Renderer.hpp"
 #include "Engine/Debug.hpp"
 
@@ -200,6 +199,16 @@ void Renderer::draw(const Rectangle& rectangle)
 
 	zIndex++;
 	m_rectangles.verticesCount += 4;
+}
+
+void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
+{
+	shader->bind();
+	shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+	shader->uploadUniformMatrix3("u_transform", transform);
+
+	glBindVertexArray(vertexArray->getRendererID());
+	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 }
 
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color)
@@ -532,18 +541,3 @@ void Renderer::batchFlushRectangles()
 }
 
 }
-
-//void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
-//{
-//	shader->bind();
-//	shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_scene->viewProjectionMatrix);
-//	shader->uploadUniformMatrix3("u_transform", transform);
-//
-//	glBindVertexArray(vertexArray->getRendererID());
-//
-//	Renderer::drawIndexed(vertexArray);
-//}
-//void Renderer::drawIndexed(Ref<VertexArray> vertexArray)
-//{
-//	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
-//}

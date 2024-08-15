@@ -1,13 +1,14 @@
 #include "OrcPch.hpp"
 
-#include "Engine/Engine.hpp"
-#include "Engine/GameLayer.hpp"
-#include "Engine/GameLayerManager.hpp"
+#include "Audio/Audio.hpp"
 
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
 
-#include "Audio/Audio.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/GameLayer.hpp"
+#include "Engine/ResourceHolder.hpp"
+#include "Engine/GameLayerManager.hpp"
 
 namespace orc
 {

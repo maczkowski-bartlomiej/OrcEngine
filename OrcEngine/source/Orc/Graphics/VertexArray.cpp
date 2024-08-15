@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/BufferLayout.hpp"
 

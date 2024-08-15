@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Sprite.hpp"
 
 namespace orc {

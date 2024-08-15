@@ -1,15 +1,16 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Engine/GameSettings.hpp"
-#include "Engine/GameLayerManager.hpp"
-
 #include "Audio/Audio.hpp"
 
 #include "Graphics/Gui.hpp"
 #include "Graphics/Window.hpp"
 #include "Graphics/Renderer.hpp"
 #include "Graphics/FTLibrary.hpp"
+
+#include "Events/Event.hpp"
+#include "Engine/GameSettings.hpp"
+#include "Engine/ResourceHolder.hpp"
+#include "Engine/GameLayerManager.hpp"
 
 namespace orc {
 
@@ -24,9 +25,9 @@ public:
 	Audio& getAudio();
 	Window& getWindow();
 	Renderer& getRenderer();
+	FTLibrary& getFTLibary();
 	GameLayerManager& getGameLayerManager();
 
-	FTLibrary& getFTLibary();
 	FontHolder& getFontHolder();
 	TextureHolder& getTextureHolder();
 	AnimationHolder& getAnimationHolder();
@@ -38,20 +39,16 @@ private:
 
 	bool m_running = false;
 
-	FTLibrary m_ftLibary;
-
+	Gui m_gui;
+	Audio m_audio;
 	Window m_window;
 	Renderer m_renderer;
-	Audio m_audio;
-
-	Gui m_gui;
+	FTLibrary m_ftLibary;
 	GameLayerManager m_gameLayerManager;
 
 	FontHolder m_fontHolder;
 	TextureHolder m_textureHolder;
 	AnimationHolder m_animationHolder;
-
-	GameSettings m_gameSettings;
 
 	static Engine* m_instance;
 };

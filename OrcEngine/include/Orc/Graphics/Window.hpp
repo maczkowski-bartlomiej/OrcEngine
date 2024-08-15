@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Core.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
+#include <cstdint>
 #include <functional>
 
 struct GLFWwindow;
@@ -48,8 +48,8 @@ private:
 	bool initGLAD();
 	void setCallbacks();
 
-	GLFWwindow* m_glfwWindow = nullptr;
 	VideoSettings m_videoSettings;
+	GLFWwindow* m_glfwWindow = nullptr;
 };
 
 }

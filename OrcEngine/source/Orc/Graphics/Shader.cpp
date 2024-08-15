@@ -1,7 +1,5 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Shader.hpp"
-
 #include "Engine/Utility.hpp"
 
 #include <glad/glad.h>

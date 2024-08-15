@@ -14,6 +14,7 @@
 #include "Graphics/Shapes/Rectangle.hpp"
 
 #include <array>
+#include <unordered_map>
 
 namespace orc {
 
@@ -33,11 +34,9 @@ public:
 	void draw(const Sprite& sprite);
 	void draw(const Circle& circle);
 	void draw(const Rectangle& rectangle);
+	void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform);
 
 	void drawLine(const Vector2f& start, const Vector2f& end, const Color& color);
-
-	//void drawIndexed(Ref<VertexArray> vertexArray);
-	//static void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform = Matrix(1.0f));
 
 private:
 	void initLinesVertices();
@@ -103,7 +102,6 @@ private:
 		std::unordered_map<RendererID, Ref<Texture>> textures;
 
 		uint32_t verticesCount = 0;
-		//uint32_t texturesCount = 0;
 	};
 
 	Lines m_lines;

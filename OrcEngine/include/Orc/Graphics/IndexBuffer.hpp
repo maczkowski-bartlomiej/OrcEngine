@@ -2,6 +2,8 @@
 
 #include "Engine/Core.hpp"
 
+#include <cstdint>
+
 namespace orc {
 
 class IndexBuffer

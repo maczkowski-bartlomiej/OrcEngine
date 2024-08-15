@@ -1,22 +1,13 @@
 #pragma once
 
-#include "Engine/Logger.hpp"
+#include <source_location>
 
-#include <fmod_errors.h>
+#define FMOD_CALL(result) orc::fmodCall(std::source_location::current(), result)
 
-#define FMOD_CALL(result) fmodCall(std::source_location::current(), result)
+enum FMOD_RESULT;
 
 namespace orc {
 
-static bool fmodCall(std::source_location sourceLocation, FMOD_RESULT result)
-{
-    if (result != FMOD_RESULT::FMOD_OK)
-    {
-        Logger::log(Logger::Level::Error, sourceLocation, "FMOD Error: {}", FMOD_ErrorString(result));
-        return false;
-    }
-
-    return true;
-}
+	bool fmodCall(std::source_location sourceLocation, FMOD_RESULT result);
 
 }

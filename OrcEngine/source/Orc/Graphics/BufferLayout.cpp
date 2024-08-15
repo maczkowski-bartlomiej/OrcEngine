@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>

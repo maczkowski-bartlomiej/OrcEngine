@@ -1,12 +1,11 @@
 #pragma once
 
-#include <array>
-
 #include "Engine/Core.hpp"
-
 #include "Graphics/Rect.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Transformable.hpp"
+
+#include <array>
 
 namespace orc {
 

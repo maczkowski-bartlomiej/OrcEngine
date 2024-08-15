@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Shapes/Circle.hpp"
 
 #include <cmath>

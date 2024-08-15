@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Engine\Logger.hpp"
 
 #include <spdlog\async.h>
