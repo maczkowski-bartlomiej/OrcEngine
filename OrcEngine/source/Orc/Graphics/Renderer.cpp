@@ -64,7 +64,7 @@ void Renderer::draw(const Text& text)
 
 	const std::vector<GlyphVertex>& glyphVertices = text.getVertices();
 
-	if (m_glyphs.verticesCount + glyphVertices.size() >= MAX_GLYPHS_VERTICES)
+	if (m_glyphs->verticesCount + glyphVertices.size() >= MAX_GLYPHS_VERTICES)
 	{
 		ORC_LOG_WARNING("Maximum amount of available vertices used, glyphs batch flushing");
 		batchFlushGlyphs();
@@ -72,8 +72,8 @@ void Renderer::draw(const Text& text)
 	}
 
 	orc::Ref<Texture> bitmap = text.getFont()->getBitmap();
-	m_glyphs.textures.insert({ bitmap->getRendererID(), bitmap });
-	if (m_glyphs.textures.size() >= MAX_TEXTURE_SLOTS)
+	m_glyphs->textures.insert({ bitmap->getRendererID(), bitmap });
+	if (m_glyphs->textures.size() >= MAX_TEXTURE_SLOTS)
 	{
 		ORC_LOG_WARNING("Maximum amount of available textures used, glyphs batch flushing");
 		batchFlushGlyphs();
@@ -83,13 +83,13 @@ void Renderer::draw(const Text& text)
 	float zValue = 1.0f / zIndex;
 	for (uint64_t i = 0; i < glyphVertices.size(); i++)
 	{
-		m_glyphs.vertices[(uint64_t)m_glyphs.verticesCount + i] = glyphVertices[i];
-		m_glyphs.vertices[(uint64_t)m_glyphs.verticesCount + i].position.z = zValue;
-		m_glyphs.vertices[(uint64_t)m_glyphs.verticesCount + i].textureIndex = (float)bitmap->getRendererID();
+		m_glyphs->vertices[(uint64_t)m_glyphs->verticesCount + i] = glyphVertices[i];
+		m_glyphs->vertices[(uint64_t)m_glyphs->verticesCount + i].position.z = zValue;
+		m_glyphs->vertices[(uint64_t)m_glyphs->verticesCount + i].textureIndex = (float)bitmap->getRendererID();
 	}
 
 	zIndex++;
-	m_glyphs.verticesCount += static_cast<uint32_t>(glyphVertices.size());
+	m_glyphs->verticesCount += static_cast<uint32_t>(glyphVertices.size());
 }
 
 void Renderer::draw(const Sprite& sprite)
@@ -97,7 +97,7 @@ void Renderer::draw(const Sprite& sprite)
 	if (!sprite.getTexture())
 		return;
 
-	if (m_sprites.verticesCount + 4 >= MAX_SPRITES_VERTICES)
+	if (m_sprites->verticesCount + 4 >= MAX_SPRITES_VERTICES)
 	{
 		ORC_LOG_WARNING("Maximum amount of available vertices used, sprites batch flushing");
 		batchFlushSprites();
@@ -105,8 +105,8 @@ void Renderer::draw(const Sprite& sprite)
 	}
 
 	orc::Ref<Texture> texture = sprite.getTexture();
-	m_sprites.textures.insert({ texture->getRendererID(), texture });
-	if (m_sprites.textures.size() >= MAX_TEXTURE_SLOTS)
+	m_sprites->textures.insert({ texture->getRendererID(), texture });
+	if (m_sprites->textures.size() >= MAX_TEXTURE_SLOTS)
 	{
 		ORC_LOG_WARNING("Maximum amount of available textures used, sprites batch flushing");
 		batchFlushSprites();
@@ -118,18 +118,18 @@ void Renderer::draw(const Sprite& sprite)
 	std::array<SpriteVertex, 4> spriteVertices = sprite.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{
-		m_sprites.vertices[(uint64_t)m_sprites.verticesCount + i] = spriteVertices[i];
-		m_sprites.vertices[(uint64_t)m_sprites.verticesCount + i].position.z = zValue;
-		m_sprites.vertices[(uint64_t)m_sprites.verticesCount + i].textureIndex = (float)texture->getRendererID();
+		m_sprites->vertices[(uint64_t)m_sprites->verticesCount + i] = spriteVertices[i];
+		m_sprites->vertices[(uint64_t)m_sprites->verticesCount + i].position.z = zValue;
+		m_sprites->vertices[(uint64_t)m_sprites->verticesCount + i].textureIndex = (float)texture->getRendererID();
 	}
 
 	zIndex++;
-	m_sprites.verticesCount += 4;
+	m_sprites->verticesCount += 4;
 }
 
 void Renderer::draw(const Circle& circle)
 {
-	if (m_circles.verticesCount + 4 >= MAX_CIRCLES_VERTICES)
+	if (m_circles->verticesCount + 4 >= MAX_CIRCLES_VERTICES)
 	{
 		ORC_LOG_WARNING("Maximum amount of available vertices used, circles batch flushing");
 		batchFlushCircles();
@@ -140,8 +140,8 @@ void Renderer::draw(const Circle& circle)
 	if (circle.getTexture())
 	{
 		orc::Ref<Texture> texture = circle.getTexture();
-		m_circles.textures.insert({ texture->getRendererID(), texture });
-		if (m_circles.textures.size() >= MAX_TEXTURE_SLOTS)
+		m_circles->textures.insert({ texture->getRendererID(), texture });
+		if (m_circles->textures.size() >= MAX_TEXTURE_SLOTS)
 		{
 			ORC_LOG_WARNING("Maximum amount of available textures used, circles batch flushing");
 			batchFlushCircles();
@@ -155,18 +155,18 @@ void Renderer::draw(const Circle& circle)
 	std::array<CircleVertex, 4> circleVertices = circle.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{
-		m_circles.vertices[(uint64_t)m_circles.verticesCount + i] = circleVertices[i];
-		m_circles.vertices[(uint64_t)m_circles.verticesCount + i].globalPosition.z = zValue;
-		m_circles.vertices[(uint64_t)m_circles.verticesCount + i].textureIndex = textureIndex;
+		m_circles->vertices[(uint64_t)m_circles->verticesCount + i] = circleVertices[i];
+		m_circles->vertices[(uint64_t)m_circles->verticesCount + i].globalPosition.z = zValue;
+		m_circles->vertices[(uint64_t)m_circles->verticesCount + i].textureIndex = textureIndex;
 	}
 
 	zIndex++;
-	m_circles.verticesCount += 4;
+	m_circles->verticesCount += 4;
 }
 
 void Renderer::draw(const Rectangle& rectangle)
 {
-	if (m_rectangles.verticesCount + 4 >= MAX_RECTANGLES_VERTICES)
+	if (m_rectangles->verticesCount + 4 >= MAX_RECTANGLES_VERTICES)
 	{
 		ORC_LOG_WARNING("Maximum amount of available vertices used, rectangles batch flushing");
 		batchFlushRectangles();
@@ -177,8 +177,8 @@ void Renderer::draw(const Rectangle& rectangle)
 	if (rectangle.getTexture())
 	{
 		orc::Ref<Texture> texture = rectangle.getTexture();
-		m_rectangles.textures.insert({ texture->getRendererID(), texture });
-		if (m_rectangles.textures.size() >= MAX_TEXTURE_SLOTS)
+		m_rectangles->textures.insert({ texture->getRendererID(), texture });
+		if (m_rectangles->textures.size() >= MAX_TEXTURE_SLOTS)
 		{
 			ORC_LOG_WARNING("Maximum amount of available textures used, rectangles batch flushing");
 			batchFlushRectangles();
@@ -192,13 +192,13 @@ void Renderer::draw(const Rectangle& rectangle)
 	std::array<RectangleVertex, 4> rectangleVertices = rectangle.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{
-		m_rectangles.vertices[(uint64_t)m_rectangles.verticesCount + i] = rectangleVertices[i];
-		m_rectangles.vertices[(uint64_t)m_rectangles.verticesCount + i].position.z = zValue;
-		m_rectangles.vertices[(uint64_t)m_rectangles.verticesCount + i].textureIndex = textureIndex;
+		m_rectangles->vertices[(uint64_t)m_rectangles->verticesCount + i] = rectangleVertices[i];
+		m_rectangles->vertices[(uint64_t)m_rectangles->verticesCount + i].position.z = zValue;
+		m_rectangles->vertices[(uint64_t)m_rectangles->verticesCount + i].textureIndex = textureIndex;
 	}
 
 	zIndex++;
-	m_rectangles.verticesCount += 4;
+	m_rectangles->verticesCount += 4;
 }
 
 void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
@@ -213,7 +213,7 @@ void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matr
 
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color)
 {
-	if (m_lines.verticesCount >= MAX_LINES_VERTICES)
+	if (m_lines->verticesCount >= MAX_LINES_VERTICES)
 	{
 		ORC_LOG_WARNING("Maximum amount of available vertices used, lines batch flushing");
 		batchFlushLines();
@@ -221,41 +221,43 @@ void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color&
 	}
 
 	float zValue = 1.0f / zIndex;
-	m_lines.vertices[(size_t)m_lines.verticesCount] = LineVertex{ .color = color.normalized(), .position = Vector3f(start, zValue) };
-	m_lines.vertices[(size_t)m_lines.verticesCount + 1] = LineVertex{ .color = color.normalized(), .position = Vector3f(end, zValue) };
+	m_lines->vertices[(size_t)m_lines->verticesCount] = LineVertex{ .color = color.normalized(), .position = Vector3f(start, zValue) };
+	m_lines->vertices[(size_t)m_lines->verticesCount + 1] = LineVertex{ .color = color.normalized(), .position = Vector3f(end, zValue) };
 
 	zIndex++;
-	m_lines.verticesCount += 2;
+	m_lines->verticesCount += 2;
 }
 
 void Renderer::initLinesVertices()
 {
-	m_lines.shader = createRef<Shader>("shaders/line.vert.glsl", "shaders/line.frag.glsl");
-	m_lines.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(LineVertex) * MAX_LINES_VERTICES));
-	m_lines.vertexBuffer->setLayout(BufferLayout{
+	m_lines = createUniquePtr<Lines>();
+	m_lines->shader = createRef<Shader>("shaders/line.vert.glsl", "shaders/line.frag.glsl");
+	m_lines->vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(LineVertex) * MAX_LINES_VERTICES));
+	m_lines->vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
 		{ BufferLayout::ShaderDataType::Float3, "a_position" }
 	});
 
-	m_lines.vertexArray = createRef<VertexArray>();
-	m_lines.vertexArray->addVertexBuffer(m_lines.vertexBuffer);
+	m_lines->vertexArray = createRef<VertexArray>();
+	m_lines->vertexArray->addVertexBuffer(m_lines->vertexBuffer);
 
-	m_lines.verticesCount = 0;
+	m_lines->verticesCount = 0;
 }
 
 void Renderer::initGlyphsVertices()
 {
-	m_glyphs.shader = createRef<Shader>("shaders/glyph.vert.glsl", "shaders/glyph.frag.glsl");
-	m_glyphs.shader->bind();
+	m_glyphs = createUniquePtr<Shape<GlyphVertex, MAX_GLYPHS_VERTICES>>();
+	m_glyphs->shader = createRef<Shader>("shaders/glyph.vert.glsl", "shaders/glyph.frag.glsl");
+	m_glyphs->shader->bind();
 
 	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
 
-	m_glyphs.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	m_glyphs->shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	m_glyphs.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(GlyphVertex) * MAX_GLYPHS_VERTICES));
-	m_glyphs.vertexBuffer->setLayout(BufferLayout{
+	m_glyphs->vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(GlyphVertex) * MAX_GLYPHS_VERTICES));
+	m_glyphs->vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
 		{ BufferLayout::ShaderDataType::Float3, "a_position" },
 		{ BufferLayout::ShaderDataType::Float2, "a_textureCoord" },
@@ -278,27 +280,28 @@ void Renderer::initGlyphsVertices()
 
 	Ref<IndexBuffer> glyphIndicesBuffer = createRef<IndexBuffer>(glyphIndices.data(), MAX_GLYPHS_INDICES);
 
-	m_glyphs.vertexArray = createRef<VertexArray>();
-	m_glyphs.vertexArray->addVertexBuffer(m_glyphs.vertexBuffer);
-	m_glyphs.vertexArray->setIndexBuffer(glyphIndicesBuffer);
+	m_glyphs->vertexArray = createRef<VertexArray>();
+	m_glyphs->vertexArray->addVertexBuffer(m_glyphs->vertexBuffer);
+	m_glyphs->vertexArray->setIndexBuffer(glyphIndicesBuffer);
 
-	m_glyphs.verticesCount = 0;
+	m_glyphs->verticesCount = 0;
 }
 
 void Renderer::initCircleVertices()
 {
-	m_circles.shader = createRef<Shader>("shaders/circle.vert.glsl", "shaders/circle.frag.glsl");
-	m_circles.shader->bind();
+	m_circles = createUniquePtr<Shape<CircleVertex, MAX_CIRCLES_VERTICES>>();
+	m_circles->shader = createRef<Shader>("shaders/circle.vert.glsl", "shaders/circle.frag.glsl");
+	m_circles->shader->bind();
 
 	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
 
-	m_circles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	m_circles->shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	m_circles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(CircleVertex) * MAX_CIRCLES_VERTICES));
+	m_circles->vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(CircleVertex) * MAX_CIRCLES_VERTICES));
 
-	m_circles.vertexBuffer->setLayout(BufferLayout{
+	m_circles->vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_fillColor" },
 		{ BufferLayout::ShaderDataType::Float4, "a_borderColor" },
 		{ BufferLayout::ShaderDataType::Float3, "a_globalPosition" },
@@ -326,26 +329,27 @@ void Renderer::initCircleVertices()
 
 	Ref<IndexBuffer> circleIndicesBuffer = createRef<IndexBuffer>(circleIndices.data(), MAX_CIRCLES_INDICES);
 
-	m_circles.vertexArray = createRef<VertexArray>();
-	m_circles.vertexArray->addVertexBuffer(m_circles.vertexBuffer);
-	m_circles.vertexArray->setIndexBuffer(circleIndicesBuffer);
+	m_circles->vertexArray = createRef<VertexArray>();
+	m_circles->vertexArray->addVertexBuffer(m_circles->vertexBuffer);
+	m_circles->vertexArray->setIndexBuffer(circleIndicesBuffer);
 
-	m_circles.verticesCount = 0;
+	m_circles->verticesCount = 0;
 }
 
 void Renderer::initSpritesVertices()
 {
-	m_sprites.shader = createRef<Shader>("shaders/sprite.vert.glsl", "shaders/sprite.frag.glsl");
-	m_sprites.shader->bind();
+	m_sprites = createUniquePtr<Shape<SpriteVertex, MAX_SPRITES_VERTICES>>();
+	m_sprites->shader = createRef<Shader>("shaders/sprite.vert.glsl", "shaders/sprite.frag.glsl");
+	m_sprites->shader->bind();
 
 	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
 
-	m_sprites.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	m_sprites->shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	m_sprites.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(SpriteVertex) * MAX_SPRITES_VERTICES));
-	m_sprites.vertexBuffer->setLayout(BufferLayout{
+	m_sprites->vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t)(sizeof(SpriteVertex) * MAX_SPRITES_VERTICES));
+	m_sprites->vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
 		{ BufferLayout::ShaderDataType::Float3, "a_position" },
 		{ BufferLayout::ShaderDataType::Float2, "a_textureCoord" },
@@ -368,25 +372,26 @@ void Renderer::initSpritesVertices()
 
 	Ref<IndexBuffer> spriteIndicesBuffer = createRef<IndexBuffer>(spriteIndices.data(), MAX_SPRITES_INDICES);
 
-	m_sprites.vertexArray = createRef<VertexArray>();
-	m_sprites.vertexArray->addVertexBuffer(m_sprites.vertexBuffer);
-	m_sprites.vertexArray->setIndexBuffer(spriteIndicesBuffer);
+	m_sprites->vertexArray = createRef<VertexArray>();
+	m_sprites->vertexArray->addVertexBuffer(m_sprites->vertexBuffer);
+	m_sprites->vertexArray->setIndexBuffer(spriteIndicesBuffer);
 
-	m_sprites.verticesCount = 0;
+	m_sprites->verticesCount = 0;
 }
 
 void Renderer::initRectanglesVertices()
 {
-	m_rectangles.shader = createRef<Shader>("shaders/rectangle.vert.glsl", "shaders/rectangle.frag.glsl");
-	m_rectangles.shader->bind();
+	m_rectangles = createUniquePtr<Shape<RectangleVertex, MAX_RECTANGLES_VERTICES>>();
+	m_rectangles->shader = createRef<Shader>("shaders/rectangle.vert.glsl", "shaders/rectangle.frag.glsl");
+	m_rectangles->shader->bind();
 	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
 	for (int32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
 		samplers[i] = i;
 
-	m_rectangles.shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	m_rectangles->shader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	m_rectangles.vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t(sizeof(RectangleVertex) * MAX_RECTANGLES_INDICES)));
-	m_rectangles.vertexBuffer->setLayout(BufferLayout{
+	m_rectangles->vertexBuffer = createRef<VertexBuffer>(nullptr, (int32_t(sizeof(RectangleVertex) * MAX_RECTANGLES_INDICES)));
+	m_rectangles->vertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float4, "a_fillColor" },
 		{ BufferLayout::ShaderDataType::Float4, "a_borderColor" },
 		{ BufferLayout::ShaderDataType::Float3, "a_position" },
@@ -411,11 +416,11 @@ void Renderer::initRectanglesVertices()
 
 	Ref<IndexBuffer> quadIndicesBuffer = createRef<IndexBuffer>(rectangleIndices.data(), MAX_RECTANGLES_INDICES);
 
-	m_rectangles.vertexArray = createRef<VertexArray>();
-	m_rectangles.vertexArray->addVertexBuffer(m_rectangles.vertexBuffer);
-	m_rectangles.vertexArray->setIndexBuffer(quadIndicesBuffer);
+	m_rectangles->vertexArray = createRef<VertexArray>();
+	m_rectangles->vertexArray->addVertexBuffer(m_rectangles->vertexBuffer);
+	m_rectangles->vertexArray->setIndexBuffer(quadIndicesBuffer);
 
-	m_rectangles.verticesCount = 0;
+	m_rectangles->verticesCount = 0;
 }
 
 void Renderer::batchStart()
@@ -440,103 +445,103 @@ void Renderer::batchFlush()
 
 void Renderer::batchStartLines()
 {
-	m_lines.verticesCount = 0;
+	m_lines->verticesCount = 0;
 }
 
 void Renderer::batchStartGlyphs()
 {
-	m_glyphs.verticesCount = 0;
+	m_glyphs->verticesCount = 0;
 }
 
 void Renderer::batchStartCircles()
 {
-	m_circles.verticesCount = 0;
+	m_circles->verticesCount = 0;
 }
 
 void Renderer::batchStartSprites()
 {
-	m_sprites.verticesCount = 0;
+	m_sprites->verticesCount = 0;
 }
 
 void Renderer::batchStartRectangles()
 {
-	m_rectangles.verticesCount = 0;
+	m_rectangles->verticesCount = 0;
 }
 
 void Renderer::batchFlushLines()
 {
-	if (m_lines.verticesCount)
+	if (m_lines->verticesCount)
 	{
-		m_lines.shader->bind();
-		m_lines.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-		m_lines.vertexBuffer->setData((void*)(m_lines.vertices.data()), (uint32_t)(m_lines.verticesCount * sizeof(LineVertex)));
+		m_lines->shader->bind();
+		m_lines->shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_lines->vertexBuffer->setData((void*)(m_lines->vertices.data()), (uint32_t)(m_lines->verticesCount * sizeof(LineVertex)));
 
-		glBindVertexArray(m_lines.vertexArray->getRendererID());
-		glDrawArrays(GL_LINES, 0, (int32_t)m_lines.verticesCount);
+		glBindVertexArray(m_lines->vertexArray->getRendererID());
+		glDrawArrays(GL_LINES, 0, (int32_t)m_lines->verticesCount);
 	}
 }
 
 void Renderer::batchFlushGlyphs()
 {
-	if (m_glyphs.verticesCount)
+	if (m_glyphs->verticesCount)
 	{
-		for (auto& texture : m_glyphs.textures)
+		for (auto& texture : m_glyphs->textures)
 			texture.second->bind(texture.first);
 
-		m_glyphs.shader->bind();
-		m_glyphs.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-		m_glyphs.vertexBuffer->setData((void*)(m_glyphs.vertices.data()), (uint32_t)(m_glyphs.verticesCount * sizeof(GlyphVertex)));
+		m_glyphs->shader->bind();
+		m_glyphs->shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_glyphs->vertexBuffer->setData((void*)(m_glyphs->vertices.data()), (uint32_t)(m_glyphs->verticesCount * sizeof(GlyphVertex)));
 
-		glBindVertexArray(m_glyphs.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_glyphs.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_glyphs->vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_glyphs->verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
 void Renderer::batchFlushCircles()
 {
-	if (m_circles.verticesCount)
+	if (m_circles->verticesCount)
 	{
-		for (auto& texture : m_circles.textures)
+		for (auto& texture : m_circles->textures)
 			texture.second->bind(texture.first);
 
-		m_circles.shader->bind();
-		m_circles.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-		m_circles.vertexBuffer->setData((void*)(m_circles.vertices.data()), (uint32_t)(m_circles.verticesCount * sizeof(CircleVertex)));
+		m_circles->shader->bind();
+		m_circles->shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_circles->vertexBuffer->setData((void*)(m_circles->vertices.data()), (uint32_t)(m_circles->verticesCount * sizeof(CircleVertex)));
 
-		glBindVertexArray(m_circles.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_circles.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_circles->vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_circles->verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
 void Renderer::batchFlushSprites()
 {
-	if (m_sprites.verticesCount)
+	if (m_sprites->verticesCount)
 	{
-		for (auto& texture : m_sprites.textures)
+		for (auto& texture : m_sprites->textures)
 			texture.second->bind(texture.first);
 
-		m_sprites.shader->bind();
-		m_sprites.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-		m_sprites.vertexBuffer->setData((void*)(m_sprites.vertices.data()), (uint32_t)(m_sprites.verticesCount * sizeof(SpriteVertex)));
+		m_sprites->shader->bind();
+		m_sprites->shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_sprites->vertexBuffer->setData((void*)(m_sprites->vertices.data()), (uint32_t)(m_sprites->verticesCount * sizeof(SpriteVertex)));
 
-		glBindVertexArray(m_sprites.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_sprites.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_sprites->vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_sprites->verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
 void Renderer::batchFlushRectangles()
 {
-	if (m_rectangles.verticesCount)
+	if (m_rectangles->verticesCount)
 	{
-		for (auto& texture : m_rectangles.textures)
+		for (auto& texture : m_rectangles->textures)
 			texture.second->bind(texture.first);
 
-		m_rectangles.shader->bind();
-		m_rectangles.shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-		m_rectangles.vertexBuffer->setData((void*)(m_rectangles.vertices.data()), (uint32_t)(m_rectangles.verticesCount * sizeof(RectangleVertex)));
+		m_rectangles->shader->bind();
+		m_rectangles->shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
+		m_rectangles->vertexBuffer->setData((void*)(m_rectangles->vertices.data()), (uint32_t)(m_rectangles->verticesCount * sizeof(RectangleVertex)));
 
-		glBindVertexArray(m_rectangles.vertexArray->getRendererID());
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_rectangles.verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(m_rectangles->vertexArray->getRendererID());
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_rectangles->verticesCount * 1.5f), GL_UNSIGNED_INT, nullptr);
 	}
 }
 
