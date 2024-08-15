@@ -95,10 +95,10 @@ void Texturable<VertexType, VerticesCount>::calculateGlobalRect() const
 	const Matrix& transform = getTransformMatrix();
 
 	Vector2f points[] = {
-		transform * Vector3f(localRect.x, localRect.y, 1.0f),
-		transform * Vector3f(localRect.x, localRect.y + localRect.height, 1.0f),
-		transform * Vector3f(localRect.x + localRect.width, localRect.y, 1.0f),
-		transform * Vector3f(localRect.x + localRect.width, localRect.y + localRect.height, 1.0f)
+		transform * Vector3f(localRect.left, localRect.top, 1.0f),
+		transform * Vector3f(localRect.left, localRect.top + localRect.bottom, 1.0f),
+		transform * Vector3f(localRect.left + localRect.right, localRect.top, 1.0f),
+		transform * Vector3f(localRect.left + localRect.right, localRect.top + localRect.bottom, 1.0f)
 	};
 
 	float left = points[0].x;
@@ -129,16 +129,16 @@ void Texturable<VertexType, VerticesCount>::updateVerticesTexCoords() const
 	{
 		Vector2f textureSize(m_texture->getSize());
 		FloatRect clipSpacedTextureRect(
-			m_textureRect.x / textureSize.x,
-			m_textureRect.y / textureSize.y,
-			m_textureRect.width / textureSize.x,
-			m_textureRect.height / textureSize.y
+			m_textureRect.left / textureSize.x,
+			m_textureRect.top / textureSize.y,
+			m_textureRect.right / textureSize.x,
+			m_textureRect.bottom / textureSize.y
 		);
 
-		m_vertices[0].textureCoord = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.y);
-		m_vertices[1].textureCoord = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.y);
-		m_vertices[2].textureCoord = Vector2f(clipSpacedTextureRect.x, clipSpacedTextureRect.height);
-		m_vertices[3].textureCoord = Vector2f(clipSpacedTextureRect.width, clipSpacedTextureRect.height);
+		m_vertices[0].textureCoord = Vector2f(clipSpacedTextureRect.left, clipSpacedTextureRect.top);
+		m_vertices[1].textureCoord = Vector2f(clipSpacedTextureRect.right, clipSpacedTextureRect.top);
+		m_vertices[2].textureCoord = Vector2f(clipSpacedTextureRect.left, clipSpacedTextureRect.bottom);
+		m_vertices[3].textureCoord = Vector2f(clipSpacedTextureRect.right, clipSpacedTextureRect.bottom);
 	}
 	else
 	{

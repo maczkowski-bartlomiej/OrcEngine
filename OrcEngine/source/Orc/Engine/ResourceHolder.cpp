@@ -180,10 +180,10 @@ bool ResourceHolder<Animation>::loadResources(const FilePath& xmlPath)
 			}
 
 			FloatRect rect;
-			rect.x = std::stof(dimensionString[0]);
-			rect.y = std::stof(dimensionString[1]);
-			rect.width = std::stof(dimensionString[2]);
-			rect.height = std::stof(dimensionString[3]);
+			rect.left = std::stof(dimensionString[0]);
+			rect.top = std::stof(dimensionString[1]);
+			rect.right = std::stof(dimensionString[2]);
+			rect.bottom = std::stof(dimensionString[3]);
 
 			frames.push_back(rect);
 			frameCount++;
