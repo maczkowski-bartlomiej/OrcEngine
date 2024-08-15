@@ -27,7 +27,7 @@ void AnimationTest::onUpdate(float deltaTime)
 
 }
 
-void AnimationTest::onEvent(orc::Event& event)
+void AnimationTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

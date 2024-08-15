@@ -35,7 +35,7 @@ public:
 	static Engine& get();
 
 private:
-	void onEvent(Event& event);
+	void onEvent(const Event& event);
 
 	bool m_running = false;
 

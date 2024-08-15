@@ -93,7 +93,7 @@ void CirclesTest::onUpdate(float deltaTime)
 	m_circle11.rotate(45.0f * deltaTime);
 }
 
-void CirclesTest::onEvent(orc::Event& event)
+void CirclesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

@@ -34,7 +34,7 @@ void AudioTest::onRender()
 	renderer.end();
 }
 
-void AudioTest::onEvent(orc::Event& event)
+void AudioTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

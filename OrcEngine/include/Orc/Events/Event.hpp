@@ -31,9 +31,9 @@ private:
 
 
 template<typename EventType>
-const EventType& getEvent(Event& event)
+const EventType& getEvent(const Event& event)
 {
-	return static_cast<EventType&>(event);
+	return static_cast<const EventType&>(event);
 }
 
 }

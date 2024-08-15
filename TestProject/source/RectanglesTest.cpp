@@ -99,7 +99,7 @@ void RectanglesTest::onUpdate(float deltaTime)
 	m_rectangle4.rotate(65.0f * deltaTime);
 }
 
-void RectanglesTest::onEvent(orc::Event& event)
+void RectanglesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

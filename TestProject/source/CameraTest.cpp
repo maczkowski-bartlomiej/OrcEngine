@@ -45,7 +45,7 @@ void CameraTest::onRender()
 	renderer.end();
 }
 
-void CameraTest::onEvent(orc::Event& event)
+void CameraTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
