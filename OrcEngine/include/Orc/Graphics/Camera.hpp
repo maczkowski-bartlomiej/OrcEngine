@@ -8,13 +8,15 @@ namespace orc {
 class Camera
 {
 public:
-	Camera(float left, float right, float bottom, float top);
+	Camera(const FloatRect& viewPort);
+	Camera(float left, float top, float right, float bottom);
 
 	void setZoom(float zoom);
 	void setRotation(float angle);
 	void setPosition(float x, float y);
 	void setPosition(const Vector2f& position);
-	void setViewportSize(float left, float right, float bottom, float top);
+	void setViewportSize(const FloatRect& viewPort);
+	void setViewportSize(float left, float top, float right, float bottom);
 
 	void zoom(float zoom);
 	void rotate(float angle);
@@ -33,7 +35,6 @@ private:
 	Matrix4 m_projectionMatrix;
 	Matrix4 m_viewProjectionMatrix;
 
-	FloatRect m_viewPort;
 	Vector2f m_position;
 
 	float m_zoom = 1.0f;
