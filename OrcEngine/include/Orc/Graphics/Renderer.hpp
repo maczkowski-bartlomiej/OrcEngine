@@ -104,11 +104,11 @@ private:
 		uint32_t verticesCount = 0;
 	};
 
-	Lines m_lines;
-	Shape<CircleVertex, MAX_CIRCLES_VERTICES> m_circles;
-	Shape<SpriteVertex, MAX_SPRITES_VERTICES> m_sprites;
-	Shape<RectangleVertex, MAX_RECTANGLES_VERTICES> m_rectangles;
-	Shape<GlyphVertex, MAX_GLYPHS_VERTICES> m_glyphs;
+	UniquePtr<Lines> m_lines;
+	UniquePtr<Shape<CircleVertex, MAX_CIRCLES_VERTICES>> m_circles;
+	UniquePtr<Shape<SpriteVertex, MAX_SPRITES_VERTICES>> m_sprites;
+	UniquePtr<Shape<RectangleVertex, MAX_RECTANGLES_VERTICES>> m_rectangles;
+	UniquePtr<Shape<GlyphVertex, MAX_GLYPHS_VERTICES>> m_glyphs;
 
 	uint32_t zIndex = 1;
 	Matrix4 m_viewProjectionMatrix;
