@@ -35,8 +35,9 @@ private:
 	Matrix4 m_projectionMatrix;
 	Matrix4 m_viewProjectionMatrix;
 
+	FloatRect m_viewPort;
 	Vector2f m_position;
-
+	
 	float m_zoom = 1.0f;
 	float m_rotation = 0.0f;
 };
