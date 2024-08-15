@@ -4,10 +4,16 @@
 
 namespace orc {
 
-Camera::Camera(float left, float right, float bottom, float top) 
+Camera::Camera(const FloatRect& viewPort)
 	: m_viewMatrix(1.0f)
 {
-	setViewportSize(left, right, bottom, top);
+	setViewportSize(viewPort);
+}
+
+Camera::Camera(float left, float top, float right, float bottom)
+	: m_viewMatrix(1.0f)
+{
+	setViewportSize(left, top, right, bottom);
 }
 
 void Camera::setZoom(float zoom)
@@ -34,10 +40,13 @@ void Camera::setPosition(const Vector2f& position)
 	recalculateViewMatrix();
 }
 
-void Camera::setViewportSize(float left, float right, float bottom, float top)
+void Camera::setViewportSize(const FloatRect& viewPort)
 {
-	//m_viewPort = FloatRect(left, top, right, bottom);
-	//m_projectionMatrix = glm::ortho(left / m_zoom, right / m_zoom, bottom / m_zoom, top / m_zoom, 1.0f, -1.0f);
+	setViewportSize(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
+}
+
+void Camera::setViewportSize(float left, float top, float right, float bottom)
+{
 	m_projectionMatrix = glm::ortho(left, right, bottom, top, 1.0f, -1.0f);
 	recalculateViewMatrix();
 }
