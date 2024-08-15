@@ -18,5 +18,6 @@ public:
 	void onGuiRender() override;
 
 private:
-	orc::Sprite m_sprite;
+	orc::Sprite m_sprite1;
+	orc::Sprite m_sprite2;
 };

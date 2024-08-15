@@ -5,8 +5,11 @@ CameraTest::CameraTest()
 	ORC_LOG_INFO("CameraTest init...");
 	
 	orc::Ref<orc::Texture> zombieTexture = textureHolder.getResource("zombie_texture");
-	m_sprite = orc::Sprite(zombieTexture, orc::Vector2f(400.0f, 300.0f));
-	m_sprite.setOrigin(m_sprite.getGlobalRect().getSize() / 2.0f);
+	m_sprite1 = orc::Sprite(zombieTexture, orc::Vector2f(400.0f, 300.0f));
+	m_sprite1.setOrigin(m_sprite1.getGlobalRect().getSize() / 2.0f);
+
+	m_sprite2 = orc::Sprite(zombieTexture, orc::Vector2f(700.0f, 500.0f));
+	m_sprite2.setOrigin(m_sprite2.getGlobalRect().getSize() / 2.0f);
 }
 
 CameraTest::~CameraTest()
@@ -41,7 +44,8 @@ void CameraTest::onRender()
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 	renderer.begin(camera);
-	renderer.draw(m_sprite);
+	renderer.draw(m_sprite1);
+	renderer.draw(m_sprite2);
 	renderer.end();
 }
 
