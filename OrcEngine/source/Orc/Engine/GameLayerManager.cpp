@@ -5,28 +5,17 @@
 
 namespace orc {
 
-void GameLayerManager::clear()
-{
-	if (m_activeGameLayer)
-	{
-		m_activeGameLayer->onDetach();
-		m_activeGameLayer.reset();
-	}
-
-	m_gameLayers.clear();
-}
-
-void GameLayerManager::setActiveGameLayer(const std::string& name)
+void GameLayerManager::setActiveLayer(const std::string& name)
 {
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty");
 
-	if (const auto& find = m_gameLayers.find(name); find != m_gameLayers.end())
+	if (const auto& find = m_layers.find(name); find != m_layers.end())
 	{
-		if (m_activeGameLayer)
-			m_activeGameLayer->onDetach();
+		if (m_activeLayer)
+			m_activeLayer->onDetach();
 
-		m_activeGameLayer = find->second;
-		m_activeGameLayer->onAttach();
+		m_activeLayer = find->second;
+		m_activeLayer->onAttach();
 	}
 	else
 	{
@@ -34,17 +23,29 @@ void GameLayerManager::setActiveGameLayer(const std::string& name)
 	}
 }
 
-Ref<GameLayer> GameLayerManager::getActiveGameLayer()
-{
-	return m_activeGameLayer;
-}
-
-void GameLayerManager::addGameLayer(const std::string& name, Ref<GameLayer> gameLayer)
+void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLayer)
 {
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty");
 	ORC_ASSERT(gameLayer, "Game layer is nullptr");
 
-	m_gameLayers[name] = gameLayer;
+	m_layers[name] = gameLayer;
 }
+
+void GameLayerManager::clear()
+{
+	if (m_activeLayer)
+	{
+		m_activeLayer->onDetach();
+		m_activeLayer.reset();
+	}
+
+	m_layers.clear();
+}
+
+Ref<GameLayer> GameLayerManager::getActiveLayer()
+{
+	return m_activeLayer;
+}
+
 
 }

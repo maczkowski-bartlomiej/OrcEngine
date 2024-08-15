@@ -74,7 +74,7 @@ void Engine::run()
 		float elapsed = clock.elapsed();
 		clock.reset();
 
-		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveGameLayer();
+		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveLayer();
 		gameLayer->onUpdate(elapsed);
 
 		m_renderer.begin(gameLayer->getCamera());
@@ -139,7 +139,7 @@ AnimationHolder& Engine::getAnimationHolder()
 
 void Engine::onEvent(Event& event) 
 {
-	m_gameLayerManager.getActiveGameLayer()->onEvent(event);
+	m_gameLayerManager.getActiveLayer()->onEvent(event);
 
 	if (event.getType() == Event::Type::WindowClosed)
 	{
@@ -148,7 +148,7 @@ void Engine::onEvent(Event& event)
 	else if (event.getType() == Event::Type::WindowResized)
 	{
 		const WindowResizedEvent& windowResizedEvent = getEvent<WindowResizedEvent>(event);
-		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveGameLayer();
+		Ref<GameLayer> gameLayer = m_gameLayerManager.getActiveLayer();
 		if (gameLayer)
 		{
 			gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);

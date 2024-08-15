@@ -52,8 +52,8 @@ void InputTest::onEvent(orc::Event& event)
 		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
 		switch (kbPressed.key)
 		{
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("CirclesTest"); break;
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("Menu"); break;
+			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("CirclesTest"); break;
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("Menu"); break;
 		}
 	}
 }
@@ -93,21 +93,21 @@ void InputTest::onGuiRender()
 	ImGui::Begin("Navigation Menu");
 	{
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AnimationTest");
+			gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AudioTest");
+			gameLayerManager.setActiveLayer("AudioTest");
 		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CameraTest");
+			gameLayerManager.setActiveLayer("CameraTest");
 		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CirclesTest");
+			gameLayerManager.setActiveLayer("CirclesTest");
 		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("Menu");
+			gameLayerManager.setActiveLayer("Menu");
 		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("InputTest");
+			gameLayerManager.setActiveLayer("InputTest");
 		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("RectanglesTest");
+			gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("SpritesTest");
+			gameLayerManager.setActiveLayer("SpritesTest");
 	}
 	ImGui::End();
 }

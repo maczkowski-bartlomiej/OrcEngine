@@ -25,8 +25,8 @@ orc::Engine* orc::startEngine()
 
 	ORC_LOG_INFO("Test Project v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
 
-	engine->getGameLayerManager().addGameLayer("Menu", orc::createRef<Menu>());
-	engine->getGameLayerManager().setActiveGameLayer("Menu");
+	engine->getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
+	engine->getGameLayerManager().setActiveLayer("Menu");
 
 	return engine;
 }
