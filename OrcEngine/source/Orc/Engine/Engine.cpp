@@ -137,7 +137,7 @@ AnimationHolder& Engine::getAnimationHolder()
 	return m_animationHolder;
 }
 
-void Engine::onEvent(Event& event) 
+void Engine::onEvent(const Event& event) 
 {
 	m_gameLayerManager.getActiveLayer()->onEvent(event);
 

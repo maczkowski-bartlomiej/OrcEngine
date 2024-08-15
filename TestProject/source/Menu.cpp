@@ -43,7 +43,7 @@ void Menu::onUpdate(float deltaTime)
 
 }
 
-void Menu::onEvent(orc::Event& event)
+void Menu::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

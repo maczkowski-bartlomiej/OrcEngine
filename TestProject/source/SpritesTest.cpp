@@ -65,7 +65,7 @@ void SpritesTest::onUpdate(float deltaTime)
 	m_sprite4.rotate(45.0f * deltaTime);
 }
 
-void SpritesTest::onEvent(orc::Event& event)
+void SpritesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{

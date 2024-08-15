@@ -45,7 +45,7 @@ void InputTest::onUpdate(float deltaTime)
 	m_player.setRotation(angle);
 }
 
-void InputTest::onEvent(orc::Event& event)
+void InputTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
