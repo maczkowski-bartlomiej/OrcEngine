@@ -65,6 +65,7 @@ void SpritesTest::onUpdate(float deltaTime)
 	m_sprite4.rotate(45.0f * deltaTime);
 }
 
+<<<<<<< ours
 void SpritesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
@@ -80,6 +81,24 @@ void SpritesTest::onEvent(const orc::Event& event)
 
 void SpritesTest::onRender()
 {
+||||||| ancestor
+=======
+void SpritesTest::onEvent(orc::Event& event)
+{
+	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	{
+		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (kbPressed.key)
+		{
+			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("RectanglesTest"); break;
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("AnimationTest"); break;
+		}
+	}
+}
+
+void SpritesTest::onRender()
+{
+>>>>>>> theirs
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 
@@ -120,6 +139,7 @@ void SpritesTest::onGuiRender()
 {
 	ImGui::Begin("Navigation Menu");
 	{
+<<<<<<< ours
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
@@ -136,6 +156,34 @@ void SpritesTest::onGuiRender()
 			gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("SpritesTest");
+||||||| ancestor
+		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
+		if (newEvent->key == orc::Keyboard::Key::Right)
+		{
+			gameLayerManager.setActiveGameLayer("inputs_test");
+		}
+		else if (newEvent->key == orc::Keyboard::Key::Left)
+		{
+			gameLayerManager.setActiveGameLayer("circles_test");
+		}
+=======
+		if (ImGui::Button("AnimationTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AnimationTest");
+		if (ImGui::Button("AudioTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("AudioTest");
+		if (ImGui::Button("CameraTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CameraTest");
+		if (ImGui::Button("CirclesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("CirclesTest");
+		if (ImGui::Button("Menu", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("Menu");
+		if (ImGui::Button("InputTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("InputTest");
+		if (ImGui::Button("RectanglesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("RectanglesTest");
+		if (ImGui::Button("SpritesTest", { 200, 50 }))
+			gameLayerManager.setActiveGameLayer("SpritesTest");
+>>>>>>> theirs
 	}
 	ImGui::End();
 }

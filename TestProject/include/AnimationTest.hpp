@@ -17,5 +17,8 @@ public:
 	void onRender() override;
 	void onGuiRender() override;
 
+	void onRender() override;
+	void onGuiRender() override;
+
 private:
 };

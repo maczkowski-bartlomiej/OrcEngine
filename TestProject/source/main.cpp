@@ -25,8 +25,16 @@ orc::Engine* orc::startEngine()
 
 	ORC_LOG_INFO("Test Project v.{}.{}.{}", config.majorVersion, config.minorVersion, config.patchVersion);
 
+<<<<<<< ours
 	engine->getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
 	engine->getGameLayerManager().setActiveLayer("Menu");
+||||||| ancestor
+	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
+	engine->getGameLayerManager().setActiveGameLayer("game");
+=======
+	engine->getGameLayerManager().addGameLayer("Menu", orc::createRef<Menu>());
+	engine->getGameLayerManager().setActiveGameLayer("Menu");
+>>>>>>> theirs
 
 	return engine;
 }
