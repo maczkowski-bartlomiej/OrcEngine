@@ -28,12 +28,12 @@ void CameraTest::onDetach()
 
 void CameraTest::onUpdate(float deltaTime)
 {
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Q))     camera.rotate(0.1f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::E))     camera.rotate(-0.1f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::W))     camera.move(0.0f, -10.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::S))     camera.move(0.0f, 10.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::A))     camera.move(-10.0f, 0.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::D))     camera.move(10.0f, 0.0f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Q)) camera.rotate(0.1f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::E)) camera.rotate(-0.1f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::W)) camera.move(0.0f, -10.0f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::S)) camera.move(0.0f, 10.0f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::A)) camera.move(-10.0f, 0.0f);
+	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::D)) camera.move(10.0f, 0.0f);
 }
 
 void CameraTest::onRender()
@@ -60,11 +60,9 @@ void CameraTest::onEvent(orc::Event& event)
 	{
 		auto& wheelScrolled = orc::getEvent<orc::MouseWheelScrolledEvent>(event);
 		if (wheelScrolled.yDelta > 0)
-			m_sprite.scale(0.1f);
+			camera.zoom(0.01f);
 		else if (wheelScrolled.yDelta < 0)
-			m_sprite.scale(-0.1f);
-
-		m_sprite.setOrigin(m_sprite.getGlobalRect().getSize() / 2.0f);
+			camera.zoom(-0.01f);
 	}
 }
 
@@ -78,6 +76,7 @@ void CameraTest::onGuiRender()
 		ImGui::Text("S - move down");
 		ImGui::Text("A - move left");
 		ImGui::Text("D - move right");
+		ImGui::Text("Scroll - zoom in/zoom out");
 	}
 	ImGui::End();
 
@@ -85,10 +84,12 @@ void CameraTest::onGuiRender()
 	{
 		orc::Vector2f position = camera.getPosition();
 		float rotation = camera.getRotation();
+		float zoom = camera.getZoom();
 
 		ImGui::Text("x = %f", position.x);
 		ImGui::Text("y = %f", position.y);
-		ImGui::Text("rotation - %f", rotation);
+		ImGui::Text("zoom = %f", zoom);
+		ImGui::Text("rotation = %f", rotation);
 	}
 	ImGui::End();
 
