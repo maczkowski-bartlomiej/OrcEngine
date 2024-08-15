@@ -44,7 +44,7 @@ Animator& Sprite::getAnimator()
 
 void Sprite::updateVerticesPositions() const
 {
-	Vector2f size = Vector2f(m_textureRect.width, m_textureRect.height);
+	Vector2f size = Vector2f(m_textureRect.right, m_textureRect.bottom);
 	const Matrix& transformMatrix = getTransformMatrix();
 
 	m_vertices[0].position = transformMatrix * Vector3f(0.0f, 0.0f, 1.0f);

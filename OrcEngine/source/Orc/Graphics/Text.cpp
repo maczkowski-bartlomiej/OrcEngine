@@ -131,14 +131,14 @@ void Text::updateVertices() const
 		position.y = positionyY;
 		position.x += character.advance;
 
-		m_localRect.width = std::max(m_localRect.width, position.x);
-		m_localRect.height = std::max(m_localRect.height, height);
+		m_localRect.right = std::max(m_localRect.right, position.x);
+		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
 	//Not sure how to skip this offset crap so it can be more efficient...
 	for (GlyphVertex& vertex : m_vertices)
 	{
-		vertex.position.y += m_localRect.height - 1;
+		vertex.position.y += m_localRect.bottom - 1;
 	}
 
 	calculateGlobalRect();
@@ -150,10 +150,10 @@ void Text::calculateGlobalRect() const
 	const Matrix& transform = getTransformMatrix();
 
 	Vector2f points[] = {
-		transform * Vector3f(m_localRect.x, m_localRect.y, 1.0f),
-		transform * Vector3f(m_localRect.x, m_localRect.y + m_localRect.height, 1.0f),
-		transform * Vector3f(m_localRect.x + m_localRect.width, m_localRect.y, 1.0f),
-		transform * Vector3f(m_localRect.x + m_localRect.width, m_localRect.y + m_localRect.height, 1.0f)
+		transform * Vector3f(m_localRect.left, m_localRect.top, 1.0f),
+		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.bottom, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)
 	};
 
 	float left = points[0].x;
