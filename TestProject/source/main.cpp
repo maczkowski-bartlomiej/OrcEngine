@@ -4,26 +4,26 @@
 
 orc::Engine* orc::startEngine()
 {
-	orc::GameSettings gameSettings;
-	gameSettings.majorVersion = 0;
-	gameSettings.minorVersion = 0;
-	gameSettings.patchVersion = 1;
+	orc::Config config;
+	config.majorVersion = 0;
+	config.minorVersion = 0;
+	config.patchVersion = 1;
 
-	gameSettings.gameName = "Test Project";
-	gameSettings.logPath = "logs/TestProject.log";
+	config.gameName = "Test Project";
+	config.logPath = "logs/TestProject.log";
 
-	gameSettings.videoSettings.title = "Test Project";
-	gameSettings.videoSettings.width = 800;
-	gameSettings.videoSettings.height = 600;
-	gameSettings.videoSettings.vsync = true;
+	config.videoSettings.title = "Test Project";
+	config.videoSettings.width = 800;
+	config.videoSettings.height = 600;
+	config.videoSettings.vsync = true;
 
-	gameSettings.audioSettings.maxChannels = 512;
+	config.audioSettings.maxChannels = 512;
 
 	orc::Engine* engine = new Engine();
-	if (!engine->init(gameSettings))
+	if (!engine->init(config))
 		return nullptr;
 
-	ORC_LOG_INFO("Test Project v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
+	ORC_LOG_INFO("Test Project v.{}.{}.{}", config.majorVersion, config.minorVersion, config.patchVersion);
 
 	engine->getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
 	engine->getGameLayerManager().setActiveLayer("Menu");

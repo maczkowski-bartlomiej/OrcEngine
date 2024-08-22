@@ -8,7 +8,7 @@
 #include "Graphics/FTLibrary.hpp"
 
 #include "Events/Event.hpp"
-#include "Engine/GameSettings.hpp"
+#include "Engine/Config.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Engine/GameLayerManager.hpp"
 
@@ -17,7 +17,7 @@ namespace orc {
 class Engine
 {
 public:
-	bool init(const GameSettings& gameSettings);
+	bool init(const Config& config);
 	void deinit();
 
 	void run();
