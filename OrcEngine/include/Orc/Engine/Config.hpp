@@ -8,7 +8,7 @@
 
 namespace orc {
 
-struct GameSettings
+struct Config
 {
 	int32_t majorVersion = 0;
 	int32_t minorVersion = 0;
