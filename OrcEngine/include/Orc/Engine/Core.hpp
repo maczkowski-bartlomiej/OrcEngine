@@ -26,9 +26,11 @@
 #endif
 
 #ifdef ORC_RELEASE
+#define ORC_DEBUGBREAK()
 #endif
 
 #ifdef ORC_DISTRIBUTION
+#define ORC_DEBUGBREAK()
 #endif
 
 namespace orc {

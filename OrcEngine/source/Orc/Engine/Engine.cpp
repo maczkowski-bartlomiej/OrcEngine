@@ -105,11 +105,6 @@ void Engine::run()
 	}
 }
 
-Engine& Engine::get()
-{
-	return *m_instance;
-}
-
 FontHolder& Engine::getFontHolder()
 {
 	return m_fontHolder;

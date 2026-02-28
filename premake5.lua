@@ -1,6 +1,6 @@
 GAME_NAME = "TestProject"
 GAME_PATH = "TestProject/"
-FMOD_DIR = "C:/Users/Bartek/Dev/Libs/FMOD/api"
+FMOD_DIR = "E:/CppLibs/FMOD/api"
 
 workspace "OrcEngine"
 	architecture "x64"

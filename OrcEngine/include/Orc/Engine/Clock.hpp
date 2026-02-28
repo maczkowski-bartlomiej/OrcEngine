@@ -18,7 +18,8 @@ public:
         return std::chrono::duration<float>(currentTime - m_time).count();
     }
 
-    uint64_t elapsedMs() const {
+    uint64_t elapsedMs() const
+    {
         auto currentTime = std::chrono::steady_clock::now();
         return std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_time).count();
     }

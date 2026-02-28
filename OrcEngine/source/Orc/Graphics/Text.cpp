@@ -92,16 +92,16 @@ void Text::updateVertices() const
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
 	const Matrix& transform = getTransformMatrix();
 
-	for (int i = 0; i < m_string.size(); i++)
+	for (size_t i = 0; i < m_string.size(); i++)
 	{
-		Character character = m_font->getCharacter(m_string[i]);
-
 		if (m_string[i] == '\n')
 		{
 			position.x = 0.0f;
 			position.y += m_font->getSize();
 			continue;
 		}
+
+		Character character = m_font->getCharacter(m_string[i]);
 
 		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
@@ -112,21 +112,21 @@ void Text::updateVertices() const
 		float positionyY = position.y;
 		position.y -= character.offset.y;
 
-		m_vertices[static_cast<size_t>(i) * 4 + 0].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 0].position = transform * Vector3f(position, 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 0].textureCoord = normalizedBitmapCoordStart;
+		m_vertices[i * 4 + 0].color = m_color.normalized();
+		m_vertices[i * 4 + 0].position = transform * Vector3f(position, 1.0f);
+		m_vertices[i * 4 + 0].textureCoord = normalizedBitmapCoordStart;
 
-		m_vertices[static_cast<size_t>(i) * 4 + 1].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
+		m_vertices[i * 4 + 1].color = m_color.normalized();
+		m_vertices[i * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
+		m_vertices[i * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
 
-		m_vertices[static_cast<size_t>(i) * 4 + 2].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
+		m_vertices[i * 4 + 2].color = m_color.normalized();
+		m_vertices[i * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
+		m_vertices[i * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
 
-		m_vertices[static_cast<size_t>(i) * 4 + 3].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
+		m_vertices[i * 4 + 3].color = m_color.normalized();
+		m_vertices[i * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
+		m_vertices[i * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
 
 		position.y = positionyY;
 		position.x += character.advance;
@@ -135,7 +135,7 @@ void Text::updateVertices() const
 		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
-	//Not sure how to skip this offset crap so it can be more efficient...
+	//Not sure how to skip this crap offset
 	for (GlyphVertex& vertex : m_vertices)
 	{
 		vertex.position.y += m_localRect.bottom - 1;
