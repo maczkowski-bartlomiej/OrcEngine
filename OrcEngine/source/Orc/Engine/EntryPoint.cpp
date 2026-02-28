@@ -5,14 +5,21 @@
 
 int main(int, char**)
 {
-	orc::Engine* engine = nullptr;
-	engine = orc::startEngine();
+	orc::Engine* engine = new orc::Engine();
+	orc::Config config = orc::getEngineConfig(); //user function callback
 
-	if (engine)
+	if (engine->init(config))
 	{
-		engine->run();
+		orc::onEngineStart(*engine); //user function callback
+
+		engine->run(); //enter game engine loop
 		engine->deinit();
+
 		delete engine;
+	}
+	else
+	{
+		return -1;
 	}
 
 	return 0;

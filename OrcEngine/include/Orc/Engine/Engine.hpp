@@ -47,6 +47,7 @@ private:
 	void onEvent(const Event& event);
 
 	bool m_running = false;
+	static Engine* m_instance;
 
 	Gui m_gui;
 	Audio m_audio;
@@ -58,10 +59,9 @@ private:
 	FontHolder m_fontHolder;
 	TextureHolder m_textureHolder;
 	AnimationHolder m_animationHolder;
-
-	static Engine* m_instance;
 };
 
-Engine* startEngine();
+Config getEngineConfig();
+void onEngineStart(Engine& engine);
 
 }

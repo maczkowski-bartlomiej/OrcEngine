@@ -13,20 +13,12 @@ Engine* Engine::m_instance = nullptr;
 
 bool Engine::init(const Config& config)
 {
-	if (m_instance)
-	{
-		ORC_FATAL("Engine already initialized");
-		return false;
-	}
-
-	m_running = true;
 	m_instance = this;
 
 	if (!Logger::init(config.logPath))
 		return false;
 
-	ORC_LOG_INFO("Starting...");
-	ORC_LOG_INFO("Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
+	ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
 	if (!m_ftLibary.init()) return false;
 <<<<<<< ours
@@ -73,8 +65,6 @@ bool Engine::init(const Config& config)
 
 void Engine::deinit()
 {
-	if (m_instance != this) return;
-
 	m_gameLayerManager.clear();
 	m_animationHolder.clear();
 	m_textureHolder.clear();
@@ -90,6 +80,7 @@ void Engine::deinit()
 
 void Engine::run()
 {
+	m_running = true;
 	Clock clock;
 	while (m_running)
 	{
@@ -176,6 +167,11 @@ void Engine::onEvent(const Event& event)
 			gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);
 		}
 	}
+}
+
+Engine& Engine::get()
+{
+	return *m_instance;
 }
 
 }
