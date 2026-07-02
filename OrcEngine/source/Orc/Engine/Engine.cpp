@@ -52,11 +52,9 @@ namespace orc {
 		m_fontResources.loadResources(config.fontsPath);
 		m_textureResources.loadResources(config.texturesPath);
 		m_animationResources.loadResources(config.animationsPath);
-
-		return true;
 	}
 
-	void Engine::deinit()
+	Engine::~Engine()
 	{
 		if (m_instance != this) return;
 

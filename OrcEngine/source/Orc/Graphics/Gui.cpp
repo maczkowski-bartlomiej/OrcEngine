@@ -32,16 +32,14 @@ Gui::Gui()
 	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow()), true))
 	{
 		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW.");
-		return false;
+		return;
 	}
 
 	if (!ImGui_ImplOpenGL3_Init("#version 460"))
 	{
 		ORC_LOG_FATAL("Failed to initialize ImGUI for OpenGL.");
-		return false;
+		return;
 	}
-
-	return true;
 }
 
 Gui::~Gui()
