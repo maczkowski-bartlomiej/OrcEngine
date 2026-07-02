@@ -2,11 +2,11 @@
 
 CirclesTest::CirclesTest()
 {
-	ORC_LOG_INFO("CirclesTest init");
+	ORC_LOG_INFO("CirclesTest init.");
 
-	orc::Ref<orc::Texture> gradientTexture = textureHolder.getResource("gradient_texture");
-	orc::Ref<orc::Texture> smallTexture = textureHolder.getResource("small_texture");
-	orc::Ref<orc::Font> font = fontHolder.getResource("arial_font");
+	orc::Ref<orc::Texture> gradientTexture = textureResources.getResource("gradient_texture");
+	orc::Ref<orc::Texture> smallTexture = textureResources.getResource("small_texture");
+	orc::Ref<orc::Font> font = fontResources.getResource("arial_font");
 
 	m_text1 = orc::Text(font, "Blue Color"); m_text1.setPosition(100.0f, 0.0f); m_text1.setScale(0.25f, 0.25f); m_text1.setOrigin(m_text1.getGlobalRect().getSize() / 2.0f);
 	m_circle1 = orc::Circle(orc::Vector2f(100.0f, 75.0f), 35.0f, orc::Color(0, 0, 255));
@@ -73,19 +73,19 @@ CirclesTest::CirclesTest()
 
 CirclesTest::~CirclesTest()
 {
-	ORC_LOG_INFO("CirclesTest deinit...");
+	ORC_LOG_INFO("CirclesTest deinit.");
 }
 
 void CirclesTest::onAttach()
 {
-	ORC_LOG_INFO("Switching to CirclesTest");
+	ORC_LOG_INFO("Switching to CirclesTest.");
 	ORC_LOG_INFO("<- CameraTest | InputTest ->");
 	window.setTitle("CirclesTest");
 }
 
 void CirclesTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from CirclesTest");
+	ORC_LOG_INFO("Leaving from CirclesTest.");
 }
 
 void CirclesTest::onUpdate(float deltaTime)
@@ -93,7 +93,6 @@ void CirclesTest::onUpdate(float deltaTime)
 	m_circle11.rotate(45.0f * deltaTime);
 }
 
-<<<<<<< ours
 void CirclesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
@@ -109,24 +108,6 @@ void CirclesTest::onEvent(const orc::Event& event)
 
 void CirclesTest::onRender()
 {
-||||||| ancestor
-=======
-void CirclesTest::onEvent(orc::Event& event)
-{
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
-	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("CameraTest"); break;
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("InputTest"); break;
-		}
-	}
-}
-
-void CirclesTest::onRender()
-{
->>>>>>> theirs
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 
@@ -167,7 +148,6 @@ void CirclesTest::onGuiRender()
 {
 	ImGui::Begin("Navigation Menu");
 	{
-<<<<<<< ours
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
@@ -184,34 +164,6 @@ void CirclesTest::onGuiRender()
 			gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("SpritesTest");
-||||||| ancestor
-		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		if (newEvent->key == orc::Keyboard::Key::Right)
-		{
-			gameLayerManager.setActiveGameLayer("sprites_test");
-		}
-		else if (newEvent->key == orc::Keyboard::Key::Left)
-		{
-			gameLayerManager.setActiveGameLayer("rectangles_test");
-		}
-=======
-		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AnimationTest");
-		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AudioTest");
-		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CameraTest");
-		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CirclesTest");
-		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("Menu");
-		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("InputTest");
-		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("RectanglesTest");
-		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("SpritesTest");
->>>>>>> theirs
 	}
 	ImGui::End();
 }

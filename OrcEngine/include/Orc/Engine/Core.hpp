@@ -3,6 +3,8 @@
 #include <memory>
 #include <cstdint>
 #include <filesystem>
+#include <intrin.h>
+#include <utility>
 
 #define GLM_FORCE_CTOR_INIT
 #define GLM_ENABLE_EXPERIMENTAL
@@ -10,19 +12,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/fwd.hpp>
 
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
-
-	#ifdef ORC_PLATFORM_WINDOWS
 		#define ORC_DEBUGBREAK() __debugbreak()
-	#elif defined ORC_PLATFORM_LINUX
-		#include <signal.h>
-		#define ORC_DEBUGBREAK() raise(SIGTRAP)
-	#else
-		#error "Platform doesn't support debugbreak!"
-	#endif
-
 #endif
 
 #ifdef ORC_RELEASE

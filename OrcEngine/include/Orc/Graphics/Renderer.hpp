@@ -21,8 +21,7 @@ namespace orc {
 class Renderer
 {
 public:
-	bool init();
-	void deinit();
+	Renderer();
 
 	void clear();
 	void setClearColor(const Color& color);

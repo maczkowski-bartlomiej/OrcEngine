@@ -36,9 +36,9 @@ protected:
 	Renderer& renderer;
 	GameLayerManager& gameLayerManager;
 
-	FontHolder& fontHolder;
-	TextureHolder& textureHolder;
-	AnimationHolder& animationHolder;
+	FontResources& fontResources;
+	TextureResources& textureResources;
+	AnimationResources& animationResources;
 };
 
 }

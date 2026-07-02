@@ -16,7 +16,7 @@ class CapitalizedLevelNamesFormatter : public spdlog::custom_flag_formatter
 public:
 	void format(const spdlog::details::log_msg& message, const std::tm&, spdlog::memory_buf_t& destination) override
 	{
-		static constexpr std::array<std::string_view, 7> names{ "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF" };
+		static constexpr std::array<std::string_view, 7> names{{ "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF" }};
 		std::string_view name = names[static_cast<size_t>(message.level)];
 
 		destination.append(name.data(), name.data() + name.size());
@@ -48,13 +48,15 @@ bool Logger::init(const std::string& logPath)
 
 		m_logger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
 		m_logger->set_level(spdlog::level::info);
-		m_logger->flush_on(spdlog::level::err);
+		m_logger->flush_on(spdlog::level::level_enum::err);
+
+		m_logger->set_error_handler([](const std::string& msg) { m_logger->error("Tried to pass invalid arguments to Logger: {}", msg); });
 
 		return true;
 	}
 	catch (const spdlog::spdlog_ex& exception)
 	{
-		std::cerr << "[FATAL] Failed to initialize Logger\n\tReason: " << exception.what() << std::endl;
+		std::cerr << "[FATAL] Failed to initialize Logger...\n\tReason: " << exception.what() << std::endl;
 		ORC_DEBUGBREAK();
 	}
 

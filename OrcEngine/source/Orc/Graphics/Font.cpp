@@ -1,15 +1,19 @@
 #include "OrcPch.hpp"
-#include "Graphics/Font.hpp"
+#include "Engine/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Engine.hpp"
+#include "Engine/Logger.hpp"
+#include "Graphics/Font.hpp"
+#include "Engine/Utility.hpp"
+
+#include <cmath>
+#include <cstdint>
+#include <vector>
 
 #include <freetype/freetype.h>
-
-#include <vector>
-#include <algorithm>
-
-//Credits for help
-//https://gist.github.com/baines/b0f9e4be04ba4e6f56cab82eef5008ff and https://github.com/SFML/SFML/blob/master/src/SFML/Graphics/Font.cpp#L352
+#include <freetype/fterrors.h>
+#include <freetype/fttypes.h>
+#include <freetype/ftimage.h>
 
 namespace orc {
 
@@ -22,7 +26,7 @@ Font::~Font()
 {
 	if (m_face)
 	{
-		if (FT_Done_Face(m_face) != 0)
+		if (FT_Done_Face(m_face) != FT_Err_Ok)
 		{
 			ORC_LOG_WARNING("Failed to deinitialize font");
 		}
@@ -32,69 +36,44 @@ Font::~Font()
 bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 {
 	FT_Library ftLibrary = Engine::get().getFTLibary().getNativeLibrary();
+	FT_Face face = nullptr;
 
-	FT_Face face;
-	FT_Error error;
-	error = FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face);
-	if (error)
+	if (!ftCall(FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face)))
 	{
-		ORC_ERROR("Failed to load font {}\n\tReason: {}", filePath.string(), FT_Error_String(error));
+		ORC_LOG_ERROR("Failed to load font from {}", filePath.string());
 		return false;
 	}
 
-	error = FT_Set_Pixel_Sizes(face, 0, size);
-	if (error == FT_Err_Invalid_Pixel_Size)
+	if (!ftCall(FT_Set_Pixel_Sizes(face, 0, size)))
 	{
-		if (!FT_IS_SCALABLE(face))
-		{
-			ORC_LOG_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
-			ORC_LOG_ERROR("Available sizes are: ");
-			for (int i = 0; i < face->num_fixed_sizes; ++i)
-			{
-				const long availableSize = (face->available_sizes[i].y_ppem + 32) >> 6;
-				ORC_LOG_ERROR("{}", availableSize);
-			}
-		}
-		else
-		{
-			ORC_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
-			return false;
-		}
-	}
-	else if (error)
-	{
-		ORC_ERROR("Failed to set font size {}\n\tReason: {}", size, FT_Error_String(error));
+		ORC_LOG_ERROR("Failed to set font pixel size of {}", size);
 		return false;
-	}
-
-	if (m_face)
-	{
-		if (FT_Done_Face(m_face) != 0)
-		{
-			ORC_LOG_WARNING("Failed to deinitialize font");
-		}
 	}
 
 	m_face = face;
 	m_size = size;
 
-	constexpr unsigned char CHARACTER_COUNT = 128;
-	uint32_t fontHeightInPixels = m_face->size->metrics.height >> 6;
-	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(CHARACTER_COUNT)));
-	uint32_t maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
+	calculateBitmap();
 
-	// Find the smallest power of 2 greater than or equal to maxDimension
+	return true;
+}
+
+void Font::calculateBitmap()
+{
+	uint32_t fontHeightInPixels = static_cast<uint32_t>(m_face->size->metrics.height) >> 6; //26.6 fixed point format, so we need to shift right by 6 to get the pixel value
+	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(static_cast<float>(M_CHARACTER_COUNT))));
+	uint32_t maxDimension= (1 + fontHeightInPixels) * charactersPerRow;
+
 	uint32_t textureWidth = 1;
 	while (textureWidth < maxDimension)
 		textureWidth <<= 1;
-
 	uint32_t textureHeight = textureWidth;
 
-	std::vector<unsigned char> pixels(textureWidth * textureHeight);
+	std::vector<unsigned char> rawPixels(textureWidth * textureHeight);
 	std::vector<unsigned char> buffer;
 
-	int32_t currentX = 0, currentY = 0;
-	for (unsigned char i = 0; i < CHARACTER_COUNT; ++i)
+	uint32_t currentX = 0, currentY = 0;
+	for (uint32_t i = 0; i < M_CHARACTER_COUNT; i++)
 	{
 		FT_Load_Char(m_face, i, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT);
 		FT_Bitmap* bitmap = &m_face->glyph->bitmap;
@@ -102,7 +81,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 		if (currentX + bitmap->width >= textureWidth)
 		{
 			currentX = 0;
-			currentY += ((m_face->size->metrics.height >> 6) + 1);
+			currentY += (static_cast<uint32_t>(m_face->size->metrics.height) >> 6) + 1;
 		}
 
 		for (uint32_t row = 0; row < bitmap->rows; row++)
@@ -111,22 +90,20 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 			{
 				uint32_t x = currentX + col;
 				uint32_t y = currentY + row;
-				pixels[y * textureWidth + x] = bitmap->buffer[row * bitmap->pitch + col];
+				rawPixels[y * textureWidth + x] = bitmap->buffer[row * bitmap->pitch + col];
 			}
 		}
 
 		m_characters[i].bitmapCoordStart = Vector2f(currentX, currentY);
 		m_characters[i].bitmapCoordEnd = Vector2f(currentX + bitmap->width, currentY + bitmap->rows);
 		m_characters[i].offset = Vector2f(m_face->glyph->bitmap_left, m_face->glyph->bitmap_top);
-		m_characters[i].advance = m_face->glyph->advance.x >> 6;
+		m_characters[i].advance = static_cast<uint32_t>(m_face->glyph->advance.x) >> 6;
 
 		currentX += bitmap->width + 1;
 	}
 
 	m_bitmap = createRef<Texture>();
-	m_bitmap->loadFromMemory(pixels.data(), textureWidth, textureHeight, Texture::TextureMode::RED);
-
-	return true;
+	m_bitmap->loadFromMemory(rawPixels.data(), textureWidth, textureHeight, Texture::TextureMode::RED);
 }
 
 uint32_t Font::getSize() const
@@ -139,8 +116,13 @@ Ref<Texture> Font::getBitmap() const
 	return m_bitmap;
 }
 
-Character Font::getCharacter(char character) const
+Character Font::getCharacter(uint32_t character) const
 {
+	if (character > M_CHARACTER_COUNT)
+	{
+		ORC_LOG_WARNING("Attempted to get a non-ascii character from a font. Character code: {}.", character);
+	}
+
 	return m_characters.at(character);
 }
 

@@ -7,8 +7,8 @@ namespace orc {
 class Gui
 {
 public:
-	bool init();
-	void deinit();
+	Gui();
+	~Gui();
 
 	void begin();
 	void end();

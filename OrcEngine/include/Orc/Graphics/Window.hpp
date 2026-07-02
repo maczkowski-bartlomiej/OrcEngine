@@ -27,8 +27,8 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	bool init(const VideoSettings& videoSettings);
-	void deinit();
+	Window(const VideoSettings& videoSettings);
+	~Window();
 
 	void display();
 	

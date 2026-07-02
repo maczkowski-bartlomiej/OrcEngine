@@ -1,33 +1,23 @@
 #pragma once
 
 #include "Audio/Audio.hpp"
-
-#include "Graphics/Gui.hpp"
-#include "Graphics/Window.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Graphics/FTLibrary.hpp"
-
-<<<<<<< ours
-#include "Events/Event.hpp"
+#include "Core.hpp"
 #include "Engine/Config.hpp"
-#include "Engine/ResourceHolder.hpp"
 #include "Engine/GameLayerManager.hpp"
-
-||||||| ancestor
-=======
+#include "Engine/ResourceHolder.hpp"
 #include "Events/Event.hpp"
-#include "Engine/GameSettings.hpp"
-#include "Engine/ResourceHolder.hpp"
-#include "Engine/GameLayerManager.hpp"
+#include "Graphics/FTLibrary.hpp"
+#include "Graphics/Gui.hpp"
+#include "Graphics/Renderer.hpp"
+#include "Graphics/Window.hpp"
 
->>>>>>> theirs
 namespace orc {
 
 class Engine
 {
 public:
-	bool init(const Config& config);
-	void deinit();
+	Engine(const Config& config);
+	~Engine();
 
 	void run();
 
@@ -37,9 +27,9 @@ public:
 	FTLibrary& getFTLibary();
 	GameLayerManager& getGameLayerManager();
 
-	FontHolder& getFontHolder();
-	TextureHolder& getTextureHolder();
-	AnimationHolder& getAnimationHolder();
+	FontResources& getFontResources();
+	TextureResources& getTextureResources();
+	AnimationResources& getAnimationResources();
 
 	static Engine& get();
 
@@ -47,18 +37,19 @@ private:
 	void onEvent(const Event& event);
 
 	bool m_running = false;
+
+	UniquePtr<Gui> m_gui;
+	UniquePtr<Audio> m_audio;
+	UniquePtr<Window> m_window;
+	UniquePtr<Renderer> m_renderer;
+	UniquePtr<FTLibrary> m_ftLibary;
+	UniquePtr<GameLayerManager> m_gameLayerManager;
+
+	FontResources m_fontResources;
+	TextureResources m_textureResources;
+	AnimationResources m_animationResources;
+
 	static Engine* m_instance;
-
-	Gui m_gui;
-	Audio m_audio;
-	Window m_window;
-	Renderer m_renderer;
-	FTLibrary m_ftLibary;
-	GameLayerManager m_gameLayerManager;
-
-	FontHolder m_fontHolder;
-	TextureHolder m_textureHolder;
-	AnimationHolder m_animationHolder;
 };
 
 Config getEngineConfig();

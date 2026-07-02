@@ -1,9 +1,40 @@
 #include "OrcPch.hpp"
+#include "Engine/Logger.hpp"
 
-#include "Engine/Utility.hpp"
+#include <string>
+
+#include <fmod_common.h>
+#include <fmod_errors.h>
+#include <source_location>
+
+#include <freetype/freetype.h>
+#include <freetype/fterrors.h>
+#include <freetype/fttypes.h>
+#include <freetype/ftimage.h>
 
 namespace orc {
-namespace utility {
+
+bool fmodCall(FMOD_RESULT result, std::source_location sourceLocation)
+{
+    if (result != FMOD_RESULT::FMOD_OK)
+    {
+        Logger::log(Logger::Level::Error, sourceLocation, "FMOD Error: {}", FMOD_ErrorString(result));
+        return false;
+    }
+
+    return true;
+}
+
+bool ftCall(FT_Error result, std::source_location sourceLocation)
+{
+    if (result != FMOD_RESULT::FMOD_OK)
+    {
+        Logger::log(Logger::Level::Error, sourceLocation, "Freetype Error: {}", FT_Error_String(result));
+        return false;
+    }
+
+    return true;
+}
 
 std::string getErrnoMessage(int error)
 {
@@ -144,5 +175,4 @@ std::string getErrnoMessage(int error)
     }
 }
 
-}
 }

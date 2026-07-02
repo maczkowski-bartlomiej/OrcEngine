@@ -23,13 +23,7 @@ public:
 	void move(float x, float y);
 	void move(const Vector2f& offset);
 
-<<<<<<< ours
 	float getZoom() const;
-||||||| ancestor
-	void test(float x);
-
-=======
->>>>>>> theirs
 	float getRotation() const;
 	Vector2f getPosition() const;
 	const Matrix4& getViewProjectionMatrix() const;

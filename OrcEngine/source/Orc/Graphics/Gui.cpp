@@ -8,16 +8,15 @@
 
 namespace orc {
 
-bool Gui::init()
+Gui::Gui()
 {
-	ORC_LOG_INFO("Initializing GUI...");
+	ORC_LOG_INFO("Initializing GUI.");
 
 	IMGUI_CHECKVERSION();
 	ImGuiContext* context = ImGui::CreateContext();
 	if (!context)
 	{
-		ORC_LOG_FATAL("Failed to initialize GUI");
-		return false;
+		ORC_LOG_FATAL("Failed to initialize GUI.");
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -32,22 +31,22 @@ bool Gui::init()
 	ImGui::StyleColorsDark();
 	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow()), true))
 	{
-		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW");
+		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW.");
 		return false;
 	}
 
 	if (!ImGui_ImplOpenGL3_Init("#version 460"))
 	{
-		ORC_LOG_FATAL("Failed to initialize ImGUI for OpenGL");
+		ORC_LOG_FATAL("Failed to initialize ImGUI for OpenGL.");
 		return false;
 	}
 
 	return true;
 }
 
-void Gui::deinit()
+Gui::~Gui()
 {
-	ORC_LOG_INFO("Deinitializing GUI...");
+	ORC_LOG_INFO("Deinitializing GUI.");
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();

@@ -17,24 +17,23 @@ constexpr int OPENGL_MINOR_VERSION = 6;
 
 namespace orc {
 
-static void glfwErrorCallback(int code, const char* description)
+static void glfwErrorCallback(int code, const char* description) noexcept
 {
-	ORC_LOG_ERROR("GLFW error occured\n\tCode: {}\n\tDescription: {}", code, description);
+	ORC_LOG_ERROR("GLFW error occured...\n\tCode: {}\n\tDescription: {}", code, description);
 }
 
-bool Window::init(const VideoSettings& videoSettings)
+Window::Window(const VideoSettings& videoSettings)
 {
 	m_videoSettings = videoSettings;
 
-	ORC_LOG_INFO("Initializing window...");
-	ORC_LOG_INFO("Window info...\n\tResolution: {}x{}\n\tTitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
+	ORC_LOG_INFO("Initializing window...\nWindow info:\n\tResolution: {}x{}\n\tTitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
 
-	return initGLAD();
+	initGLAD();
 }
 
-void Window::deinit()
+Window::~Window()
 {
-	ORC_LOG_INFO("Deinitializing window...");
+	ORC_LOG_INFO("Deinitializing window.");
 	glfwDestroyWindow(m_glfwWindow);
 	glfwTerminate();
 }
@@ -100,7 +99,7 @@ bool Window::initGLAD()
 	int errorResult = glfwInit();
 	if (!errorResult)
 	{
-		ORC_LOG_FATAL("Failed to initialize GLFW");
+		ORC_LOG_FATAL("Failed to initialize GLFW.");
 		return false;
 	}
 
@@ -114,14 +113,14 @@ bool Window::initGLAD()
 	glfwMakeContextCurrent(m_glfwWindow);
 	glfwSetWindowUserPointer(m_glfwWindow, &m_videoSettings);
 
-	errorResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	errorResult = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 	if (!errorResult)
 	{
-		ORC_LOG_FATAL("Failed to initialize GLAD");
+		ORC_LOG_FATAL("Failed to initialize GLAD.");
 		return false;
 	}
 
-	ORC_LOG_INFO("Graphics info...\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
+	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);
@@ -132,7 +131,7 @@ bool Window::initGLAD()
 void Window::setCallbacks()
 {
 	glfwSetWindowSizeCallback(m_glfwWindow,
-		[](GLFWwindow* window, int width, int height)
+		[](GLFWwindow* window, int width, int height) noexcept
 		{
 			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 			videoSettings.width = static_cast<uint32_t>(width);
@@ -144,14 +143,14 @@ void Window::setCallbacks()
 	);
 
 	glfwSetFramebufferSizeCallback(m_glfwWindow,
-		[](GLFWwindow* window, int width, int height)
+		[](GLFWwindow* window, int width, int height) noexcept
 		{
 			glViewport(0, 0, width, height);
 		}
 	);
 
 	glfwSetWindowCloseCallback(m_glfwWindow,
-		[](GLFWwindow* window)
+		[](GLFWwindow* window) noexcept
 		{
 			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 
@@ -161,7 +160,7 @@ void Window::setCallbacks()
 	);
 
 	glfwSetKeyCallback(m_glfwWindow,
-		[](GLFWwindow* window, int key, int scancode, int action, int mods)
+		[](GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
 		{
 			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 
@@ -182,40 +181,40 @@ void Window::setCallbacks()
 	);
 
 	glfwSetMouseButtonCallback(m_glfwWindow,
-		[](GLFWwindow* window, int button, int action, int mods)
+		[](GLFWwindow* window, int button, int action, int mods) noexcept
 		{
-			Window::VideoSettings& properties = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
+			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 
 			if (action == GLFW_PRESS)
 			{
 				orc::MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToOrcButton(button));
-				properties.eventCallback(mouseButtonPressedEvent);
+				videoSettings.eventCallback(mouseButtonPressedEvent);
 			}
 			else if (action == GLFW_RELEASE)
 			{
 				orc::MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToOrcButton(button));
-				properties.eventCallback(mouseButtonReleasedEvent);
+				videoSettings.eventCallback(mouseButtonReleasedEvent);
 			}
 		}
 	);
 
 	glfwSetCursorPosCallback(m_glfwWindow,
-		[](GLFWwindow* window, double x, double y)
+		[](GLFWwindow* window, double x, double y) noexcept
 		{
-			Window::VideoSettings& properties = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
+			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 
 			orc::MouseMovedEvent mouseMovedEvent(static_cast<float>(x), static_cast<float>(y));
-			properties.eventCallback(mouseMovedEvent);
+			videoSettings.eventCallback(mouseMovedEvent);
 		}
 	);
 
 	glfwSetScrollCallback(m_glfwWindow,
-		[](GLFWwindow* window, double xDelta, double yDelta)
+		[](GLFWwindow* window, double xDelta, double yDelta) noexcept
 		{
-			Window::VideoSettings& properties = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
+			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
 
 			orc::MouseWheelScrolledEvent mouseWheelScrolledEvent(static_cast<float>(xDelta), static_cast<float>(yDelta));
-			properties.eventCallback(mouseWheelScrolledEvent);
+			videoSettings.eventCallback(mouseWheelScrolledEvent);
 		}
 	);
 }

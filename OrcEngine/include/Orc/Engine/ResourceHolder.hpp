@@ -11,15 +11,16 @@
 
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 namespace orc {
 
 template<typename ResourceType>
-class ResourceHolder
+class Resources
 {
 public:
-	ResourceHolder() = default;
-	ResourceHolder(const FilePath& xmlPath);
+	Resources() = default;
+	Resources(const FilePath& xmlPath);
 
 	Ref<ResourceType> getResource(std::string_view name);
 
@@ -27,12 +28,12 @@ public:
 	void clear();
 
 private:
-	std::unordered_map<std::string, Ref<ResourceType>, utility::string_view_hash, std::equal_to<>> m_resources;
+    std::unordered_map<std::string, Ref<ResourceType>, string_view_hash, std::equal_to<>> m_resources;
 };
 
-using FontHolder = ResourceHolder<Font>;
-using ShaderHolder = ResourceHolder<Shader>;
-using TextureHolder = ResourceHolder<Texture>;
-using AnimationHolder = ResourceHolder<Animation>;
+using FontResources = Resources<Font>;
+using ShaderResources = Resources<Shader>;
+using TextureResources = Resources<Texture>;
+using AnimationResources = Resources<Animation>;
 
 }

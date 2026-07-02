@@ -101,8 +101,7 @@ void Text::updateVertices() const
 			continue;
 		}
 
-		Character character = m_font->getCharacter(m_string[i]);
-
+		Character character = m_font->getCharacter(static_cast<uint32_t>(m_string[i]));
 		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
@@ -135,7 +134,6 @@ void Text::updateVertices() const
 		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
-	//Not sure how to skip this crap offset
 	for (GlyphVertex& vertex : m_vertices)
 	{
 		vertex.position.y += m_localRect.bottom - 1;

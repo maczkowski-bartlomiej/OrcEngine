@@ -16,7 +16,7 @@ public:
 
 	void clear();
 
-	Ref<GameLayer> getActiveLayer();
+	Ref<GameLayer> getActiveLayer() const;
 
 private:
 	Ref<GameLayer> m_activeLayer;

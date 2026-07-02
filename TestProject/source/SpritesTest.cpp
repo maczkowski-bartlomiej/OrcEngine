@@ -2,13 +2,13 @@
 
 SpritesTest::SpritesTest()
 {
-	ORC_LOG_INFO("SpritesTest init...");
+	ORC_LOG_INFO("SpritesTest init.");
 
-	orc::Ref<orc::Texture> gradientTexture = textureHolder.getResource("gradient_texture");
-	orc::Ref<orc::Texture> smallTexture = textureHolder.getResource("small_texture");
-	orc::Ref<orc::Texture> zombieTexture = textureHolder.getResource("zombie_texture");
-	orc::Ref<orc::Texture> soldierTexture = textureHolder.getResource("soldier_texture");
-	orc::Ref<orc::Font> font = fontHolder.getResource("arial_font");
+	orc::Ref<orc::Texture> gradientTexture = textureResources.getResource("gradient_texture");
+	orc::Ref<orc::Texture> smallTexture = textureResources.getResource("small_texture");
+	orc::Ref<orc::Texture> zombieTexture = textureResources.getResource("zombie_texture");
+	orc::Ref<orc::Texture> soldierTexture = textureResources.getResource("soldier_texture");
+	orc::Ref<orc::Font> font = fontResources.getResource("arial_font");
 
 	m_text1 = orc::Text(font, "Soldier Texture"); m_text1.setPosition(100.0f, 0.0f); m_text1.setScale(0.25f, 0.25f); m_text1.setOrigin(m_text1.getGlobalRect().getSize() / 2.0f);
 	m_sprite1 = orc::Sprite(soldierTexture, orc::Vector2f(100.0f, 75.0f));
@@ -45,19 +45,19 @@ SpritesTest::SpritesTest()
 
 SpritesTest::~SpritesTest()
 {
-	ORC_LOG_INFO("SpritesTest deinit...");
+	ORC_LOG_INFO("SpritesTest deinit.");
 }
 
 void SpritesTest::onAttach()
 {
-	ORC_LOG_INFO("Switching to SpritesTest");
+	ORC_LOG_INFO("Switching to SpritesTest.");
 	ORC_LOG_INFO("<- RectanglesTest | AnimationTest ->");
 	window.setTitle("SpritesTest");
 }
 
 void SpritesTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from SpritesTest");
+	ORC_LOG_INFO("Leaving from SpritesTest.");
 }
 
 void SpritesTest::onUpdate(float deltaTime)
@@ -65,7 +65,6 @@ void SpritesTest::onUpdate(float deltaTime)
 	m_sprite4.rotate(45.0f * deltaTime);
 }
 
-<<<<<<< ours
 void SpritesTest::onEvent(const orc::Event& event)
 {
 	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
@@ -81,24 +80,6 @@ void SpritesTest::onEvent(const orc::Event& event)
 
 void SpritesTest::onRender()
 {
-||||||| ancestor
-=======
-void SpritesTest::onEvent(orc::Event& event)
-{
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
-	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveGameLayer("RectanglesTest"); break;
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveGameLayer("AnimationTest"); break;
-		}
-	}
-}
-
-void SpritesTest::onRender()
-{
->>>>>>> theirs
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 
@@ -139,7 +120,6 @@ void SpritesTest::onGuiRender()
 {
 	ImGui::Begin("Navigation Menu");
 	{
-<<<<<<< ours
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
@@ -156,34 +136,6 @@ void SpritesTest::onGuiRender()
 			gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
 			gameLayerManager.setActiveLayer("SpritesTest");
-||||||| ancestor
-		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		if (newEvent->key == orc::Keyboard::Key::Right)
-		{
-			gameLayerManager.setActiveGameLayer("inputs_test");
-		}
-		else if (newEvent->key == orc::Keyboard::Key::Left)
-		{
-			gameLayerManager.setActiveGameLayer("circles_test");
-		}
-=======
-		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AnimationTest");
-		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("AudioTest");
-		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CameraTest");
-		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("CirclesTest");
-		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("Menu");
-		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("InputTest");
-		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("RectanglesTest");
-		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveGameLayer("SpritesTest");
->>>>>>> theirs
 	}
 	ImGui::End();
 }

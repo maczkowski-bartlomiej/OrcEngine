@@ -1,17 +1,17 @@
 #pragma once
 
-struct FT_LibraryRec_;
-typedef FT_LibraryRec_* FT_Library;
+#define FT_CONFIG_OPTION_ERROR_STRINGS 
+#include <freetype/freetype.h>
 
 namespace orc {
 
 class FTLibrary
 {
 public:
-	bool init();
-	void deinit();
+	FTLibrary();
+	~FTLibrary();
 
-	FT_Library getNativeLibrary();
+	FT_Library getNativeLibrary() const;
 
 private:
 	FT_Library m_ft;

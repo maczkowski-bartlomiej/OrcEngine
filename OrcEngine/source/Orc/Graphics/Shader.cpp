@@ -57,7 +57,7 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32_t size) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
-	glUniform1iv(location, size, array);
+	glUniform1iv(location, static_cast<uint32_t>(size), array);
 }
 
 void Shader::uploadUniformFloat3(const std::string& name, const Vector3f& float3) const
@@ -91,12 +91,12 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 	std::ifstream shaderFile(filePath, std::ios::in | std::ios::binary);
 	if (!shaderFile.is_open())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), utility::getErrnoMessage(errno));
+		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
 		success = false;
 	}
 	else if (!shaderFile.good())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), utility::getErrnoMessage(errno));
+		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
 		success = false;
 	}
 	else
@@ -117,13 +117,13 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 	const char* source = vertexSource.c_str();
 	glShaderSource(vertexShader, 1, &source, 0);
 	glCompileShader(vertexShader);
-	int status = 0;
+	GLint status = 0;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		int errorLenght = 0;
+		GLint errorLenght = 0;
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &errorLenght);
-		std::vector<char> errorMessage(errorLenght);
+		std::vector<char> errorMessage(static_cast<uint32_t>(errorLenght));
 		glGetShaderInfoLog(vertexShader, errorLenght, &errorLenght, &errorMessage[0]);
 		glDeleteShader(vertexShader);
 		ORC_ERROR("Vertex shader compilation\n{}", errorMessage.data());
@@ -138,9 +138,9 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		int errorLenght = 0;
+		GLint errorLenght = 0;
 		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &errorLenght);
-		std::vector<char> errorMessage(errorLenght);
+		std::vector<char> errorMessage(static_cast<uint32_t>(errorLenght));
 		glGetShaderInfoLog(vertexShader, errorLenght, &errorLenght, &errorMessage[0]);
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -159,7 +159,7 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 	{
 		GLint maxLenght = 0;
 		glGetProgramiv(m_rendererID, GL_INFO_LOG_LENGTH, &maxLenght);
-		std::vector<char> errorMessage(maxLenght);
+		std::vector<char> errorMessage(static_cast<uint32_t>(maxLenght));
 		glGetProgramInfoLog(m_rendererID, maxLenght, &maxLenght, &errorMessage[0]);
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);

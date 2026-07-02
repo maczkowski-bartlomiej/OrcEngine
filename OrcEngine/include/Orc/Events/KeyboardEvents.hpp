@@ -5,19 +5,19 @@
 
 namespace orc {
 
-struct KeyboardKeyPressedEvent : public Event
+struct KeyboardKeyPressedEvent final : public EventT<Event::Type::KeyboardKeyPressed>
 {
 	KeyboardKeyPressedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
-		: Event(Event::Type::KeyboardKeyPressed), key(key), specialKeys(specialKeys) {}
+		: key(key), specialKeys(specialKeys) {}
 
 	const Keyboard::Key key;
 	const Keyboard::SpecialKeys specialKeys;
 };
 
-struct KeyboardKeyReleasedEvent : public Event
+struct KeyboardKeyReleasedEvent final : public EventT<Event::Type::KeyboardKeyReleased>
 {
 	KeyboardKeyReleasedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
-		: Event(Event::Type::KeyboardKeyReleased), key(key), specialKeys(specialKeys) {}
+		: key(key), specialKeys(specialKeys) {}
 
 	const Keyboard::Key key;
 	const Keyboard::SpecialKeys specialKeys;

@@ -24,16 +24,15 @@ void VertexArray::setIndexBuffer(Ref<IndexBuffer> indexBuffer)
 
 void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer) 
 {
-	ORC_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex Buffer has no layout")
+	ORC_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex Buffer has no layout");
 
 	const BufferLayout& bufferLayout = vertexBuffer->getLayout();
 	const std::vector<BufferLayout::Element>& bufferElements = bufferLayout.getElements();
-
 	glVertexArrayVertexBuffer(
-		m_rendererID,                  // VAO
-		(int)m_vertexBuffers.size(),   // current VBO number linked to VAO
-		vertexBuffer->getRendererID(), // VBO
-		0,                             // offset of the first element in the VBO
+		m_rendererID,									// VAO
+		static_cast<uint32_t>(m_vertexBuffers.size()),  // current VBO number linked to VAO
+		vertexBuffer->getRendererID(),					// VBO
+		0,												// offset of the first element in the VBO
 		bufferLayout.getStride()
 		);
 
@@ -45,13 +44,13 @@ void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 		glVertexArrayAttribFormat(
 			m_rendererID,
 			i,
-			element.getComponentCount(),
+			static_cast<GLint>(element.getComponentCount()),
 			BufferLayout::shaderDataTypeToOpenGLType(element.type),
 			element.normalized ? GL_TRUE : GL_FALSE,
 			element.offset
 		);
 
-		glVertexArrayAttribBinding(m_rendererID, i, (int)m_vertexBuffers.size());
+		glVertexArrayAttribBinding(m_rendererID, i, static_cast<uint32_t>(m_vertexBuffers.size()));
 	}
 
 	glVertexArrayVertexBuffer(m_rendererID, 0, vertexBuffer->getRendererID(), 0, bufferLayout.getStride());

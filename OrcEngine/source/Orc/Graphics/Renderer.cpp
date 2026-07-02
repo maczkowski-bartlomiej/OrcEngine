@@ -6,9 +6,9 @@
 
 namespace orc {
 
-bool Renderer::init()
+Renderer::Renderer()
 {
-	ORC_LOG_INFO("Initializing renderer...");
+	ORC_LOG_INFO("Initializing renderer.");
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -22,13 +22,6 @@ bool Renderer::init()
 	initCircleVertices();
 	initSpritesVertices();
 	initRectanglesVertices();
-
-	return true;
-}
-
-void Renderer::deinit()
-{
-	ORC_LOG_INFO("Deinitializing renderer...");
 }
 
 void Renderer::clear()
@@ -66,7 +59,7 @@ void Renderer::draw(const Text& text)
 
 	if (m_glyphs->verticesCount + glyphVertices.size() >= MAX_GLYPHS_VERTICES)
 	{
-		ORC_LOG_WARNING("Maximum amount of available vertices used, glyphs batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available vertices used, glyphs batch flushing.");
 		batchFlushGlyphs();
 		batchStartGlyphs();
 	}
@@ -75,12 +68,12 @@ void Renderer::draw(const Text& text)
 	m_glyphs->textures.insert({ bitmap->getRendererID(), bitmap });
 	if (m_glyphs->textures.size() >= MAX_TEXTURE_SLOTS)
 	{
-		ORC_LOG_WARNING("Maximum amount of available textures used, glyphs batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available textures used, glyphs batch flushing.");
 		batchFlushGlyphs();
 		batchStartGlyphs();
 	}
 
-	float zValue = 1.0f / zIndex;
+	float zValue = 1.0f / (float)zIndex;
 	for (uint64_t i = 0; i < glyphVertices.size(); i++)
 	{
 		m_glyphs->vertices[(uint64_t)m_glyphs->verticesCount + i] = glyphVertices[i];
@@ -99,7 +92,7 @@ void Renderer::draw(const Sprite& sprite)
 
 	if (m_sprites->verticesCount + 4 >= MAX_SPRITES_VERTICES)
 	{
-		ORC_LOG_WARNING("Maximum amount of available vertices used, sprites batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available vertices used, sprites batch flushing.");
 		batchFlushSprites();
 		batchStartSprites();
 	}
@@ -108,12 +101,12 @@ void Renderer::draw(const Sprite& sprite)
 	m_sprites->textures.insert({ texture->getRendererID(), texture });
 	if (m_sprites->textures.size() >= MAX_TEXTURE_SLOTS)
 	{
-		ORC_LOG_WARNING("Maximum amount of available textures used, sprites batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available textures used, sprites batch flushing.");
 		batchFlushSprites();
 		batchStartSprites();
 	}
 
-	float zValue = 1.0f / zIndex;
+	float zValue = 1.0f / (float)zIndex;
 
 	std::array<SpriteVertex, 4> spriteVertices = sprite.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
@@ -131,7 +124,7 @@ void Renderer::draw(const Circle& circle)
 {
 	if (m_circles->verticesCount + 4 >= MAX_CIRCLES_VERTICES)
 	{
-		ORC_LOG_WARNING("Maximum amount of available vertices used, circles batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available vertices used, circles batch flushing.");
 		batchFlushCircles();
 		batchStartCircles();
 	}
@@ -143,7 +136,7 @@ void Renderer::draw(const Circle& circle)
 		m_circles->textures.insert({ texture->getRendererID(), texture });
 		if (m_circles->textures.size() >= MAX_TEXTURE_SLOTS)
 		{
-			ORC_LOG_WARNING("Maximum amount of available textures used, circles batch flushing");
+			ORC_LOG_WARNING("Maximum amount of available textures used, circles batch flushing.");
 			batchFlushCircles();
 			batchStartCircles();
 		}
@@ -151,7 +144,7 @@ void Renderer::draw(const Circle& circle)
 		textureIndex = (float)texture->getRendererID();
 	}
 
-	float zValue = 1.0f / zIndex;
+	float zValue = 1.0f / (float)zIndex;
 	std::array<CircleVertex, 4> circleVertices = circle.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{
@@ -168,7 +161,7 @@ void Renderer::draw(const Rectangle& rectangle)
 {
 	if (m_rectangles->verticesCount + 4 >= MAX_RECTANGLES_VERTICES)
 	{
-		ORC_LOG_WARNING("Maximum amount of available vertices used, rectangles batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available vertices used, rectangles batch flushing.");
 		batchFlushRectangles();
 		batchStartRectangles();
 	}
@@ -180,7 +173,7 @@ void Renderer::draw(const Rectangle& rectangle)
 		m_rectangles->textures.insert({ texture->getRendererID(), texture });
 		if (m_rectangles->textures.size() >= MAX_TEXTURE_SLOTS)
 		{
-			ORC_LOG_WARNING("Maximum amount of available textures used, rectangles batch flushing");
+			ORC_LOG_WARNING("Maximum amount of available textures used, rectangles batch flushing.");
 			batchFlushRectangles();
 			batchStartRectangles();
 		}
@@ -188,7 +181,7 @@ void Renderer::draw(const Rectangle& rectangle)
 		textureIndex = (float)texture->getRendererID();
 	}
 
-	float zValue = 1.0f / zIndex;
+	float zValue = 1.0f / static_cast<float>(zIndex);
 	std::array<RectangleVertex, 4> rectangleVertices = rectangle.getVertices();
 	for (uint64_t i = 0; i < 4; i++)
 	{
@@ -211,26 +204,16 @@ void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matr
 	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
 }
 
-void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
-{
-	shader->bind();
-	shader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-	shader->uploadUniformMatrix3("u_transform", transform);
-
-	glBindVertexArray(vertexArray->getRendererID());
-	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
-}
-
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color)
 {
 	if (m_lines->verticesCount >= MAX_LINES_VERTICES)
 	{
-		ORC_LOG_WARNING("Maximum amount of available vertices used, lines batch flushing");
+		ORC_LOG_WARNING("Maximum amount of available vertices used, lines batch flushing.");
 		batchFlushLines();
 		batchStartLines();
 	}
 
-	float zValue = 1.0f / zIndex;
+	float zValue = 1.0f / static_cast<float>(zIndex);
 	m_lines->vertices[(size_t)m_lines->verticesCount] = LineVertex{ .color = color.normalized(), .position = Vector3f(start, zValue) };
 	m_lines->vertices[(size_t)m_lines->verticesCount + 1] = LineVertex{ .color = color.normalized(), .position = Vector3f(end, zValue) };
 

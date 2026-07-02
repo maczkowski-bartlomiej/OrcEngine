@@ -2,14 +2,10 @@
 
 #include "Menu.hpp"
 
-orc::Engine* orc::startEngine()
+orc::Config orc::getEngineConfig()
 {
 	orc::Config config;
-	config.majorVersion = 0;
-	config.minorVersion = 0;
-	config.patchVersion = 1;
 
-	config.gameName = "Test Project";
 	config.logPath = "logs/TestProject.log";
 
 	config.videoSettings.title = "Test Project";
@@ -19,22 +15,13 @@ orc::Engine* orc::startEngine()
 
 	config.audioSettings.maxChannels = 512;
 
-	orc::Engine* engine = new Engine();
-	if (!engine->init(config))
-		return nullptr;
+	return config;
+}
 
-	ORC_LOG_INFO("Test Project v.{}.{}.{}", config.majorVersion, config.minorVersion, config.patchVersion);
+void orc::onEngineStart(orc::Engine& engine)
+{
+	ORC_LOG_INFO("Test Project v.{}.{}.{}", 0, 0, 1);
 
-<<<<<<< ours
-	engine->getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
-	engine->getGameLayerManager().setActiveLayer("Menu");
-||||||| ancestor
-	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
-	engine->getGameLayerManager().setActiveGameLayer("game");
-=======
-	engine->getGameLayerManager().addGameLayer("Menu", orc::createRef<Menu>());
-	engine->getGameLayerManager().setActiveGameLayer("Menu");
->>>>>>> theirs
-
-	return engine;
+	engine.getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
+	engine.getGameLayerManager().setActiveLayer("Menu");
 }
