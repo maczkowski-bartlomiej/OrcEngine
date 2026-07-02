@@ -1,12 +1,11 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/IndexBuffer.hpp"
 
 #include <glad/glad.h>
 
 namespace orc {
 
-IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) 
+IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
 	: m_count(count)
 {
 	glCreateBuffers(1, &m_rendererID);

@@ -21,7 +21,7 @@ public:
 	virtual void onDetach() {}
 
 	virtual void onUpdate(float dt) {}
-	virtual void onEvent(Event& event) {}
+	virtual void onEvent(const Event& event) {}
 
 	virtual void onRender() {}
 	virtual void onGuiRender() {}
@@ -36,10 +36,9 @@ protected:
 	Renderer& renderer;
 	GameLayerManager& gameLayerManager;
 
-	FontHolder& fontHolder;
-	ShaderHolder& shaderHolder;
-	TextureHolder& textureHolder;
-	AnimationHolder& animationHolder;
+	FontResources& fontResources;
+	TextureResources& textureResources;
+	AnimationResources& animationResources;
 };
 
 }

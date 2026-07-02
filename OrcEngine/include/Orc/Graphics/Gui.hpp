@@ -12,9 +12,6 @@ public:
 
 	void begin();
 	void end();
-
-private:
-	static Gui* m_instance;
 };
 
 }

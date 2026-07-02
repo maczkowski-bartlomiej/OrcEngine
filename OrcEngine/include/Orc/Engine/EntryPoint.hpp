@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Engine/Engine.hpp"
+#include "Engine/Config.hpp"
 
-#ifdef ORC_PLATFORM_WINDOWS
+extern orc::Config orc::getEngineConfig(); //user function callback
+extern void orc::onEngineStart(Engine& engine); //user function callback
 
-extern orc::Engine* orc::startEngine();
 int main(int argc, char** argv);
-
-#endif

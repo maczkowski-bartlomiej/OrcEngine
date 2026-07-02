@@ -1,16 +1,13 @@
 #include "OrcPch.hpp"
-
 #include "Engine/EntryPoint.hpp"
-
-#ifdef ORC_PLATFORM_WINDOWS
 
 int main(int, char**)
 {
-	orc::Engine* engine = nullptr;
-	engine = orc::startEngine();
-	engine->run();
+    orc::Config config = orc::getEngineConfig(); //user function callback
+    orc::Engine engine(config);
 
-	delete engine;
+    orc::onEngineStart(engine);
+    engine.run();
+
+    return 0;
 }
-
-#endif

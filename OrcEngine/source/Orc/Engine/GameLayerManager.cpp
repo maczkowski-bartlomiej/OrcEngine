@@ -2,38 +2,63 @@
 
 #include "Engine/Debug.hpp"
 #include "Engine/GameLayerManager.hpp"
+#include <string>
+#include "Engine/Core.hpp"
+#include "Engine/GameLayer.hpp"
+#include "Engine/Logger.hpp"
 
 namespace orc {
 
-void GameLayerManager::setActiveGameLayer(const std::string& name)
+void GameLayerManager::setActiveLayer(const std::string& name)
 {
-	ORC_ASSERT(!name.empty(), "Game layer name string is empty");
+	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
 
-	if (const auto& find = m_gameLayers.find(name); find != m_gameLayers.end())
+	if (const auto& find = m_layers.find(name); find != m_layers.end())
 	{
-		if (m_activeGameLayer)
-			m_activeGameLayer->onDetach();
+		if (find->second == m_activeLayer)
+		{
+			ORC_LOG_WARNING("Requested switch to already active game layer '{}.'", name);
+			return;
+		}
 
-		m_activeGameLayer = find->second;
-		m_activeGameLayer->onAttach();
+		if (m_activeLayer)
+			m_activeLayer->onDetach();
+
+		m_activeLayer = find->second;
+		m_activeLayer->onAttach();
 	}
 	else
 	{
-		ORC_LOG_ERROR("Requested switch to non-existing game layer '{}'", name);
+		ORC_LOG_ERROR("Requested switch to non-existing game layer '{}.'", name);
 	}
 }
 
-Ref<GameLayer> GameLayerManager::getActiveGameLayer()
+void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLayer)
 {
-	return m_activeGameLayer;
+	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
+	ORC_ASSERT(gameLayer, "Game layer is nullptr.");
+
+	if (m_layers.try_emplace(name, gameLayer).second)
+	{
+		ORC_LOG_WARNING("Game layer '{}' is already added.", name);
+	}
 }
 
-void GameLayerManager::addGameLayer(const std::string& name, Ref<GameLayer> gameLayer)
+void GameLayerManager::clear()
 {
-	ORC_ASSERT(!name.empty(), "Game layer name string is empty");
-	ORC_ASSERT(gameLayer, "Game layer is nullptr");
+	if (m_activeLayer)
+	{
+		m_activeLayer->onDetach();
+		m_activeLayer.reset();
+	}
 
-	m_gameLayers[name] = gameLayer;
+	m_layers.clear();
 }
+
+Ref<GameLayer> GameLayerManager::getActiveLayer() const
+{
+	return m_activeLayer;
+}
+
 
 }

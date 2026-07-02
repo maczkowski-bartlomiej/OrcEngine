@@ -1,7 +1,5 @@
 #include "OrcPch.hpp"
-
 #include "Engine/Debug.hpp"
-
 #include "Graphics/Shapes/Rectangle.hpp"
 
 namespace orc {

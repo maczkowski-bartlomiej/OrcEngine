@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Core.hpp"
 #include "Events/Event.hpp"
 
 #include <string>
+#include <cstdint>
 #include <functional>
 
 struct GLFWwindow;
@@ -27,7 +27,7 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	Window(const VideoSettings& properties);
+	Window(const VideoSettings& videoSettings);
 	~Window();
 
 	void display();
@@ -45,13 +45,11 @@ public:
 	void* getNativeWindow() const;
 
 private:
-	void initGLAD();
+	bool initGLAD();
 	void setCallbacks();
 
-	GLFWwindow* m_window;
 	VideoSettings m_videoSettings;
-
-	static Window* m_instance;
+	GLFWwindow* m_glfwWindow = nullptr;
 };
 
 }

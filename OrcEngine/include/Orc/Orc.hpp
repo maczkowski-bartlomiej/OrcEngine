@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Audio/Audio.hpp"
+#include "Audio/Bus.hpp"
 
 #include "Engine/Clock.hpp"
 #include "Engine/Core.hpp"
@@ -9,7 +10,7 @@
 #include "Engine/EntryPoint.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/GameLayerManager.hpp"
-#include "Engine/GameSettings.hpp"
+#include "Engine/Config.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/Random.hpp"
 #include "Engine/ResourceHolder.hpp"
@@ -20,6 +21,7 @@
 #include "Events/MouseEvents.hpp"
 #include "Events/WindowEvents.hpp"
 
+#include "Graphics/Animator.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Color.hpp"

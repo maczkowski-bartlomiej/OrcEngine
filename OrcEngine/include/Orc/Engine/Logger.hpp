@@ -4,6 +4,7 @@
 #include <spdlog/fmt/fmt.h>
 
 #include <string>
+#include <memory>
 #include <source_location>
 
 namespace orc {
@@ -19,13 +20,13 @@ public:
 		Fatal
 	};
 
-	static void init(const std::string& logPath);
-	static void shutdown();
+	static bool init(const std::string& logPath);
+	static void deinit();
 
 	template<typename... Arguments>
 	static void log(Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments) 
 	{
-		m_logger->log({ sourceLocation.file_name(), static_cast<std::int32_t>(sourceLocation.line()), sourceLocation.function_name() }, static_cast<spdlog::level::level_enum>(level), message, std::forward<Arguments>(arguments)...);
+		m_logger->log({ sourceLocation.file_name(), static_cast<std::int32_t>(sourceLocation.line()), sourceLocation.function_name() }, static_cast<spdlog::level::level_enum>(level), message, std::forward<Arguments>(arguments)...);;
 	}
 
 private:
@@ -34,7 +35,7 @@ private:
 
 }
 
-#define ORC_LOG_INFO(message, ...)    orc::Logger::log(orc::Logger::Level::Info, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_WARNING(message, ...) orc::Logger::log(orc::Logger::Level::Warning, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_ERROR(message, ...)   orc::Logger::log(orc::Logger::Level::Error, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_FATAL(message, ...)   orc::Logger::log(orc::Logger::Level::Fatal, std::source_location::current(), message, __VA_ARGS__)
+	#define ORC_LOG_INFO(message, ...)    orc::Logger::log(orc::Logger::Level::Info, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_WARNING(message, ...) orc::Logger::log(orc::Logger::Level::Warning, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_ERROR(message, ...)   orc::Logger::log(orc::Logger::Level::Error, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_FATAL(message, ...)   orc::Logger::log(orc::Logger::Level::Fatal, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)

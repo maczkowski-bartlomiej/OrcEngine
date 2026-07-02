@@ -8,6 +8,11 @@
 .git/
 binaries/
 binaries-temp/
+build/
+vcpkg_installed/
+CMakeUserPresets.json
+
+.idea/
 
 # Project files
 *.sln

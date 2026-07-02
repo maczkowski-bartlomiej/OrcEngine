@@ -2,6 +2,10 @@
 
 #include "Engine/Random.hpp"
 
+#include <cstdint>
+#include <limits>
+#include <random>
+
 namespace orc {
 
 std::mt19937 Random::m_engine = std::mt19937(std::random_device{}());

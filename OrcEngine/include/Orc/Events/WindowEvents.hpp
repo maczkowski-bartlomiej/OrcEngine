@@ -2,20 +2,21 @@
 
 #include "Events/Event.hpp"
 
+#include <cstdint>
+
 namespace orc {
 
-struct WindowResizedEvent : public Event
+struct WindowResizedEvent final : public EventT<Event::Type::WindowResized>
 {
 	WindowResizedEvent(uint32_t width, uint32_t height) 
-		: Event(Event::Type::WindowResized), width(width), height(height) {}
+		: width(width), height(height) {}
 
 	uint32_t width, height;
 };
 
-struct WindowClosedEvent : public Event
+struct WindowClosedEvent final : public EventT<Event::Type::WindowClosed>
 {
-	WindowClosedEvent() 
-		: Event(Event::Type::WindowClosed) {}
+	WindowClosedEvent() {}
 };
 
 }

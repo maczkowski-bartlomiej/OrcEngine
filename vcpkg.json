@@ -1,0 +1,22 @@
+
+  {
+    "name": "orc-engine",
+    "version-string": "0.0.1",
+    "builtin-baseline": "1600ce2ba1b6b621bfc5a31a785c4963b817a1c7",
+    "dependencies": [
+      "glfw3",
+      "glad",
+      "glm",
+      "spdlog",
+      "tinyxml2",
+      "stb",
+      "freetype",
+      {
+        "name": "imgui",
+        "features": [
+          "glfw-binding",
+          "opengl3-binding"
+        ]
+      }
+    ]
+  }

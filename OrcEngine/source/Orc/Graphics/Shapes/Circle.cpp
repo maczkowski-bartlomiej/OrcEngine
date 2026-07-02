@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Shapes/Circle.hpp"
 
 #include <cmath>
@@ -8,15 +7,17 @@ namespace orc {
 
 Circle::Circle()
 {
-	std::array<Vector2f, 4> localPositions = {
+	constexpr std::array<Vector2f, 4> localPositions = {
 		Vector2f(-1.0f,  1.0f),
 		Vector2f(1.0f,  1.0f),
 		Vector2f(-1.0f, -1.0f),
 		Vector2f(1.0f, -1.0f)
 	};
 
-	for (auto& vertex : m_vertices)
-		vertex.localPosition = localPositions[&vertex - &m_vertices[0]];
+	for (size_t i = 0; i < m_vertices.size(); ++i)
+	{
+		m_vertices[i].localPosition = localPositions[i];
+	}
 }
 
 Circle::Circle(float radius, const Color& color)

@@ -1,22 +1,25 @@
 GAME_NAME = "TestProject"
 GAME_PATH = "TestProject/"
-FMOD_DIR = "C:/Users/Bartek/Dev/Libs/FMOD/api"
+FMOD_DIR = "E:/CppLibs/FMOD/api"
+MONO_DIR = "C:/Program Files/Mono"
 
 workspace "OrcEngine"
 	architecture "x64"
 	startproject (GAME_NAME)
-	configurations { "Debug", "Release", "Distribution" }
+	configurations { "Debug", "Release" }
 
 OUTPUT_DIR = "%{cfg.buildcfg}/%{cfg.system}_(%{cfg.architecture})"
 
 ENGINE_NAME = "OrcEngine"
 ENGINE_PATH = "OrcEngine/"
 ENGINE_CPP_FILES_WORKSPACE = "Orc"
-	
+
 project "OrcEngine"
     location "OrcEngine"
     kind "StaticLib"
-    staticruntime "off"
+    staticruntime "Off"
+	warnings "Everything"
+	flags {	"Multiprocessorcompile" }
 
     language "C++"
     cppdialect "C++20"
@@ -24,6 +27,12 @@ project "OrcEngine"
     targetdir ("binaries/" .. OUTPUT_DIR .. "/%{prj.name}")
     objdir ("binaries-temp/" .. OUTPUT_DIR .. "/%{prj.name}")
 	
+	-- Warning supression:
+	--[[
+		  4006: 'symbol' already defined in the module; duplicate symbol ignored
+		  4099: PDB (debug info) mismatch with .lib file
+		  4098: defaultlib 'library' conflicts with other libraries
+	]]
 	linkoptions { "-IGNORE:4006,4099,4098" }
 
     files
@@ -45,40 +54,42 @@ project "OrcEngine"
         "%{prj.name}/include/dependencies",
         "%{FMOD_DIR}/core/inc",
         "%{FMOD_DIR}/studio/inc",
+		"%{MONO_DIR}/include/mono-2.0",
     }
 
     libdirs
     {
         "%{FMOD_DIR}/core/lib/x64/",
         "%{FMOD_DIR}/studio/lib/x64/",
+		"%{MONO_DIR}/lib",
     }
-
+	
     filter "action:vs*"
-        buildoptions "/wd4100 /wd4820"
-        externalanglebrackets "On"
-        externalwarnings "Off"
-
-    filter "system:windows"
-        systemversion "latest"
-        defines { "ORC_PLATFORM_WINDOWS" }
+		-- Compiler warning suppression:
+		--[[
+		  4100: unreferenced formal parameter (function argument is unused)
+		  4820: structure padding added for alignment
+		  4625: copy constructor was implicitly deleted
+		  4626: assignment operator was implicitly deleted
+		  5027: move assignment operator was implicitly defined as deleted
+		  5038: data member 'member1' will be initialized after data member 'member2'
+		  5045: spectre mitigation options ignored
+		]]
+		buildoptions { "/wd4100", "/wd4820", "/wd4625", "/wd4626", "/wd5027", "/wd5038", "/wd5045",  }
+        externalanglebrackets "On" -- treat <> includes as external headers to reduce warnings
+        externalwarnings "Off" -- disable warnings for external headers
 
     filter "configurations:Debug"
         defines { "ORC_DEBUG" }
         runtime "Debug"
         symbols "on"
-		links { "fmodL_vc", "fmodstudioL_vc" }
+		links { "fmodL_vc", "fmodstudioL_vc", "mono-2.0-sgen", "MonoPosixHelper", "libmono-static-sgen"}
 		
     filter "configurations:Release"
         defines { "ORC_RELEASE" }
         runtime "Release"
         optimize "on"
-		links { "fmod_vc", "fmodstudio_vc" }
-
-    filter "configurations:Distribution"
-        defines { "ORC_DISTRIBUTION" }
-        runtime "Release"
-        optimize "on"
-		links { "fmod_vc", "fmodstudio_vc" }
+		links { "fmod_vc", "fmodstudio_vc", "mono-2.0-sgen", "MonoPosixHelper", "libmono-static-sgen" }
 
     pchheader "%{prj.name}/include/Orc/OrcPch.hpp"
     pchsource "%{prj.name}/include/Orc/OrcPch.cpp"
@@ -114,18 +125,17 @@ project (GAME_NAME)
 		ENGINE_NAME
 	}
 
-	filter "system:windows"
-		systemversion "latest"
-
-		defines { "ORC_PLATFORM_WINDOWS" }
-
 	filter "configurations:Debug"
 		defines "ORC_DEBUG"
 		runtime "Debug"
 		symbols "on"
 		postbuildcommands {
-            "{COPYFILE} %{FMOD_DIR}/core/lib/x64/fmodL.dll %{cfg.targetdir}",
-            "{COPYFILE} %{FMOD_DIR}/studio/lib/x64/fmodstudioL.dll %{cfg.targetdir}"
+			'{COPYFILE} "%{FMOD_DIR}/core/lib/x64/fmodL.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{FMOD_DIR}/studio/lib/x64/fmodstudioL.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{MONO_DIR}/bin/mono-2.0-sgen.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{MONO_DIR}/bin/MonoPosixHelper.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{MONO_DIR}/bin/libmono-btls-shared.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{MONO_DIR}/lib/mono/4.8-api/mscorlib.dll" "%{cfg.targetdir}"',
         }
 	
 	filter "configurations:Release"
@@ -134,15 +144,8 @@ project (GAME_NAME)
 		optimize "on"
 		postbuildcommands {
             "{COPYFILE} %{FMOD_DIR}/core/lib/x64/fmod.dll %{cfg.targetdir}",
-            "{COPYFILE} %{FMOD_DIR}/studio/lib/x64/fmodstudio.dll %{cfg.targetdir}"
+            "{COPYFILE} %{FMOD_DIR}/studio/lib/x64/fmodstudio.dll %{cfg.targetdir}",
+			"{COPYFILE} %{MONO_DIR}/bin/mono-2.0-sgen.dll %{cfg.targetdir}",
+			"{COPYFILE} %{MONO_DIR}/bin/MonoPosixHelper.dll %{cfg.targetdir}",
+			"{COPYFILE} %{MONO_DIR}/bin/libmono-btls-shared.dll %{cfg.targetdir}",
         }
-
-	filter "configurations:Distribution"
-		defines "ORC_DISTRIBUTION"
-		runtime "Release"
-		optimize "on"
-		postbuildcommands {
-            "{COPYFILE} %{FMOD_DIR}/core/lib/x64/fmod.dll %{cfg.targetdir}",
-            "{COPYFILE} %{FMOD_DIR}/studio/lib/x64/fmodstudio.dll %{cfg.targetdir}"
-        }
-	

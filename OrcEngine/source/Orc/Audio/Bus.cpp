@@ -1,52 +1,85 @@
 #include "OrcPch.hpp"
-
 #include "Audio/Bus.hpp"
-#include "Audio/FmodCall.hpp"
+#include "Engine/Debug.hpp"
+#include "Engine/Utility.hpp"
 
-#include <fmod.hpp>
-#include <fmod_common.h>
 #include <fmod_studio.hpp>
 #include <fmod_studio_common.h>
+#include <string>
 
 namespace orc {
 
-Bus::Bus(FMOD::Studio::Bus* bus)
-	: m_bus(bus)
-{
-}
+	void Bus::load(FMOD::Studio::System* system, const std::string& busName)
+	{
+		ORC_ASSERT(system, "Uninitialized audio system.");
 
-void Bus::stop()
-{
-	FMOD_CALL(m_bus->stopAllEvents(FMOD_STUDIO_STOP_IMMEDIATE));
-}
+		FMOD::Studio::Bus* bus = nullptr; 
+		if (!fmodCall(system->getBus(busName.c_str(), &bus)))
+		{
+			ORC_LOG_ERROR("Failed to load bus '{}'.", busName);
+		}
+		ORC_ASSERT(bus, "FMOD returned empty bus '{}'.", busName.c_str());
 
-void Bus::pause()
-{
-	FMOD_CALL(m_bus->setPaused(true));
-}
+		m_bus = bus;
+	}
 
-void Bus::resume()
-{
-	FMOD_CALL(m_bus->setPaused(false));
-}
+	void Bus::stop()
+	{
+		ORC_ASSERT(m_bus, "Attempted to stop events on a null bus.");
+		if (!fmodCall(m_bus->stopAllEvents(FMOD_STUDIO_STOP_IMMEDIATE)))
+		{
+			ORC_LOG_ERROR("Failed to stop events on a bus.");
+		}
+	}
 
-float Bus::getVolume() const
-{
-	float volume = 0.0f;
-	FMOD_CALL(m_bus->getVolume(&volume));
-	return volume;
-}
+	void Bus::pause()
+	{
+		ORC_ASSERT(m_bus, "Attempted to pause a null bus.");
+        if (!fmodCall(m_bus->setPaused(true)))
+		{
+			ORC_LOG_ERROR("Failed to pause a bus.");
+		}
+	}
 
-void Bus::setVolume(float volume)
-{
-	FMOD_CALL(m_bus->setVolume(volume));
-}
+	void Bus::resume()
+	{
+		ORC_ASSERT(m_bus, "Attempted to resume a null bus.");
+		if (!fmodCall(m_bus->setPaused(false)))
+		{
+			ORC_LOG_ERROR("Failed to resume a bus.");
+		}
+	}
 
-bool Bus::isPaused() const
-{
-	bool isPaused = false;
-	FMOD_CALL(m_bus->getPaused(&isPaused));
-	return isPaused;
-}
+	float Bus::getVolume() const
+	{
+		ORC_ASSERT(m_bus, "Attempted to get volume from a null bus.");
+
+		float volume = 0.0f;
+        if (!fmodCall(m_bus->getVolume(&volume)))
+		{
+			ORC_LOG_ERROR("Failed to get volume from a bus");
+		}
+		return volume;
+	}
+
+	void Bus::setVolume(float volume)
+	{
+		ORC_ASSERT(m_bus, "Attempted to set volume from a null bus.");
+		 if (!fmodCall(m_bus->setVolume(volume)))
+		{
+			ORC_LOG_ERROR("Failed to set volume of a bus");
+		}
+	}
+
+	bool Bus::isPaused() const
+	{
+		ORC_ASSERT(m_bus, "Attempted to check if a null bus is paused.");
+		bool isPaused = false;
+		if (!fmodCall(m_bus->getPaused(&isPaused)))
+		{
+			ORC_LOG_ERROR("Failed to check if a bus is paused.");
+		}
+		return isPaused;
+	}
 
 }

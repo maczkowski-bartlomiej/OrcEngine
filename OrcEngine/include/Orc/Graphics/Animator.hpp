@@ -19,7 +19,7 @@ struct Animation
 	}
 
 	std::vector<FloatRect> frames;
-	uint32_t durationMs;
+	uint32_t durationMs = 0u;
 };
 
 class Animator

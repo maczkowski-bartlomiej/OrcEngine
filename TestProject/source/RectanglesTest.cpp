@@ -2,9 +2,11 @@
 
 RectanglesTest::RectanglesTest()
 {
-	orc::Ref<orc::Texture> gradientTexture = textureHolder.getResource("gradient_texture");
-	orc::Ref<orc::Texture> smallTexture = textureHolder.getResource("small_texture");
-	orc::Ref<orc::Font> font = fontHolder.getResource("arial_font");
+	ORC_LOG_INFO("RectanglesTest init.");
+
+	orc::Ref<orc::Texture> gradientTexture = textureResources.getResource("gradient_texture");
+	orc::Ref<orc::Texture> smallTexture = textureResources.getResource("small_texture");
+	orc::Ref<orc::Font> font = fontResources.getResource("arial_font");
 
 	m_text1 = orc::Text(font, "Blue Color"); m_text1.setPosition(100.0f, 0.0f); m_text1.setScale(0.25f, 0.25f); m_text1.setOrigin(m_text1.getGlobalRect().getSize() / 2.0f);
 	m_rectangle1 = orc::Rectangle(orc::Vector2f(100.0f, 75.0f), orc::Vector2f(75.0f, 75.0f), orc::Color(0, 0, 255));
@@ -77,22 +79,41 @@ RectanglesTest::RectanglesTest()
 
 RectanglesTest::~RectanglesTest()
 {
-	ORC_LOG_INFO("RectanglesTest shutting down...");
+	ORC_LOG_INFO("RectanglesTest layer deinit.");
 }
 
 void RectanglesTest::onAttach()
 {
+	ORC_LOG_INFO("Switching to RectanglesTest.");
+	ORC_LOG_INFO("<- Menu | SpritesTest ->");
 	window.setTitle("RectanglesTest");
 }
 
 void RectanglesTest::onDetach()
 {
+	ORC_LOG_INFO("Leaving from RectanglesTest.");
 }
 
 void RectanglesTest::onUpdate(float deltaTime)
 {
 	m_rectangle4.rotate(65.0f * deltaTime);
+}
 
+void RectanglesTest::onEvent(const orc::Event& event)
+{
+	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	{
+		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (kbPressed.key)
+		{
+			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("SpritesTest"); break;
+			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("Menu"); break;
+		}
+	}
+}
+
+void RectanglesTest::onRender()
+{
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.clear();
 
@@ -129,20 +150,28 @@ void RectanglesTest::onUpdate(float deltaTime)
 	renderer.end();
 }
 
-void RectanglesTest::onEvent(orc::Event& event)
+void RectanglesTest::onGuiRender()
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	ImGui::Begin("Navigation Menu");
 	{
-		auto newEvent = (orc::KeyboardKeyPressedEvent*)&event;
-		if (newEvent->key == orc::Keyboard::Key::Right)
-		{
-			gameLayerManager.setActiveGameLayer("circles_test");
-		}
-		else if (newEvent->key == orc::Keyboard::Key::Left)
-		{
-			gameLayerManager.setActiveGameLayer("game");
-		}
+		if (ImGui::Button("AnimationTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("AnimationTest");
+		if (ImGui::Button("AudioTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("AudioTest");
+		if (ImGui::Button("CameraTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("CameraTest");
+		if (ImGui::Button("CirclesTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("CirclesTest");
+		if (ImGui::Button("Menu", { 200, 50 }))
+			gameLayerManager.setActiveLayer("Menu");
+		if (ImGui::Button("InputTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("InputTest");
+		if (ImGui::Button("RectanglesTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("RectanglesTest");
+		if (ImGui::Button("SpritesTest", { 200, 50 }))
+			gameLayerManager.setActiveLayer("SpritesTest");
 	}
+	ImGui::End();
 }
 
 void RectanglesTest::drawLines()

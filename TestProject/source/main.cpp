@@ -1,25 +1,27 @@
-#include "Game.hpp"
+#include <Orc/Orc.hpp>
 
-orc::Engine* orc::startEngine()
+#include "Menu.hpp"
+
+orc::Config orc::getEngineConfig()
 {
-	orc::GameSettings gameSettings;
-	gameSettings.majorVersion = 0;
-	gameSettings.minorVersion = 0;
-	gameSettings.patchVersion = 1;
+	orc::Config config;
 
-	gameSettings.gameName = "Test Project";
-	gameSettings.logPath = "logs/TestProject.log";
+	config.logPath = "logs/TestProject.log";
 
-	gameSettings.videoSettings.title = "Test Project";
-	gameSettings.videoSettings.width = 800;
-	gameSettings.videoSettings.height = 600;
-	gameSettings.videoSettings.vsync = true;
+	config.videoSettings.title = "Test Project";
+	config.videoSettings.width = 800;
+	config.videoSettings.height = 600;
+	config.videoSettings.vsync = true;
 
-	orc::Engine* engine = new Engine(gameSettings);
-	ORC_LOG_INFO("Test Project v.{}.{}.{}", gameSettings.majorVersion, gameSettings.minorVersion, gameSettings.patchVersion);
+	config.audioSettings.maxChannels = 512;
 
-	engine->getGameLayerManager().addGameLayer("game", orc::createRef<Game>());
-	engine->getGameLayerManager().setActiveGameLayer("game");
+	return config;
+}
 
-	return engine;
+void orc::onEngineStart(orc::Engine& engine)
+{
+	ORC_LOG_INFO("Test Project v.{}.{}.{}", 0, 0, 1);
+
+	engine.getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
+	engine.getGameLayerManager().setActiveLayer("Menu");
 }

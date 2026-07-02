@@ -3,6 +3,8 @@
 #include "Engine/Core.hpp"
 #include "Graphics/BufferLayout.hpp"
 
+#include <cstdint>
+
 namespace orc {
 
 class VertexBuffer

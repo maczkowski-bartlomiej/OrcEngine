@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace orc {
 
@@ -14,7 +13,7 @@ public:
 	{
 		Invalid = -1,
 		Bool,
-		Mat3, Mat4,
+		Matrix3, Matrix4,
 		Int, Int2, Int3, Int4,
 		Float, Float2, Float3, Float4,
 	};

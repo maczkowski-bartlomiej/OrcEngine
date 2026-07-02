@@ -1,5 +1,4 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Texture.hpp"
 
 #include <stb_image.h>
@@ -35,7 +34,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	if (!pixels)
 	{
-		ORC_ERROR("Failed to load texture at path '{}'\n\treason: {}", filePath.string(), stbi_failure_reason());
+		ORC_ERROR("Failed to load texture at path '{}'\n\tReason: {}", filePath.string(), stbi_failure_reason());
 		return false;
 	}
 
@@ -53,7 +52,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	if (!dataFormat && !internalFormat)
 	{
-		ORC_ERROR("Failed to load texture at path '{}'\n\treason: Texture format not supported", filePath.string());
+		ORC_ERROR("Failed to load texture at path '{}'\n\tReason: Texture format not supported", filePath.string());
 		return false;
 	}
 
@@ -79,7 +78,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 {
 	if (!data)
 	{
-		ORC_ERROR("Failed to load texture from memory\n\treason: Data is null");
+		ORC_ERROR("Failed to load texture from memory\n\tReason: Data is null");
 		return false;
 	}
 
@@ -102,7 +101,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	m_size = Vector2f(width, height);
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
-	glTextureStorage2D(m_rendererID, 1, GL_RGBA8, (GLsizei)width, (GLsizei)height);
+	glTextureStorage2D(m_rendererID, 1, GL_RGBA8, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -110,7 +109,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, openGLTextureMode, GL_UNSIGNED_BYTE, data);
+	glTextureSubImage2D(m_rendererID, 0, 0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height), openGLTextureMode, GL_UNSIGNED_BYTE, data);
 
 	return true;
 }

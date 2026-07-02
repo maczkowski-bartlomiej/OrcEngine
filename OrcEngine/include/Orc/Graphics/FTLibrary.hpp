@@ -3,19 +3,18 @@
 #define FT_CONFIG_OPTION_ERROR_STRINGS 
 #include <freetype/freetype.h>
 
-namespace orc
-{
+namespace orc {
 
 class FTLibrary
 {
 public:
-	static void init();
-	static void shutdown();
+	FTLibrary();
+	~FTLibrary();
 
-	static FT_Library& getLibrary();
+	FT_Library getNativeLibrary() const;
 
 private:
-	static FT_Library m_ft;
+	FT_Library m_ft;
 };
 
 }

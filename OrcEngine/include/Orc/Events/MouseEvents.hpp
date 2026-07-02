@@ -5,34 +5,34 @@
 
 namespace orc {
 
-struct MouseButtonPressedEvent : public Event
+struct MouseButtonPressedEvent final : public EventT<Event::Type::MouseButtonPressed>
 {
 	MouseButtonPressedEvent(Mouse::Button button) 
-		: Event(Event::Type::MouseButtonPressed), button(button) {}
+		: button(button) {}
 
 	const Mouse::Button button;
 };
 
-struct MouseButtonReleasedEvent : public Event
+struct MouseButtonReleasedEvent final : public EventT<Event::Type::MouseButtonReleased>
 {
 	MouseButtonReleasedEvent(Mouse::Button button) 
-		: Event(Event::Type::MouseButtonReleased), button(button) {}
+		: button(button) {}
 
 	const Mouse::Button button;
 };
 
-struct MouseMovedEvent : public Event
+struct MouseMovedEvent final : public EventT<Event::Type::MouseMoved>
 {
 	MouseMovedEvent(float x, float y) 
-		: Event(Event::Type::MouseMoved), x(x), y(y) {}
+		: x(x), y(y) {}
 
 	const float x, y;
 };
 
-struct MouseWheelScrolledEvent : public Event
+struct MouseWheelScrolledEvent final : public EventT<Event::Type::MouseWheelScrolled>
 {
 	MouseWheelScrolledEvent(float xDelta, float yDelta) 
-		: Event(Event::Type::MouseWheelScrolled), xDelta(xDelta), yDelta(yDelta) {}
+		: xDelta(xDelta), yDelta(yDelta) {}
 
 	const float xDelta;
 	const float yDelta;

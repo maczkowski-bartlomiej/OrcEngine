@@ -1,7 +1,5 @@
 #include "OrcPch.hpp"
-
 #include "Graphics/Text.hpp"
-
 
 namespace orc {
 
@@ -94,10 +92,8 @@ void Text::updateVertices() const
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
 	const Matrix& transform = getTransformMatrix();
 
-	for (int i = 0; i < m_string.size(); i++)
+	for (size_t i = 0; i < m_string.size(); i++)
 	{
-		Character character = m_font->getCharacter(m_string[i]);
-
 		if (m_string[i] == '\n')
 		{
 			position.x = 0.0f;
@@ -105,6 +101,7 @@ void Text::updateVertices() const
 			continue;
 		}
 
+		Character character = m_font->getCharacter(static_cast<uint32_t>(m_string[i]));
 		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
@@ -114,33 +111,32 @@ void Text::updateVertices() const
 		float positionyY = position.y;
 		position.y -= character.offset.y;
 
-		m_vertices[static_cast<size_t>(i) * 4 + 0].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 0].position = transform * Vector3f(position, 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 0].textureCoord = normalizedBitmapCoordStart;
+		m_vertices[i * 4 + 0].color = m_color.normalized();
+		m_vertices[i * 4 + 0].position = transform * Vector3f(position, 1.0f);
+		m_vertices[i * 4 + 0].textureCoord = normalizedBitmapCoordStart;
 
-		m_vertices[static_cast<size_t>(i) * 4 + 1].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
+		m_vertices[i * 4 + 1].color = m_color.normalized();
+		m_vertices[i * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
+		m_vertices[i * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
 
-		m_vertices[static_cast<size_t>(i) * 4 + 2].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
+		m_vertices[i * 4 + 2].color = m_color.normalized();
+		m_vertices[i * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
+		m_vertices[i * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
 
-		m_vertices[static_cast<size_t>(i) * 4 + 3].color = m_color.normalized();
-		m_vertices[static_cast<size_t>(i) * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
-		m_vertices[static_cast<size_t>(i) * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
+		m_vertices[i * 4 + 3].color = m_color.normalized();
+		m_vertices[i * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
+		m_vertices[i * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
 
 		position.y = positionyY;
 		position.x += character.advance;
 
-		m_localRect.width = std::max(m_localRect.width, position.x);
-		m_localRect.height = std::max(m_localRect.height, height);
+		m_localRect.right = std::max(m_localRect.right, position.x);
+		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
-	//Not sure how to skip this offset crap so it can be more efficient...
 	for (GlyphVertex& vertex : m_vertices)
 	{
-		vertex.position.y += m_localRect.height - 1;
+		vertex.position.y += m_localRect.bottom - 1;
 	}
 
 	calculateGlobalRect();
@@ -152,10 +148,10 @@ void Text::calculateGlobalRect() const
 	const Matrix& transform = getTransformMatrix();
 
 	Vector2f points[] = {
-		transform * Vector3f(m_localRect.x, m_localRect.y, 1.0f),
-		transform * Vector3f(m_localRect.x, m_localRect.y + m_localRect.height, 1.0f),
-		transform * Vector3f(m_localRect.x + m_localRect.width, m_localRect.y, 1.0f),
-		transform * Vector3f(m_localRect.x + m_localRect.width, m_localRect.y + m_localRect.height, 1.0f)
+		transform * Vector3f(m_localRect.left, m_localRect.top, 1.0f),
+		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.bottom, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)
 	};
 
 	float left = points[0].x;

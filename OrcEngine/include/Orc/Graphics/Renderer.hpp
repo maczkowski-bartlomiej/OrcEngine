@@ -14,6 +14,7 @@
 #include "Graphics/Shapes/Rectangle.hpp"
 
 #include <array>
+#include <unordered_map>
 
 namespace orc {
 
@@ -32,11 +33,9 @@ public:
 	void draw(const Sprite& sprite);
 	void draw(const Circle& circle);
 	void draw(const Rectangle& rectangle);
+	void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform);
 
 	void drawLine(const Vector2f& start, const Vector2f& end, const Color& color);
-
-	//void drawIndexed(Ref<VertexArray> vertexArray);
-	//static void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform = Matrix(1.0f));
 
 private:
 	void initLinesVertices();
@@ -90,7 +89,7 @@ private:
 		std::array<LineVertex, MAX_LINES_VERTICES> vertices;
 
 		uint32_t verticesCount = 0;
-	} m_lines;
+	};
 
 	template<typename VertexType, uint32_t MAX_VERTICES>
 	struct Shape
@@ -102,13 +101,13 @@ private:
 		std::unordered_map<RendererID, Ref<Texture>> textures;
 
 		uint32_t verticesCount = 0;
-		//uint32_t texturesCount = 0;
 	};
 
-	Shape<CircleVertex, MAX_CIRCLES_VERTICES> m_circles;
-	Shape<SpriteVertex, MAX_SPRITES_VERTICES> m_sprites;
-	Shape<RectangleVertex, MAX_RECTANGLES_VERTICES> m_rectangles;
-	Shape<GlyphVertex, MAX_GLYPHS_VERTICES> m_glyphs;
+	UniquePtr<Lines> m_lines;
+	UniquePtr<Shape<CircleVertex, MAX_CIRCLES_VERTICES>> m_circles;
+	UniquePtr<Shape<SpriteVertex, MAX_SPRITES_VERTICES>> m_sprites;
+	UniquePtr<Shape<RectangleVertex, MAX_RECTANGLES_VERTICES>> m_rectangles;
+	UniquePtr<Shape<GlyphVertex, MAX_GLYPHS_VERTICES>> m_glyphs;
 
 	uint32_t zIndex = 1;
 	Matrix4 m_viewProjectionMatrix;

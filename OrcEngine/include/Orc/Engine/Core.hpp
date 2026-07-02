@@ -4,32 +4,37 @@
 #include <cstdint>
 #include <filesystem>
 
+#ifdef _WIN32
+#include <intrin.h>
+#endif
+
+#include <utility>
+
 #define GLM_FORCE_CTOR_INIT
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/fwd.hpp>
 
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
-
-	#ifdef ORC_PLATFORM_WINDOWS
+	#ifdef _WIN32
 		#define ORC_DEBUGBREAK() __debugbreak()
-	#elif defined ORC_PLATFORM_LINUX
-		#include <signal.h>
-		#define ORC_DEBUGBREAK() raise(SIGTRAP)
+	#elif defined(__GNUC__) || defined(__clang__)
+		#define ORC_DEBUGBREAK() __builtin_trap()
 	#else
-		#error "Platform doesn't support debugbreak!"
+		#define ORC_DEBUGBREAK()
 	#endif
-
 #endif
+
 
 #ifdef ORC_RELEASE
+#define ORC_DEBUGBREAK()
 #endif
 
-#ifdef ORC_DISTRIBUTION
-#endif
 
 namespace orc {
 
@@ -52,7 +57,6 @@ constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
 
-using AudioID = uint32_t;
 using RendererID = uint32_t;
 
 template<typename T>
