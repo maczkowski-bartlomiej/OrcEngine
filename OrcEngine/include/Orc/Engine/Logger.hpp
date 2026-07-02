@@ -35,7 +35,7 @@ private:
 
 }
 
-#define ORC_LOG_INFO(message, ...)    orc::Logger::log(orc::Logger::Level::Info, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_WARNING(message, ...) orc::Logger::log(orc::Logger::Level::Warning, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_ERROR(message, ...)   orc::Logger::log(orc::Logger::Level::Error, std::source_location::current(), message, __VA_ARGS__)
-#define ORC_LOG_FATAL(message, ...)   orc::Logger::log(orc::Logger::Level::Fatal, std::source_location::current(), message, __VA_ARGS__)
+	#define ORC_LOG_INFO(message, ...)    orc::Logger::log(orc::Logger::Level::Info, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_WARNING(message, ...) orc::Logger::log(orc::Logger::Level::Warning, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_ERROR(message, ...)   orc::Logger::log(orc::Logger::Level::Error, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)
+	#define ORC_LOG_FATAL(message, ...)   orc::Logger::log(orc::Logger::Level::Fatal, std::source_location::current(), message __VA_OPT__(,) __VA_ARGS__)

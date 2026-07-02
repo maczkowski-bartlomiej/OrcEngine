@@ -1,10 +1,11 @@
 #include "OrcPch.hpp"
-#include "Engine\Logger.hpp"
+#include "Engine/Logger.hpp"
 
-#include <spdlog\async.h>
-#include <spdlog\spdlog.h>
-#include <spdlog\sinks\basic_file_sink.h>
-#include <spdlog\sinks\stdout_color_sinks.h>
+#include <spdlog/async.h>
+#include <spdlog/pattern_formatter.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <array>
 #include <iostream>
@@ -22,7 +23,7 @@ public:
 		destination.append(name.data(), name.data() + name.size());
 	}
 
-	std::unique_ptr<custom_flag_formatter> clone() const override
+	std::unique_ptr<spdlog::custom_flag_formatter> clone() const override
 	{
 		return spdlog::details::make_unique<CapitalizedLevelNamesFormatter>();
 	}

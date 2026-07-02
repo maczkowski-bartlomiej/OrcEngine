@@ -3,7 +3,11 @@
 #include <memory>
 #include <cstdint>
 #include <filesystem>
+
+#ifdef _WIN32
 #include <intrin.h>
+#endif
+
 #include <utility>
 
 #define GLM_FORCE_CTOR_INIT
@@ -17,16 +21,20 @@
 
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
+	#ifdef _WIN32
 		#define ORC_DEBUGBREAK() __debugbreak()
+	#elif defined(__GNUC__) || defined(__clang__)
+		#define ORC_DEBUGBREAK() __builtin_trap()
+	#else
+		#define ORC_DEBUGBREAK()
+	#endif
 #endif
+
 
 #ifdef ORC_RELEASE
 #define ORC_DEBUGBREAK()
 #endif
 
-#ifdef ORC_DISTRIBUTION
-#define ORC_DEBUGBREAK()
-#endif
 
 namespace orc {
 
