@@ -9,6 +9,8 @@
 binaries/
 binaries-temp/
 
+.idea/
+
 # Project files
 *.sln
 *.vcxproj
