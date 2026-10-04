@@ -7,6 +7,7 @@
       "glfw3",
       "glad",
       "glm",
+      "fmt",
       "spdlog",
       "tinyxml2",
       "stb",
