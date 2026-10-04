@@ -71,6 +71,7 @@ target_compile_definitions(OrcEngine
     PUBLIC
         $<$<CONFIG:Debug>:ORC_DEBUG>
         $<$<NOT:$<CONFIG:Debug>>:ORC_RELEASE>
+        FMT_USE_OPTIMIZE_PRAGMA=0
 )
 
 target_precompile_headers(OrcEngine PRIVATE "${ORC_ENGINE_DIR}/include/Orc/OrcPch.hpp")
