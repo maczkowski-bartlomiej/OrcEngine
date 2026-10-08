@@ -4,6 +4,7 @@
 #include "Engine/Core.hpp"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <fmod_studio.hpp>
@@ -16,9 +17,15 @@ public:
 	struct AudioSettings
 	{
 		int maxChannels = 512;
-		const std::string masterBusName = "bus:/";
+		std::string masterBusName = "bus:/";
 		std::string sfxBusName = "bus:/SFX";	
 		std::string musicBusName = "bus:/Music";
+		std::vector<FilePath> banks = {
+			"assets/audio/Master.bank",
+			"assets/audio/Master.strings.bank",
+			"assets/audio/Music.bank",
+			"assets/audio/SFX.bank"
+		};
 	};	
 
 	Audio() = delete;

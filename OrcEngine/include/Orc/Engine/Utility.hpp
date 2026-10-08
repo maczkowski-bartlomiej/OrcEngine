@@ -12,7 +12,6 @@
 
 namespace orc {
 
-using namespace std::literals;
 struct string_view_hash
 {
     using hash_type = std::hash<std::string_view>;

@@ -3,6 +3,7 @@
 #include "Engine/Core.hpp"
 
 #include <cstdint>
+#include <span>
 
 namespace orc {
 
@@ -10,7 +11,14 @@ class IndexBuffer
 {
 public:
 	IndexBuffer() = default;
-	IndexBuffer(uint32_t* indices, uint32_t count);
+	IndexBuffer(const uint32_t* indices, uint32_t count);
+
+	template<typename T>
+	explicit IndexBuffer(std::span<T> indices)
+		: IndexBuffer(indices.data(), static_cast<uint32_t>(indices.size()))
+	{
+	}
+
 	~IndexBuffer();
 	
 	IndexBuffer(IndexBuffer&&) = delete;
@@ -26,4 +34,4 @@ private:
 	RendererID m_rendererID = 0;
 };
 
-};
+}

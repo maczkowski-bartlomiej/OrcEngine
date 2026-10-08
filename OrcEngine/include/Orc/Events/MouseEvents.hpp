@@ -1,41 +1,46 @@
 #pragma once
 
 #include "Input/Mouse.hpp"
-#include "Events/Event.hpp"
 
 namespace orc {
 
-struct MouseButtonPressedEvent final : public EventT<Event::Type::MouseButtonPressed>
+struct MouseButtonPressedEvent
 {
+	Mouse::Button button = Mouse::Button::Invalid;
+
+	MouseButtonPressedEvent() = default;
 	MouseButtonPressedEvent(Mouse::Button button) 
 		: button(button) {}
-
-	const Mouse::Button button;
 };
 
-struct MouseButtonReleasedEvent final : public EventT<Event::Type::MouseButtonReleased>
+struct MouseButtonReleasedEvent
 {
+	Mouse::Button button = Mouse::Button::Invalid;
+
+	MouseButtonReleasedEvent() = default;
 	MouseButtonReleasedEvent(Mouse::Button button) 
 		: button(button) {}
-
-	const Mouse::Button button;
 };
 
-struct MouseMovedEvent final : public EventT<Event::Type::MouseMoved>
+struct MouseMovedEvent
 {
+	float x = 0.0f;
+	float y = 0.0f;
+
+	MouseMovedEvent() = default;
 	MouseMovedEvent(float x, float y) 
 		: x(x), y(y) {}
-
-	const float x, y;
 };
 
-struct MouseWheelScrolledEvent final : public EventT<Event::Type::MouseWheelScrolled>
+struct MouseWheelScrolledEvent
 {
+	float xDelta = 0.0f;
+	float yDelta = 0.0f;
+
+	MouseWheelScrolledEvent() = default;
 	MouseWheelScrolledEvent(float xDelta, float yDelta) 
 		: xDelta(xDelta), yDelta(yDelta) {}
-
-	const float xDelta;
-	const float yDelta;
 };
 
 }
+

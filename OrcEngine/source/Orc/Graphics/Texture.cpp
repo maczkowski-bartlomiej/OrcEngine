@@ -53,6 +53,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 	if (!dataFormat && !internalFormat)
 	{
 		ORC_ERROR("Failed to load texture at path '{}'\n\tReason: Texture format not supported", filePath.string());
+		stbi_image_free(pixels);
 		return false;
 	}
 

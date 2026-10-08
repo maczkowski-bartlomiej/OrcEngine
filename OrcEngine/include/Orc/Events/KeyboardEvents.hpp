@@ -1,26 +1,28 @@
 #pragma once
 
-#include "Events/Event.hpp"
 #include "Input/Keyboard.hpp"
 
 namespace orc {
 
-struct KeyboardKeyPressedEvent final : public EventT<Event::Type::KeyboardKeyPressed>
+struct KeyboardKeyPressedEvent
 {
+	Keyboard::Key key = Keyboard::Key::Invalid;
+	Keyboard::SpecialKeys specialKeys{};
+
+	KeyboardKeyPressedEvent() = default;
 	KeyboardKeyPressedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
 		: key(key), specialKeys(specialKeys) {}
-
-	const Keyboard::Key key;
-	const Keyboard::SpecialKeys specialKeys;
 };
 
-struct KeyboardKeyReleasedEvent final : public EventT<Event::Type::KeyboardKeyReleased>
+struct KeyboardKeyReleasedEvent
 {
+	Keyboard::Key key = Keyboard::Key::Invalid;
+	Keyboard::SpecialKeys specialKeys{};
+
+	KeyboardKeyReleasedEvent() = default;
 	KeyboardKeyReleasedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
 		: key(key), specialKeys(specialKeys) {}
-
-	const Keyboard::Key key;
-	const Keyboard::SpecialKeys specialKeys;
 };
 
 }
+

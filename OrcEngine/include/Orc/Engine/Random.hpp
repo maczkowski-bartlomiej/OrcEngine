@@ -21,6 +21,7 @@ public:
 	static double nextDouble(double min, double max);
 
 private:
+	static uint32_t m_seed;
 	static std::mt19937 m_engine;
 	static std::uniform_int_distribution<int> m_distributionInt;
 	static std::uniform_real_distribution<float> m_distributionFloat;

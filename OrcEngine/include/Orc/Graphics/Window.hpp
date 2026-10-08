@@ -13,7 +13,7 @@ namespace orc {
 class Window
 {
 public:
-	using EventCallback = std::function<void(Event&)>;
+	using EventCallback = std::function<void(const Event&)>;
 
 	struct VideoSettings
 	{

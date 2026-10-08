@@ -6,7 +6,7 @@
 namespace orc {
 
 BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized) 
-	: offset(0), type(type), name(name), size(getShaderDataTypeSize(type)), normalized(normalized)
+	: normalized(normalized), name(name), size(getShaderDataTypeSize(type)), offset(0), type(type)
 {
 }
 

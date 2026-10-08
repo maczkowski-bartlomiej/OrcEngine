@@ -98,7 +98,7 @@ private:
 		Ref<VertexArray> vertexArray;
 		Ref<VertexBuffer> vertexBuffer;
 		std::array<VertexType, MAX_VERTICES> vertices;
-		std::unordered_map<RendererID, Ref<Texture>> textures;
+		std::vector<Ref<Texture>> textures;
 
 		uint32_t verticesCount = 0;
 	};

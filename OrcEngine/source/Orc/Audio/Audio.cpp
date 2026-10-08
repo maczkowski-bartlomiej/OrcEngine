@@ -30,15 +30,9 @@ namespace orc {
 			ORC_LOG_FATAL("Failed to initialize FMOD system.");
 		}
 
-		std::vector<FilePath> banks; //Temporary
-		banks.push_back("assets/audio/Master.bank");
-		banks.push_back("assets/audio/Master.strings.bank");
-		banks.push_back("assets/audio/Music.bank");
-		banks.push_back("assets/audio/SFX.bank");
-
-		for (const auto& audioBank : banks)
+		for (const auto& audioBank : audioSettings.banks)
 		{
-			loadBank(FilePath(audioBank));
+			loadBank(audioBank);
 		}
 
 		m_masterBus.load(m_system, audioSettings.masterBusName);
@@ -79,12 +73,10 @@ namespace orc {
 			if (!bank)
 				continue;
 
-			if (!fmodCall(bank->unloadSampleData()))
-			{
-				ORC_LOG_ERROR("Failed to unload audio bank.");
-				continue;
-			}
+			(void)fmodCall(bank->unloadSampleData());
+			(void)fmodCall(bank->unload());
 		}
+		m_banks.clear();
 
 		if (!fmodCall(m_system->release()))
 		{

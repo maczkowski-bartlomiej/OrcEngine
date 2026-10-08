@@ -18,7 +18,7 @@ namespace orc {
 		{
 			ORC_LOG_ERROR("Failed to load bus '{}'.", busName);
 		}
-		ORC_ASSERT(bus, "FMOD returned empty bus '{}'.", busName.c_str());
+		ORC_ASSERT(bus, "FMOD returned empty bus '{}'.", busName);
 
 		m_bus = bus;
 	}

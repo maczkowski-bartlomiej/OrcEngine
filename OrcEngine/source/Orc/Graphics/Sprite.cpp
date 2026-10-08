@@ -9,12 +9,12 @@ Sprite::Sprite()
 }
 
 Sprite::Sprite(Ref<Texture> texture)
-	: m_animator(this), Texturable(texture)
+	: Texturable(texture), m_animator(this)
 {
 }
 
 Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
-	: m_animator(this), Texturable(texture)
+	: Texturable(texture), m_animator(this)
 {
 	setPosition(position);
 }

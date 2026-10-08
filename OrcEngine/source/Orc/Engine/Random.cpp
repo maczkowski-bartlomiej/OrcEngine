@@ -8,6 +8,7 @@
 
 namespace orc {
 
+uint32_t Random::m_seed = 0;
 std::mt19937 Random::m_engine = std::mt19937(std::random_device{}());
 std::uniform_int_distribution<int> Random::m_distributionInt = std::uniform_int_distribution<int>(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 std::uniform_real_distribution<float> Random::m_distributionFloat = std::uniform_real_distribution<float>(0.0f, 1.0f);
@@ -15,12 +16,13 @@ std::uniform_real_distribution<double> Random::m_distributionDouble = std::unifo
 
 void Random::setSeed(uint32_t seed)
 {
+	m_seed = seed;
 	m_engine.seed(seed);
 }
 
 uint32_t Random::getSeed()
 {
-	return m_engine();
+	return m_seed;
 }
 
 int32_t Random::nextInt()

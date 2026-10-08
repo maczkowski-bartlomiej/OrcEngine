@@ -6,7 +6,7 @@
 namespace orc {
 
 Transformable::Transformable()
-	: m_scale(1.0f, 1.0f), m_rotation(0.0f), m_isTransformMatrixUpdateNeeded(false), m_isInverseTransformMatrixUpdateNeeded(false)
+	: m_rotation(0.0f), m_scale(1.0f, 1.0f), m_isTransformMatrixUpdateNeeded(false), m_isInverseTransformMatrixUpdateNeeded(false)
 {
 }
 
