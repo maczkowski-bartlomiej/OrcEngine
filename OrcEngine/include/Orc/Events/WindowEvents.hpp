@@ -1,22 +1,22 @@
 #pragma once
 
-#include "Events/Event.hpp"
-
 #include <cstdint>
 
 namespace orc {
 
-struct WindowResizedEvent final : public EventT<Event::Type::WindowResized>
+struct WindowResizedEvent
 {
-	WindowResizedEvent(uint32_t width, uint32_t height) 
-		: width(width), height(height) {}
+	uint32_t width = 0;
+	uint32_t height = 0;
 
-	uint32_t width, height;
+	WindowResizedEvent() = default;
+	WindowResizedEvent(uint32_t width, uint32_t height)
+		: width(width), height(height) {}
 };
 
-struct WindowClosedEvent final : public EventT<Event::Type::WindowClosed>
+struct WindowClosedEvent
 {
-	WindowClosedEvent() {}
 };
 
 }
+

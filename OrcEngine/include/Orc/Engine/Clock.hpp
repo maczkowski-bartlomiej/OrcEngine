@@ -28,6 +28,14 @@ public:
         m_time = clock::now();
     }
 
+    float restart() noexcept
+    {
+        const auto currentTime = clock::now();
+        const float elapsedSeconds = std::chrono::duration<float>(currentTime - m_time).count();
+        m_time = currentTime;
+        return elapsedSeconds;
+    }
+
 private:
     time_point m_time = clock::now();
 };

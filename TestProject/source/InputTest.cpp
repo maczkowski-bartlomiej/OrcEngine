@@ -47,13 +47,13 @@ void InputTest::onUpdate(float deltaTime)
 
 void InputTest::onEvent(const orc::Event& event)
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
 	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
+		switch (kbPressed->key)
 		{
 			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("CirclesTest"); break;
 			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("Menu"); break;
+			default: break;
 		}
 	}
 }

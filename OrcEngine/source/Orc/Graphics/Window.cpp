@@ -47,7 +47,7 @@ void Window::display()
 void Window::setTitle(const std::string& title)
 {
 	m_videoSettings.title = title;
-	glfwSetWindowTitle(m_glfwWindow, title.c_str());
+	glfwSetWindowTitle(m_glfwWindow, m_videoSettings.title.c_str());
 }
 
 void Window::setEventCallback(Window::EventCallback eventCallback) 

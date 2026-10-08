@@ -15,7 +15,7 @@ namespace orc {
 		GLFWwindow* window = static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow());
 		glfwGetCursorPos(window, &mousePosition.x, &mousePosition.y);
 
-		return (Vector2f)mousePosition;
+		return static_cast<Vector2f>(mousePosition);
 	}
 
 	bool Mouse::isButtonPressed(Button button)
@@ -58,7 +58,7 @@ namespace orc {
 				case Mouse::Button::Extra5:  return GLFW_MOUSE_BUTTON_8;
 
 				case Mouse::Button::Invalid:
-				default: return GLFW_KEY_UNKNOWN;
+				default: return -1;
 			}
 		}
 

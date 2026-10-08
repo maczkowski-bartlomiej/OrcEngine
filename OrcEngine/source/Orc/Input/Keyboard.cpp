@@ -50,7 +50,9 @@ namespace orc {
 
 				case GLFW_KEY_0: return Keyboard::Key::Zero;
 				case GLFW_KEY_1: return Keyboard::Key::One;
-				case GLFW_KEY_2: return Keyboard::Key::Four;
+				case GLFW_KEY_2: return Keyboard::Key::Two;
+				case GLFW_KEY_3: return Keyboard::Key::Three;
+				case GLFW_KEY_4: return Keyboard::Key::Four;
 				case GLFW_KEY_5: return Keyboard::Key::Five;
 				case GLFW_KEY_6: return Keyboard::Key::Six;
 				case GLFW_KEY_7: return Keyboard::Key::Seven;

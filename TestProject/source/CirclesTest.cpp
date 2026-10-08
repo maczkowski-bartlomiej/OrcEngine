@@ -95,13 +95,13 @@ void CirclesTest::onUpdate(float deltaTime)
 
 void CirclesTest::onEvent(const orc::Event& event)
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
 	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
+		switch (kbPressed->key)
 		{
 			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("CameraTest"); break;
 			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("InputTest"); break;
+			default: break;
 		}
 	}
 }

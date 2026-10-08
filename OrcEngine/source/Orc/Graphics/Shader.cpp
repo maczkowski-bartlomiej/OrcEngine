@@ -27,7 +27,7 @@ bool Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragme
 	return true;
 }
 
-bool Shader::loadFromString(const std::string& vertexShaderSource, const std::string& fragmentShaderSource)
+bool Shader::loadFromString(std::string_view vertexShaderSource, std::string_view fragmentShaderSource)
 {
 	if (!compile(vertexShaderSource, fragmentShaderSource))
 	{
@@ -44,7 +44,7 @@ void Shader::bind() const
 
 void Shader::unbind() const 
 {
-	glUseProgram(NULL);
+	glUseProgram(0);
 }
 
 void Shader::uploadUniformInt(const std::string& name, int integer) const
@@ -53,11 +53,10 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 	glUniform1i(location, integer);
 }
 
-
-void Shader::uploadUniformIntArray(const std::string& name, int* array, uint32_t size) const
+void Shader::uploadUniformIntArray(const std::string& name, const int* array, uint32_t size) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
-	glUniform1iv(location, static_cast<uint32_t>(size), array);
+	glUniform1iv(location, static_cast<GLsizei>(size), array);
 }
 
 void Shader::uploadUniformFloat3(const std::string& name, const Vector3f& float3) const
@@ -110,21 +109,22 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 	return success;
 }
 
-bool Shader::compile(const std::string& vertexSource, const std::string& fragmentSource)
+bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSource)
 {
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	
-	const char* source = vertexSource.c_str();
-	glShaderSource(vertexShader, 1, &source, 0);
+	const char* vSource = vertexSource.data();
+	GLint vLength = static_cast<GLint>(vertexSource.size());
+	glShaderSource(vertexShader, 1, &vSource, &vLength);
 	glCompileShader(vertexShader);
 	GLint status = 0;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		GLint errorLenght = 0;
-		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &errorLenght);
-		std::vector<char> errorMessage(static_cast<uint32_t>(errorLenght));
-		glGetShaderInfoLog(vertexShader, errorLenght, &errorLenght, &errorMessage[0]);
+		GLint errorLength = 0;
+		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &errorLength);
+		std::vector<char> errorMessage(static_cast<uint32_t>(errorLength));
+		glGetShaderInfoLog(vertexShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
 		ORC_ERROR("Vertex shader compilation\n{}", errorMessage.data());
 
@@ -132,16 +132,17 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 	}
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	source = fragmentSource.c_str();
-	glShaderSource(fragmentShader, 1, &source, 0);
+	const char* fSource = fragmentSource.data();
+	GLint fLength = static_cast<GLint>(fragmentSource.size());
+	glShaderSource(fragmentShader, 1, &fSource, &fLength);
 	glCompileShader(fragmentShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		GLint errorLenght = 0;
-		glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &errorLenght);
-		std::vector<char> errorMessage(static_cast<uint32_t>(errorLenght));
-		glGetShaderInfoLog(vertexShader, errorLenght, &errorLenght, &errorMessage[0]);
+		GLint errorLength = 0;
+		glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &errorLength);
+		std::vector<char> errorMessage(static_cast<uint32_t>(errorLength));
+		glGetShaderInfoLog(fragmentShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 		ORC_ERROR("Fragment shader compilation\n{}", errorMessage.data());
@@ -157,10 +158,10 @@ bool Shader::compile(const std::string& vertexSource, const std::string& fragmen
 	glGetProgramiv(m_rendererID, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		GLint maxLenght = 0;
-		glGetProgramiv(m_rendererID, GL_INFO_LOG_LENGTH, &maxLenght);
-		std::vector<char> errorMessage(static_cast<uint32_t>(maxLenght));
-		glGetProgramInfoLog(m_rendererID, maxLenght, &maxLenght, &errorMessage[0]);
+		GLint maxLength = 0;
+		glGetProgramiv(m_rendererID, GL_INFO_LOG_LENGTH, &maxLength);
+		std::vector<char> errorMessage(static_cast<uint32_t>(maxLength));
+		glGetProgramInfoLog(m_rendererID, maxLength, &maxLength, errorMessage.data());
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 		glDeleteProgram(m_rendererID);

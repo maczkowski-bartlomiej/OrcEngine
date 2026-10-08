@@ -97,9 +97,9 @@ void Camera::recalculateViewMatrix()
 	Vector3f center((m_viewPort.right - m_viewPort.left) / 2.0f, (m_viewPort.bottom - m_viewPort.top) / 2.0f, 0.0f);
 	m_viewMatrix =
 		glm::translate(Matrix4(1.0f), center) * 
-		glm::inverse(glm::translate(Matrix4(1.0f), Vector3f(m_position, 0.0f)) *
-		glm::rotate(Matrix4(1.0f), m_rotation, Vector3f(0.0f, 0.0f, 1.0f)) *
-		glm::scale(Matrix4(1.0f), Vector3f(1.0f / m_zoom, 1.0f / m_zoom, 1.0f))) *
+		glm::scale(Matrix4(1.0f), Vector3f(m_zoom, m_zoom, 1.0f)) *
+		glm::rotate(Matrix4(1.0f), -m_rotation, Vector3f(0.0f, 0.0f, 1.0f)) *
+		glm::translate(Matrix4(1.0f), Vector3f(-m_position, 0.0f)) *
 		glm::translate(Matrix4(1.0f), -center);
 
 	m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;

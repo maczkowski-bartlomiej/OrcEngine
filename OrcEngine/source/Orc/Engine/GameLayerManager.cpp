@@ -13,7 +13,7 @@ void GameLayerManager::setActiveLayer(const std::string& name)
 {
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
 
-	if (const auto& find = m_layers.find(name); find != m_layers.end())
+	if (const auto find = m_layers.find(name); find != m_layers.end())
 	{
 		if (find->second == m_activeLayer)
 		{
@@ -38,7 +38,7 @@ void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLaye
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
 	ORC_ASSERT(gameLayer, "Game layer is nullptr.");
 
-	if (m_layers.try_emplace(name, gameLayer).second)
+	if (!m_layers.try_emplace(name, gameLayer).second)
 	{
 		ORC_LOG_WARNING("Game layer '{}' is already added.", name);
 	}

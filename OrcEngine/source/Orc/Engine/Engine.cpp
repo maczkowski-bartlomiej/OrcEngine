@@ -64,69 +64,42 @@ namespace orc {
 		m_textureResources.clear();
 		m_fontResources.clear();
 
-		m_audio.release();
-		m_renderer.release();
-		m_gui.release();
-		m_window.release();
-
-		m_ftLibary.release();
-
+		m_audio.reset();
+		m_gui.reset();
+		m_renderer.reset();
+		m_window.reset();
+		m_ftLibary.reset();
+		m_gameLayerManager.reset();
 
 		Logger::deinit();
+		m_instance = nullptr;
 	}
 
 	void Engine::run()
 	{
-		/*MonoDomain* domain;
-
-		mono_config_parse(NULL);
-		//mono_set_dirs("lib", "etc");
-		mono_set_assemblies_path("lib");
-		domain = mono_jit_init("GameDomain");
-		MonoAssembly* assembly = mono_domain_assembly_open(domain, "GameScripts.dll");
-		MonoImage* image = mono_assembly_get_image(assembly);
-		MonoClass* playerClass = mono_class_from_name(image, "Game", "Player");
-
-		MonoObject* playerObject = mono_object_new(domain, playerClass);
-		mono_runtime_object_init(playerObject);*/
-
-		//MonoMethod* updateMethod =
-		//	mono_class_get_method_from_name(
-		//		playerClass,
-		//		"Update",
-		//		0
-		//	);
-
-		//mono_runtime_invoke(
-		//	updateMethod,
-		//	playerObject,
-		//	nullptr,
-		//	nullptr
-		//);
-
 		Clock clock;
 
 		m_running = true;
 		while (m_running)
 		{
-			float elapsed = clock.elapsed();
-			clock.reset();
+			float elapsed = clock.restart();
 
 			Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
-			gameLayer->onUpdate(elapsed);
+			if (gameLayer)
+			{
+				gameLayer->onUpdate(elapsed);
 
-			m_renderer->begin(gameLayer->getCamera());
-			gameLayer->onRender();
-			m_renderer->end();
+				m_renderer->begin(gameLayer->getCamera());
+				gameLayer->onRender();
+				m_renderer->end();
 
-			m_gui->begin();
-			gameLayer->onGuiRender();
-			m_gui->end();
+				m_gui->begin();
+				gameLayer->onGuiRender();
+				m_gui->end();
+			}
 
 			m_audio->update();
 			m_window->display();
-
-			//ORC_LOG_INFO("FPS: {}", 1.0f / elapsed);
 		}
 	}
 
@@ -178,43 +151,30 @@ namespace orc {
 	void Engine::onEvent(const Event& event)
 	{
 		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
-		gameLayer->onEvent(event);
-
-		Event::Type eventType = event.getType();
-		switch (eventType)
+		if (gameLayer)
 		{
-			case Event::Type::WindowClosed:
+			gameLayer->onEvent(event);
+		}
+
+		event.visit(
+			[this, &event](const WindowClosedEvent&)
 			{
 				m_running = false;
 				event.setHandled();
-				break;
-			}
-			
-			case Event::Type::WindowResized:
+			},
+			[this, &gameLayer, &event](const WindowResizedEvent& windowResizedEvent)
 			{
-				auto& windowResizedEvent = getEvent<WindowResizedEvent>(event);
 				if (gameLayer)
 				{
 					gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);
 				}
-
 				event.setHandled();
-				break;
-			}
-
-			case Event::Type::KeyboardKeyPressed:
-			case Event::Type::KeyboardKeyReleased:
-			case Event::Type::MouseButtonPressed:
-			case Event::Type::MouseButtonReleased:
-			case Event::Type::MouseMoved:
-			case Event::Type::MouseWheelScrolled:
-			case Event::Type::Invalid:
-			default:
+			},
+			[&event](auto&&)
 			{
 				event.setHandled();
-				break;
 			}
-		}
+		);
 	}
 
 }

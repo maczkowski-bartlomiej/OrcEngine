@@ -67,13 +67,13 @@ void SpritesTest::onUpdate(float deltaTime)
 
 void SpritesTest::onEvent(const orc::Event& event)
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
 	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
+		switch (kbPressed->key)
 		{
 			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("RectanglesTest"); break;
 			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("AnimationTest"); break;
+			default: break;
 		}
 	}
 }

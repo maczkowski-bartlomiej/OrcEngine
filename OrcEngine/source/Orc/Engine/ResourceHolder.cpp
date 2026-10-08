@@ -24,7 +24,7 @@ Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name)
 	else
 	{
 		ORC_LOG_ERROR("Requested non-existing resource '{}'.", name);
-		return createRef<ResourceType>(); //Return default object
+		return nullptr;
 	}
 }
 

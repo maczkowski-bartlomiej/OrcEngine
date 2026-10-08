@@ -35,14 +35,14 @@ public:
 
 private:
 	Sprite* m_sprite = nullptr;
-	Animation* m_currentAnimation = nullptr;
-	Animation* m_defaultAnimation = nullptr;
+	Ref<Animation> m_currentAnimation;
+	Ref<Animation> m_defaultAnimation;
 
 	Clock m_currentAnimationClock;
 	uint64_t m_currentAnimationFrame = 0;
 	bool m_currentAnimationLooping = false;
 	
-	std::unordered_map<std::string, Animation> m_animations;
+	std::unordered_map<std::string, Ref<Animation>> m_animations;
 };
 
 }

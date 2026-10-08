@@ -51,23 +51,25 @@ void CameraTest::onRender()
 
 void CameraTest::onEvent(const orc::Event& event)
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
-	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
+	event.visit(
+		[this](const orc::KeyboardKeyPressedEvent& e)
 		{
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("AudioTest"); break;
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("CirclesTest"); break;
-		}
-	}
-	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)
-	{
-		auto& wheelScrolled = orc::getEvent<orc::MouseWheelScrolledEvent>(event);
-		if (wheelScrolled.yDelta > 0)
-			camera.zoom(0.01f);
-		else if (wheelScrolled.yDelta < 0)
-			camera.zoom(-0.01f);
-	}
+			switch (e.key)
+			{
+				case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("AudioTest"); break;
+				case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("CirclesTest"); break;
+				default: break;
+			}
+		},
+		[this](const orc::MouseWheelScrolledEvent& wheelScrolled)
+		{
+			if (wheelScrolled.yDelta > 0)
+				camera.zoom(0.01f);
+			else if (wheelScrolled.yDelta < 0)
+				camera.zoom(-0.01f);
+		},
+		[](auto&&) {}
+	);
 }
 
 void CameraTest::onGuiRender()

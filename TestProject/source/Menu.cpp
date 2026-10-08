@@ -45,13 +45,13 @@ void Menu::onUpdate(float deltaTime)
 
 void Menu::onEvent(const orc::Event& event)
 {
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
 	{
-		auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
+		switch (kbPressed->key)
 		{
 			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("InputTest"); break;
 			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("RectanglesTest"); break;
+			default: break;
 		}
 	}
 }
