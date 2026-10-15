@@ -92,8 +92,10 @@ if(ORC_BUILD_TEST_PROJECT)
     target_link_libraries(TestProject PRIVATE OrcEngine)
     orc_enable_warnings(TestProject)
 
-    # Look for the deployed FMOD libraries next to the executable.
-    set_target_properties(TestProject PROPERTIES BUILD_RPATH "$ORIGIN")
+    # Look for the deployed FMOD libraries next to the executable (Linux ELF).
+    if(UNIX AND NOT APPLE)
+        set_target_properties(TestProject PROPERTIES BUILD_RPATH "$ORIGIN")
+    endif()
 
     # Make the build directory runnable: FMOD runtime libs (under their soname),
     # assets and shaders (the renderer loads "shaders/*.glsl" relative to the CWD).

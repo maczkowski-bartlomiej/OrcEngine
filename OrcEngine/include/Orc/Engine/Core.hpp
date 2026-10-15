@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <filesystem>
 
-#ifdef _WIN32
+#if defined(_MSC_VER)
 #include <intrin.h>
 #endif
 
@@ -21,13 +21,16 @@
 
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
-	#ifdef _WIN32
+
+	#ifdef ORC_PLATFORM_WINDOWS
 		#define ORC_DEBUGBREAK() __debugbreak()
-	#elif defined(__GNUC__) || defined(__clang__)
-		#define ORC_DEBUGBREAK() __builtin_trap()
+	#elif defined ORC_PLATFORM_LINUX
+		#include <signal.h>
+		#define ORC_DEBUGBREAK() raise(SIGTRAP)
 	#else
-		#define ORC_DEBUGBREAK()
+		#error "Platform doesn't support debugbreak!"
 	#endif
+
 #endif
 
 
