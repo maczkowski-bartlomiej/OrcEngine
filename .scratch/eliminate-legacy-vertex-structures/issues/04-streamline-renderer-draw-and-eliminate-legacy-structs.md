@@ -1,6 +1,6 @@
 # 04: Streamline Renderer Draw Fast-Copy and Eliminate Legacy Structs
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 **What to build:**
@@ -20,3 +20,7 @@ Streamline `Renderer::draw` for `Sprite`, `Rectangle`, `Circle`, and `Text` into
 - [ ] `lint-conventions.ps1 -ChangedOnly` passes with 0 violations.
 
 ## Comments
+
+## Answer
+
+Eliminated SpriteVertex, RectangleVertex, CircleVertex, GlyphVertex, LineVertex, and QuadVertex alias so Vertex.hpp contains only canonical orc::Vertex. Verified compilation and demo execution across debug and release configurations.
