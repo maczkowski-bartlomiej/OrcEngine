@@ -77,6 +77,10 @@ target_compile_definitions(OrcEngine
 )
 
 target_precompile_headers(OrcEngine PRIVATE "${ORC_ENGINE_DIR}/include/Orc/OrcPch.hpp")
+target_compile_options(OrcEngine
+    PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:/Zc:preprocessor>
+)
 orc_enable_warnings(OrcEngine)
 
 # --- TestProject ------------------------------------------------------------

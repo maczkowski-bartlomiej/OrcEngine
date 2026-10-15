@@ -62,17 +62,31 @@ else
 fi
 
 # 4. VCPKG_ROOT Check
-if [ -n "$VCPKG_ROOT" ]; then
+if [ -z "$VCPKG_ROOT" ]; then
+    if [ -d "$HOME/vcpkg" ] && [ -f "$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake" ]; then
+        export VCPKG_ROOT="$HOME/vcpkg"
+        pass "VCPKG_ROOT" "$VCPKG_ROOT (auto-detected, toolchain verified)"
+    else
+        fail "VCPKG_ROOT" "Environment variable VCPKG_ROOT is not set." "Export VCPKG_ROOT pointing to your vcpkg checkout or install vcpkg at \$HOME/vcpkg."
+    fi
+else
     if [ -f "$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" ]; then
         pass "VCPKG_ROOT" "$VCPKG_ROOT (toolchain verified)"
     else
         fail "VCPKG_ROOT" "VCPKG_ROOT is set to '$VCPKG_ROOT', but scripts/buildsystems/vcpkg.cmake is missing." "Verify vcpkg directory."
     fi
-else
-    fail "VCPKG_ROOT" "Environment variable VCPKG_ROOT is not set." "Export VCPKG_ROOT pointing to your vcpkg checkout."
 fi
 
 # 5. FMOD_ROOT Check
+if [ -z "$FMOD_ROOT" ]; then
+    for candidate in "$HOME/fmod" "$HOME/dev/libs/cpp/fmod" "/opt/fmod" "/usr/local/fmod" "/usr/local/opt/fmod"; do
+        if [ -d "$candidate/api/core/inc" ]; then
+            export FMOD_ROOT="$candidate"
+            break
+        fi
+    done
+fi
+
 if [ -n "$FMOD_ROOT" ]; then
     if [ -f "$FMOD_ROOT/api/core/inc/fmod.hpp" ] && [ -f "$FMOD_ROOT/api/studio/inc/fmod_studio.hpp" ]; then
         pass "FMOD_ROOT" "$FMOD_ROOT (Core & Studio headers verified)"
@@ -80,7 +94,7 @@ if [ -n "$FMOD_ROOT" ]; then
         warn "FMOD_ROOT" "FMOD_ROOT is set to '$FMOD_ROOT', but api headers are missing." "Check README.md FMOD SDK layout."
     fi
 else
-    fail "FMOD_ROOT" "Environment variable FMOD_ROOT is not set." "Export FMOD_ROOT pointing to your FMOD installation."
+    fail "FMOD_ROOT" "Environment variable FMOD_ROOT is not set." "Export FMOD_ROOT pointing to your FMOD installation or install to /opt/fmod or \$HOME/fmod."
 fi
 
 # 6. Git Status Check

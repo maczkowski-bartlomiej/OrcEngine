@@ -18,6 +18,14 @@ set(FMOD_ROOT "${FMOD_ROOT}" CACHE PATH "Root directory of the FMOD Engine SDK (
 set(_fmod_hints "${FMOD_ROOT}" "$ENV{FMOD_ROOT}")
 
 if(WIN32)
+    list(APPEND _fmod_hints
+        "$ENV{ProgramFiles}/FMOD SoundSystem/FMOD Studio API Windows"
+        "$ENV{ProgramFiles\(x86\)}/FMOD SoundSystem/FMOD Studio API Windows"
+        "C:/Program Files/FMOD SoundSystem/FMOD Studio API Windows"
+        "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows"
+        "$ENV{USERPROFILE}/fmod"
+        "$ENV{USERPROFILE}/dev/libs/cpp/fmod"
+    )
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         set(_fmod_arch "x86")
     else()
@@ -26,6 +34,13 @@ if(WIN32)
     set(_fmod_core_names fmod_vc fmod fmodL_vc)
     set(_fmod_studio_names fmodstudio_vc fmodstudio fmodstudioL_vc)
 else()
+    list(APPEND _fmod_hints
+        "/opt/fmod"
+        "/usr/local/fmod"
+        "/usr/local/opt/fmod"
+        "$ENV{HOME}/fmod"
+        "$ENV{HOME}/dev/libs/cpp/fmod"
+    )
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         set(_fmod_arch "x86")
     else()

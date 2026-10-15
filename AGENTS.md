@@ -230,12 +230,12 @@ Follow the style of the surrounding file; the repository has no enforced formatt
 - **Destructor Teardown**: **Never** call `m_ptr.release()` in destructors to leak memory. Use `m_ptr.reset()` or let RAII destroy the resource automatically.
 
 ### 5.4 Error Handling & Logging
-- **Logging Macros**: Use the built-in spdlog macros:
+- **Logging Macros**: Use the built-in spdlog macros (standardized on ISO C++20 `__VA_OPT__(,) __VA_ARGS__` expansion, permitting calls without trailing format arguments):
   - `ORC_LOG_INFO(message, ...)`: Normal diagnostic messages.
   - `ORC_LOG_WARNING(message, ...)`: Recoverable unexpected states or fallbacks.
   - `ORC_LOG_ERROR(message, ...)`: Operation failures (e.g. failed asset load).
   - `ORC_LOG_FATAL(message, ...)`: Critical unrecoverable errors.
-- **Assertion Macros**: Use `ORC_ASSERT(condition, message, ...)` for debug-only invariant checks (active under `ORC_DEBUG_ASSERTS`).
+- **Assertion Macros**: Use `ORC_ASSERT(condition, message, ...)` for debug-only invariant checks (active under `ORC_DEBUG_ASSERTS`), also conforming to ISO C++20 `__VA_OPT__(,)`.
 - **Graceful Degradation**: Handle recoverable runtime failures gracefully (e.g. return `false`, `nullptr`, or `std::nullopt`) rather than crashing the engine.
 
 ### 5.5 Formatting & File Layout
@@ -301,15 +301,15 @@ To compile only the engine without the demo, configure with `-DORC_BUILD_TEST_PR
 
 ### 6.3 Build Prerequisites & Environment Variables
 The presets require CMake 3.25 or newer, Ninja, and a C++20 compiler (MSVC on Windows, GCC 11+ or Clang 13+ on Linux), plus the Linux system packages listed in `README.md` (when on Linux). In addition, two paths configure third-party dependencies:
-- `VCPKG_ROOT`: Environment variable pointing to a vcpkg checkout. Open-source dependencies (`glfw3`, `glad`, `glm`, `fmt`, `spdlog`, `tinyxml2`, `freetype`, `imgui`, `stb`) are managed via `vcpkg.json`.
-- `FMOD_ROOT`: Environment variable or CMake cache variable (`-DFMOD_ROOT=...`) pointing to a manually installed FMOD SDK (Core and Studio) with headers in `api/core/inc` and `api/studio/inc`, and libraries in `api/core/lib` and `api/studio/lib`.
+- `VCPKG_ROOT`: Environment variable pointing to a vcpkg checkout. If unset on Linux, build and diagnostic scripts automatically fall back to `$HOME/vcpkg` if present. Open-source dependencies (`glfw3`, `glad`, `glm`, `fmt`, `spdlog`, `tinyxml2`, `freetype`, `imgui`, `stb`) are managed via `vcpkg.json`.
+- `FMOD_ROOT`: Environment variable or CMake cache variable (`-DFMOD_ROOT=...`) pointing to a manually installed FMOD SDK (Core and Studio) with headers in `api/core/inc` and `api/studio/inc`, and libraries in `api/core/lib` and `api/studio/lib`. If unset, `cmake/FindFMOD.cmake` and automation scripts inspect standard multi-tier discovery paths on Linux (`/opt/fmod`, `/usr/local/fmod`, `/usr/local/opt/fmod`, `$HOME/fmod`, `$HOME/dev/libs/cpp/fmod`) and Windows (`Program Files`, user profile directories).
 
 Do not commit machine-specific paths, generated build trees (`build/`), `vcpkg_installed/`, or `CMakeUserPresets.json`.
 
 ### 6.4 Compiler Warnings Configuration
-Compiler warning flags are configured centrally in `cmake/OrcWarnings.cmake`:
+Compiler warning and standards flags are configured centrally in `cmake/OrcWarnings.cmake` and `CMakeLists.txt`:
 - **GCC / Clang**: `-Wall -Wextra -Wno-unused-parameter`
-- **MSVC**: `/W4 /wd4100`
+- **MSVC**: `/W4 /wd4100` (warnings in `cmake/OrcWarnings.cmake`), with `/Zc:preprocessor` configured on `OrcEngine` (PUBLIC in `CMakeLists.txt`) for C++20 `__VA_OPT__` conforming preprocessor semantics
 
 All engine and demo code must compile with **zero warnings** under these flags across both debug and release configurations.
 

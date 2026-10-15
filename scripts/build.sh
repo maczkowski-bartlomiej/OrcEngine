@@ -58,10 +58,15 @@ printf "Preset: \033[1m%s\033[0m\n\n" "$PRESET"
 
 # Check Prerequisites
 if [ -z "$VCPKG_ROOT" ]; then
-    printf "\033[33mWarning: VCPKG_ROOT is not set. Configure may fail.\033[0m\n"
+    if [ -d "$HOME/vcpkg" ] && [ -f "$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake" ]; then
+        export VCPKG_ROOT="$HOME/vcpkg"
+        printf "\033[32mAuto-detected VCPKG_ROOT at: %s\033[0m\n" "$VCPKG_ROOT"
+    else
+        printf "\033[33mWarning: VCPKG_ROOT is not set. Configure may fail. Export VCPKG_ROOT or install vcpkg at \$HOME/vcpkg.\033[0m\n"
+    fi
 fi
 if [ -z "$FMOD_ROOT" ]; then
-    printf "\033[33mWarning: FMOD_ROOT is not set. FMOD discovery may fail.\033[0m\n"
+    printf "\033[90mNote: FMOD_ROOT is not set. CMake will use multi-tier SDK discovery.\033[0m\n"
 fi
 
 BUILD_DIR="$REPO_ROOT/build/$PRESET"
