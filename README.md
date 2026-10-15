@@ -21,15 +21,15 @@ OrcEngine is a C++20 game engine project with a demo application in `TestProject
 
 ## Requirements
 
-Supported platform: **Linux** (x86_64).
+Supported platforms: **Linux** (x86_64) and **Windows** (x64).
 
 - CMake 3.25 or newer
 - Ninja
-- A C++20 compiler (GCC or Clang)
+- A C++20 compiler (GCC or Clang on Linux; MSVC, Clang, or MinGW GCC on Windows)
 - [vcpkg](https://github.com/microsoft/vcpkg) checkout
-- [FMOD Engine](https://www.fmod.com/download) SDK for Linux
+- [FMOD Engine](https://www.fmod.com/download) SDK for your platform
 
-### System packages
+### System packages (Linux)
 
 OpenGL comes from the system, and GLFW (built by vcpkg) needs the X11/Wayland development headers.
 
@@ -67,7 +67,9 @@ Set the environment variable `VCPKG_ROOT` to your vcpkg directory. Open-source d
 
 ### FMOD
 
-FMOD cannot be distributed through vcpkg, so the SDK is installed manually. Download the FMOD Engine for Linux and point `FMOD_ROOT` at the directory that contains `api/`:
+FMOD cannot be distributed through vcpkg, so the SDK is installed manually. Download the FMOD Engine SDK and point `FMOD_ROOT` at the directory that contains `api/`:
+
+**Linux layout:**
 
 ```text
 <FMOD_ROOT>/api/core/inc/fmod.hpp
@@ -78,10 +80,27 @@ FMOD cannot be distributed through vcpkg, so the SDK is installed manually. Down
 <FMOD_ROOT>/api/studio/lib/x86_64/libfmodstudio.so
 ```
 
+**Windows layout (x64):**
+
+```text
+<FMOD_ROOT>/api/core/inc/fmod.hpp
+<FMOD_ROOT>/api/core/inc/fmod_common.h
+<FMOD_ROOT>/api/studio/inc/fmod_studio.hpp
+<FMOD_ROOT>/api/studio/inc/fmod_studio_common.h
+<FMOD_ROOT>/api/core/lib/x64/fmod_vc.lib
+<FMOD_ROOT>/api/core/lib/x64/fmod.dll
+<FMOD_ROOT>/api/studio/lib/x64/fmodstudio_vc.lib
+<FMOD_ROOT>/api/studio/lib/x64/fmodstudio.dll
+```
+
 `FMOD_ROOT` can be set either as an environment variable:
 
 ```bash
+# Linux
 export FMOD_ROOT=/path/to/fmodstudioapi<version>linux
+
+# Windows (PowerShell)
+$env:FMOD_ROOT = "C:\path\to\fmod"
 ```
 
 or as a CMake cache variable, for example in an untracked `CMakeUserPresets.json` (already git-ignored):
@@ -92,9 +111,9 @@ or as a CMake cache variable, for example in an untracked `CMakeUserPresets.json
   "configurePresets": [
     {
       "name": "dev-debug",
-      "inherits": "linux-debug",
+      "inherits": "windows-debug",
       "cacheVariables": {
-        "FMOD_ROOT": "/path/to/fmodstudioapi<version>linux"
+        "FMOD_ROOT": "C:/path/to/fmod"
       }
     }
   ]
@@ -104,6 +123,8 @@ or as a CMake cache variable, for example in an untracked `CMakeUserPresets.json
 ## Configure and build
 
 From the repository root:
+
+**Linux:**
 
 ```bash
 cmake --preset linux-debug
@@ -117,13 +138,36 @@ cmake --preset linux-release
 cmake --build --preset linux-release
 ```
 
+**Windows:**
+
+```bash
+cmake --preset windows-debug
+cmake --build --preset windows-debug
+```
+
+Release build:
+
+```bash
+cmake --preset windows-release
+cmake --build --preset windows-release
+```
+
 To build only the engine, configure with `-DORC_BUILD_TEST_PROJECT=OFF`.
 
 ## Run
 
 The demo executable is `TestProject`. After each build the FMOD runtime libraries, `assets/` and `shaders/` are copied next to it, so run it from its build directory:
 
+**Linux:**
+
 ```bash
 cd build/linux-debug
 ./TestProject
+```
+
+**Windows:**
+
+```powershell
+cd build/windows-debug
+.\TestProject.exe
 ```

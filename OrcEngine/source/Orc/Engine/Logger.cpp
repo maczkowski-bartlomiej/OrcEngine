@@ -32,6 +32,11 @@ public:
 bool Logger::init(const std::string& logPath)
 {
 	try {
+		if (std::filesystem::path p(logPath); p.has_parent_path())
+		{
+			std::filesystem::create_directories(p.parent_path());
+		}
+
 		spdlog::init_thread_pool(8192, 1);
 		std::vector<spdlog::sink_ptr> sinks
 		{

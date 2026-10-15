@@ -84,14 +84,14 @@ namespace orc {
 		{
 			float elapsed = clock.restart();
 
+			m_renderer->clear();
+
 			Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
 			if (gameLayer)
 			{
 				gameLayer->onUpdate(elapsed);
 
-				m_renderer->begin(gameLayer->getCamera());
 				gameLayer->onRender();
-				m_renderer->end();
 
 				m_gui->begin();
 				gameLayer->onGuiRender();

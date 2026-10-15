@@ -115,9 +115,8 @@ void RectanglesTest::onEvent(const orc::Event& event)
 void RectanglesTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
 
-	renderer.begin(camera);
+	renderer.beginScene(camera);
 
 	renderer.draw(m_rectangle1);
 	renderer.draw(m_rectangle2);
@@ -147,7 +146,7 @@ void RectanglesTest::onRender()
 
 	drawLines();
 
-	renderer.end();
+	renderer.endScene();
 }
 
 void RectanglesTest::onGuiRender()

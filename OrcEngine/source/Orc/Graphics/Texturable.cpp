@@ -1,54 +1,51 @@
+#include "OrcPch.hpp"
+#include "Graphics/Texturable.hpp"
+
 namespace orc {
 
-template<typename VertexType, uint64_t VerticesCount>
-Texturable<VertexType, VerticesCount>::Texturable()
+Texturable::Texturable()
 	: m_isVertexPositionsUpdateNeeded(true)
 {
 	updateVerticesTexCoords();
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-Texturable<VertexType, VerticesCount>::Texturable(Ref<Texture> texture)
+Texturable::Texturable(Ref<Texture> texture)
 	: m_isVertexPositionsUpdateNeeded(true)
 {
 	setTexture(texture);
 	updateVerticesTexCoords();
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::setTexture(Ref<Texture> texture)
+void Texturable::setTexture(Ref<Texture> texture)
 {
 	m_texture = texture;
-	setTextureRect(FloatRect(0.0f, 0.0f, texture->getSize().x, texture->getSize().y));
+	if (m_texture)
+	{
+		setTextureRect(FloatRect(0.0f, 0.0f, texture->getSize().x, texture->getSize().y));
+	}
+	else
+	{
+		updateVerticesTexCoords();
+	}
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::setTextureRect(const FloatRect& textureRect)
+void Texturable::setTextureRect(const FloatRect& textureRect)
 {
 	m_textureRect = textureRect;
 	updateVerticesTexCoords();
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::setVertices(const std::array<VertexType, VerticesCount>& vertices)
-{
-	m_vertices = vertices;
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-Ref<Texture> Texturable<VertexType, VerticesCount>::getTexture() const
+Ref<Texture> Texturable::getTexture() const
 {
 	return m_texture;
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-FloatRect Texturable<VertexType, VerticesCount>::getTextureRect() const
+FloatRect Texturable::getTextureRect() const
 {
 	return m_textureRect;
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-FloatRect Texturable<VertexType, VerticesCount>::getGlobalRect() const
+FloatRect Texturable::getGlobalRect() const
 {
 	if (m_isVertexPositionsUpdateNeeded)
 	{
@@ -60,23 +57,7 @@ FloatRect Texturable<VertexType, VerticesCount>::getGlobalRect() const
 	return m_globalRect;
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-VertexType Texturable<VertexType, VerticesCount>::getVertex(uint64_t index) const
-{
-	ORC_ASSERT(index >= 0 && index <= VerticesCount, "Invalid vertex index '{}'", index);
-
-	if (m_isVertexPositionsUpdateNeeded)
-	{
-		updateVerticesPositions();
-		calculateGlobalRect();
-		m_isVertexPositionsUpdateNeeded = false;
-	}
-
-	return m_vertices[index];
-}
-
-template<typename VertexType, uint64_t VerticesCount>
-const std::array<VertexType, VerticesCount>& Texturable<VertexType, VerticesCount>::getVertices() const
+const std::array<Vertex, 4>& Texturable::getVertices() const
 {
 	if (m_isVertexPositionsUpdateNeeded)
 	{
@@ -88,8 +69,7 @@ const std::array<VertexType, VerticesCount>& Texturable<VertexType, VerticesCoun
 	return m_vertices;
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::calculateGlobalRect() const
+void Texturable::calculateGlobalRect() const
 {
 	FloatRect localRect = getLocalRect();
 	const Matrix& transform = getTransformMatrix();
@@ -122,8 +102,7 @@ void Texturable<VertexType, VerticesCount>::calculateGlobalRect() const
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::updateVerticesTexCoords() const
+void Texturable::updateVerticesTexCoords() const
 {
 	if (m_texture)
 	{
@@ -149,8 +128,7 @@ void Texturable<VertexType, VerticesCount>::updateVerticesTexCoords() const
 	}
 }
 
-template<typename VertexType, uint64_t VerticesCount>
-void Texturable<VertexType, VerticesCount>::onTransformChangeCallback()
+void Texturable::onTransformChangeCallback()
 {
 	m_isVertexPositionsUpdateNeeded = true;
 }
