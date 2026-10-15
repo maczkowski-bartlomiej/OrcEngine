@@ -81,39 +81,38 @@ void SpritesTest::onEvent(const orc::Event& event)
 void SpritesTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
 
-	renderer.begin(camera);
+	renderer2D.beginScene(camera);
 
-	renderer.draw(m_sprite1);
-	renderer.draw(m_sprite2);
-	renderer.draw(m_sprite3);
-	renderer.draw(m_sprite4);
-	renderer.draw(m_sprite5);
-	renderer.draw(m_sprite6);
-	//renderer.draw(m_sprite7);
-	//renderer.draw(m_sprite8);
-	//renderer.draw(m_sprite9);
-	//renderer.draw(m_sprite10);
-	//renderer.draw(m_sprite11);
-	//renderer.draw(m_sprite12);
+	renderer2D.draw(m_sprite1);
+	renderer2D.draw(m_sprite2);
+	renderer2D.draw(m_sprite3);
+	renderer2D.draw(m_sprite4);
+	renderer2D.draw(m_sprite5);
+	renderer2D.draw(m_sprite6);
+	//renderer2D.draw(m_sprite7);
+	//renderer2D.draw(m_sprite8);
+	//renderer2D.draw(m_sprite9);
+	//renderer2D.draw(m_sprite10);
+	//renderer2D.draw(m_sprite11);
+	//renderer2D.draw(m_sprite12);
 
-	renderer.draw(m_text1);
-	renderer.draw(m_text2);
-	renderer.draw(m_text3);
-	renderer.draw(m_text4);
-	renderer.draw(m_text5);
-	renderer.draw(m_text6);
-	//renderer.draw(m_text7);
-	//renderer.draw(m_text8);
-	//renderer.draw(m_text9);
-	//renderer.draw(m_text10);
-	//renderer.draw(m_text11);
-	//renderer.draw(m_text12);
+	renderer2D.draw(m_text1);
+	renderer2D.draw(m_text2);
+	renderer2D.draw(m_text3);
+	renderer2D.draw(m_text4);
+	renderer2D.draw(m_text5);
+	renderer2D.draw(m_text6);
+	//renderer2D.draw(m_text7);
+	//renderer2D.draw(m_text8);
+	//renderer2D.draw(m_text9);
+	//renderer2D.draw(m_text10);
+	//renderer2D.draw(m_text11);
+	//renderer2D.draw(m_text12);
 
 	drawLines();
 
-	renderer.end();
+	renderer2D.endScene();
 }
 
 void SpritesTest::onGuiRender()
@@ -143,11 +142,11 @@ void SpritesTest::onGuiRender()
 
 void SpritesTest::drawLines()
 {
-	renderer.drawLine(orc::Vector2f(200.0f, 0.0f), orc::Vector2f(200.0f, 600.0f), orc::Color(255));
-	renderer.drawLine(orc::Vector2f(400.0f, 0.0f), orc::Vector2f(400.0f, 600.0f), orc::Color(255));
-	renderer.drawLine(orc::Vector2f(600.0f, 0.0f), orc::Vector2f(600.0f, 600.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(200.0f, 0.0f), orc::Vector2f(200.0f, 600.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(400.0f, 0.0f), orc::Vector2f(400.0f, 600.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(600.0f, 0.0f), orc::Vector2f(600.0f, 600.0f), orc::Color(255));
 
-	renderer.drawLine(orc::Vector2f(0.0f, 150.0f), orc::Vector2f(800.0f, 150.0f), orc::Color(255));
-	renderer.drawLine(orc::Vector2f(0.0f, 300.0f), orc::Vector2f(800.0f, 300.0f), orc::Color(255));
-	renderer.drawLine(orc::Vector2f(0.0f, 450.0f), orc::Vector2f(800.0f, 450.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(0.0f, 150.0f), orc::Vector2f(800.0f, 150.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(0.0f, 300.0f), orc::Vector2f(800.0f, 300.0f), orc::Color(255));
+	renderer2D.drawLine(orc::Vector2f(0.0f, 450.0f), orc::Vector2f(800.0f, 450.0f), orc::Color(255));
 }

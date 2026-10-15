@@ -1,6 +1,6 @@
 # Spec: Collapse the 2D Render Submission Pipeline
 
-Status: ready-for-agent
+Status: resolved
 
 ## Problem Statement
 

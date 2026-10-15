@@ -54,6 +54,7 @@ $procInfo.UseShellExecute = $false
 
 $proc = [System.Diagnostics.Process]::Start($procInfo)
 
+$timedOut = $false
 if ($TimeoutSeconds -gt 0) {
     Write-Host "Running with $TimeoutSeconds second(s) timeout..." -ForegroundColor DarkGray
     $finished = $proc.WaitForExit($TimeoutSeconds * 1000)
@@ -61,6 +62,7 @@ if ($TimeoutSeconds -gt 0) {
         Write-Host "Timeout reached ($TimeoutSeconds s). Closing demo process..." -ForegroundColor Yellow
         $proc.Kill()
         $proc.WaitForExit()
+        $timedOut = $true
     }
 } else {
     $proc.WaitForExit()
@@ -85,7 +87,7 @@ if (Test-Path $logPath) {
     }
 }
 
-if ($exitCode -ne 0) {
+if ($exitCode -ne 0 -and -not $timedOut) {
     Write-Host "`nDemo crashed or exited with non-zero exit code: $exitCode" -ForegroundColor Red
     exit $exitCode
 }
