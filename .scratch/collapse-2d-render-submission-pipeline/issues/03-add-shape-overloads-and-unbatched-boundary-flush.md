@@ -5,10 +5,14 @@ Convenience overloads on `Renderer2D` for `Sprite`, `Circle`, `Rectangle`, and `
 
 **Blocked by:** 02: Implement Renderer2D Batching Engine
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Implement `Renderer2D::draw(const Sprite&)` decomposing sprite vertices into `QuadVertex` stream.
-- [ ] Implement `Renderer2D::draw(const Rectangle&)` passing border thickness and colors.
-- [ ] Implement `Renderer2D::draw(const Circle&)` passing radius, inner radius, and border properties.
-- [ ] Implement `Renderer2D::draw(const Text&)` batching glyphs with font atlas textures.
-- [ ] Ensure calling `Renderer::draw(VertexArray, Shader, Matrix)` triggers `Renderer2D::flush()` when a 2D scene is active.
+- [x] Implement `Renderer2D::draw(const Sprite&)` decomposing sprite vertices into `QuadVertex` stream.
+- [x] Implement `Renderer2D::draw(const Rectangle&)` passing border thickness and colors.
+- [x] Implement `Renderer2D::draw(const Circle&)` passing radius, inner radius, and border properties.
+- [x] Implement `Renderer2D::draw(const Text&)` batching glyphs with font atlas textures.
+- [x] Ensure calling `Renderer::draw(VertexArray, Shader, Matrix)` triggers `Renderer2D::flush()` when a 2D scene is active.
+
+## Answer
+
+Implemented shape overloads on `Renderer2D` and hooked `Renderer::draw(VertexArray, Shader, Matrix)` to flush active `Renderer2D` scenes.

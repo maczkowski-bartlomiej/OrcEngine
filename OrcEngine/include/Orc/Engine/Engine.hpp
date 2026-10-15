@@ -9,6 +9,7 @@
 #include "Graphics/FTLibrary.hpp"
 #include "Graphics/Gui.hpp"
 #include "Graphics/Renderer.hpp"
+#include "Graphics/Renderer2D.hpp"
 #include "Graphics/Window.hpp"
 
 namespace orc {
@@ -24,6 +25,7 @@ public:
 	Audio& getAudio();
 	Window& getWindow();
 	Renderer& getRenderer();
+	Renderer2D& getRenderer2D();
 	FTLibrary& getFTLibary();
 	GameLayerManager& getGameLayerManager();
 
@@ -42,6 +44,7 @@ private:
 	UniquePtr<Audio> m_audio;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
+	UniquePtr<Renderer2D> m_renderer2D;
 	UniquePtr<FTLibrary> m_ftLibary;
 	UniquePtr<GameLayerManager> m_gameLayerManager;
 
