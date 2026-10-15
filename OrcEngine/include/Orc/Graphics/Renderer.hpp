@@ -58,6 +58,7 @@ public:
 private:
 	void startBatch();
 	float getTextureSlot(Ref<Texture> texture);
+	void submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot);
 
 	static constexpr uint32_t MAX_QUADS = 2000;
 	static constexpr uint32_t MAX_QUAD_VERTICES = MAX_QUADS * 4;

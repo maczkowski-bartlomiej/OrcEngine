@@ -11,17 +11,14 @@ Sprite::Sprite()
 }
 
 Sprite::Sprite(Ref<Texture> texture)
-	: Texturable(texture), m_animator(this)
+	: Sprite()
 {
-	for (auto& vertex : m_vertices)
-		vertex.shapeType = 0.0f;
+	setTexture(texture);
 }
 
 Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
-	: Texturable(texture), m_animator(this)
+	: Sprite(texture)
 {
-	for (auto& vertex : m_vertices)
-		vertex.shapeType = 0.0f;
 	setPosition(position);
 }
 

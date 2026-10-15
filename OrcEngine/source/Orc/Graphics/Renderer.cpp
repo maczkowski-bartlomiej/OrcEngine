@@ -136,46 +136,36 @@ float Renderer::getTextureSlot(Ref<Texture> texture)
 	return slot;
 }
 
+void Renderer::submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot)
+{
+	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
+		flush();
+
+	std::copy_n(vertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
+	for (size_t i = 0; i < 4; ++i)
+		m_quadVertices[m_quadVerticesCount + i].textureIndex = textureSlot;
+	m_quadVerticesCount += 4;
+}
+
 void Renderer::draw(const Sprite& sprite)
 {
 	if (!sprite.getTexture())
 		return;
 
 	float texSlot = getTextureSlot(sprite.getTexture());
-	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		flush();
-
-	const auto& spriteVertices = sprite.getVertices();
-	std::copy_n(spriteVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
-	for (size_t i = 0; i < 4; ++i)
-		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
-	m_quadVerticesCount += 4;
+	submitQuad(sprite.getVertices(), texSlot);
 }
 
 void Renderer::draw(const Rectangle& rectangle)
 {
 	float texSlot = rectangle.getTexture() ? getTextureSlot(rectangle.getTexture()) : EMPTY_TEXTURE_SLOT;
-	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		flush();
-
-	const auto& rectVertices = rectangle.getVertices();
-	std::copy_n(rectVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
-	for (size_t i = 0; i < 4; ++i)
-		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
-	m_quadVerticesCount += 4;
+	submitQuad(rectangle.getVertices(), texSlot);
 }
 
 void Renderer::draw(const Circle& circle)
 {
 	float texSlot = circle.getTexture() ? getTextureSlot(circle.getTexture()) : EMPTY_TEXTURE_SLOT;
-	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		flush();
-
-	const auto& circleVertices = circle.getVertices();
-	std::copy_n(circleVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
-	for (size_t i = 0; i < 4; ++i)
-		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
-	m_quadVerticesCount += 4;
+	submitQuad(circle.getVertices(), texSlot);
 }
 
 void Renderer::draw(const Text& text)
@@ -183,20 +173,24 @@ void Renderer::draw(const Text& text)
 	if (!text.getFont() || !text.getFont()->getBitmap())
 		return;
 
-	float texSlot = getTextureSlot(text.getFont()->getBitmap());
+	Ref<Texture> fontBitmap = text.getFont()->getBitmap();
+	float texSlot = getTextureSlot(fontBitmap);
 	const auto& glyphVertices = text.getVertices();
 	size_t count = glyphVertices.size();
 
 	for (size_t i = 0; i < count; i += 4)
 	{
 		if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
+		{
 			flush();
+			texSlot = getTextureSlot(fontBitmap);
+		}
 
-		size_t quadsToCopy = std::min<size_t>(4, count - i);
-		std::copy_n(&glyphVertices[i], quadsToCopy, &m_quadVertices[m_quadVerticesCount]);
-		for (size_t j = 0; j < quadsToCopy; ++j)
+		size_t verticesToCopy = std::min<size_t>(4, count - i);
+		std::copy_n(&glyphVertices[i], verticesToCopy, &m_quadVertices[m_quadVerticesCount]);
+		for (size_t j = 0; j < verticesToCopy; ++j)
 			m_quadVertices[m_quadVerticesCount + j].textureIndex = texSlot;
-		m_quadVerticesCount += static_cast<uint32_t>(quadsToCopy);
+		m_quadVerticesCount += static_cast<uint32_t>(verticesToCopy);
 	}
 }
 

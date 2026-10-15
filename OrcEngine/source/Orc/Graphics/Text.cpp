@@ -84,10 +84,12 @@ void Text::updateVertices() const
 	if (!m_font)
 		return;
 
-	m_vertices.resize(m_string.size() * 4);
+	m_vertices.clear();
 
 	if (m_string.empty())
 		return;
+
+	m_vertices.reserve(m_string.size() * 4);
 
 	Vector2f position;
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
@@ -113,7 +115,7 @@ void Text::updateVertices() const
 		float positionyY = position.y;
 		position.y -= character.offset.y;
 
-		m_vertices[i * 4 + 0] = Vertex{
+		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position, 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -124,9 +126,9 @@ void Text::updateVertices() const
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
 			.radius = 0.0f
-		};
+		});
 
-		m_vertices[i * 4 + 1] = Vertex{
+		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -137,9 +139,9 @@ void Text::updateVertices() const
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
 			.radius = 0.0f
-		};
+		});
 
-		m_vertices[i * 4 + 2] = Vertex{
+		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -150,9 +152,9 @@ void Text::updateVertices() const
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
 			.radius = 0.0f
-		};
+		});
 
-		m_vertices[i * 4 + 3] = Vertex{
+		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(width, height), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -163,7 +165,7 @@ void Text::updateVertices() const
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
 			.radius = 0.0f
-		};
+		});
 
 		position.y = positionyY;
 		position.x += character.advance;
