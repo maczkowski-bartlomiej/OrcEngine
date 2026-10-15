@@ -19,3 +19,7 @@ _Avoid_: Shape batcher, sprite batcher, primitive pipeline
 **Submission Order**:
 The temporal order in which drawing commands are submitted by layers, naturally preserved by appending to the dynamic batch buffer without depth-buffer z-index inversions.
 _Avoid_: Z-index ordering, depth sorting
+
+**Texturable**:
+A 2D transformable quad element holding texture coordinates, bounds, and four `Vertex` elements directly compatible with dynamic quad batching.
+_Avoid_: TexturedQuad, ShapeVertexArray, QuadDrawable

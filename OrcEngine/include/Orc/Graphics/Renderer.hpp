@@ -58,6 +58,7 @@ public:
 private:
 	void startBatch();
 	float getTextureSlot(Ref<Texture> texture);
+	void submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot);
 
 	static constexpr uint32_t MAX_QUADS = 2000;
 	static constexpr uint32_t MAX_QUAD_VERTICES = MAX_QUADS * 4;
@@ -69,7 +70,7 @@ private:
 	Ref<Shader> m_quadShader;
 	Ref<VertexArray> m_quadVertexArray;
 	Ref<VertexBuffer> m_quadVertexBuffer;
-	std::array<QuadVertex, MAX_QUAD_VERTICES> m_quadVertices;
+	std::array<Vertex, MAX_QUAD_VERTICES> m_quadVertices;
 	uint32_t m_quadVerticesCount = 0;
 
 	std::vector<Ref<Texture>> m_textures;

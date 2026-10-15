@@ -4,15 +4,14 @@
 
 #include "Graphics/Rect.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Vertex.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
 
-class Rectangle : public Texturable<RectangleVertex, 4>
+class Rectangle : public Texturable
 {
 public:
-	Rectangle() = default;
+	Rectangle();
 	Rectangle(const Vector2f& size, const Color& color = Color());
 	Rectangle(const Vector2f& position, const Vector2f& size, const Color& color = Color());
 
@@ -29,7 +28,7 @@ public:
 	float getBorderThickness() const;
 
 	FloatRect getLocalRect() const override;
-	
+
 private:
 	void updateVerticesPositions() const override;
 

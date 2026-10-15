@@ -116,6 +116,7 @@ Do not edit or commit generated build output. Treat checked-in DLLs and other bi
 - Check event, renderer, window, and audio lifetime assumptions before retaining references across frames or layer transitions.
 - Add a focused demo path for new visible engine behavior when no automated test can cover it.
 - Update `README.md` when prerequisites, build commands, runtime steps, or advertised capabilities change.
+- **No legacy cruft**: OrcEngine is an internal/private project. Aggressively prune dead, obsolete, or unused methods, typedefs, and dummy structs without hesitation or asking for permission. Breaking changes to engine APIs are completely acceptable as long as `TestProject` is updated in the same change.
 
 ## Agent skills
 
@@ -134,3 +135,4 @@ Single-context repository layout (`GLOSSARY.md` + `docs/adr/` at repo root). See
 ### Helper scripts
 
 Agent automation scripts for environment checks, building, C++ conventions linting, and local markdown issue tracking live in `scripts/`. See `scripts/README.md`.
+
