@@ -69,7 +69,7 @@ private:
 	Ref<Shader> m_quadShader;
 	Ref<VertexArray> m_quadVertexArray;
 	Ref<VertexBuffer> m_quadVertexBuffer;
-	std::array<QuadVertex, MAX_QUAD_VERTICES> m_quadVertices;
+	std::array<Vertex, MAX_QUAD_VERTICES> m_quadVertices;
 	uint32_t m_quadVerticesCount = 0;
 
 	std::vector<Ref<Texture>> m_textures;

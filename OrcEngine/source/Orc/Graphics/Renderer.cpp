@@ -25,7 +25,7 @@ Renderer::Renderer()
 
 	m_quadShader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
 
-	m_quadVertexBuffer = createRef<VertexBuffer>(nullptr, static_cast<int32_t>(sizeof(QuadVertex) * MAX_QUAD_VERTICES));
+	m_quadVertexBuffer = createRef<VertexBuffer>(nullptr, static_cast<int32_t>(sizeof(Vertex) * MAX_QUAD_VERTICES));
 	m_quadVertexBuffer->setLayout(BufferLayout{
 		{ BufferLayout::ShaderDataType::Float3, "a_position" },
 		{ BufferLayout::ShaderDataType::Float4, "a_color" },
@@ -148,7 +148,7 @@ void Renderer::draw(const Sprite& sprite)
 	const auto& spriteVertices = sprite.getVertices();
 	for (size_t i = 0; i < 4; ++i)
 	{
-		m_quadVertices[m_quadVerticesCount + i] = QuadVertex{
+		m_quadVertices[m_quadVerticesCount + i] = Vertex{
 			.position = spriteVertices[i].position,
 			.color = spriteVertices[i].color,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -173,7 +173,7 @@ void Renderer::draw(const Rectangle& rectangle)
 	const auto& rectVertices = rectangle.getVertices();
 	for (size_t i = 0; i < 4; ++i)
 	{
-		m_quadVertices[m_quadVerticesCount + i] = QuadVertex{
+		m_quadVertices[m_quadVerticesCount + i] = Vertex{
 			.position = rectVertices[i].position,
 			.color = rectVertices[i].fillColor,
 			.secondaryColor = rectVertices[i].borderColor,
@@ -198,7 +198,7 @@ void Renderer::draw(const Circle& circle)
 	const auto& circleVertices = circle.getVertices();
 	for (size_t i = 0; i < 4; ++i)
 	{
-		m_quadVertices[m_quadVerticesCount + i] = QuadVertex{
+		m_quadVertices[m_quadVerticesCount + i] = Vertex{
 			.position = circleVertices[i].globalPosition,
 			.color = circleVertices[i].fillColor,
 			.secondaryColor = circleVertices[i].borderColor,
@@ -230,7 +230,7 @@ void Renderer::draw(const Text& text)
 
 		for (size_t j = 0; j < 4 && (i + j) < count; ++j)
 		{
-			m_quadVertices[m_quadVerticesCount + j] = QuadVertex{
+			m_quadVertices[m_quadVerticesCount + j] = Vertex{
 				.position = glyphVertices[i + j].position,
 				.color = glyphVertices[i + j].color,
 				.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
@@ -276,10 +276,10 @@ void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, Ref<Textu
 	Vector3f v2 = transform * Vector3f(0.0f, size.y, 1.0f);
 	Vector3f v3 = transform * Vector3f(size.x, size.y, 1.0f);
 
-	m_quadVertices[m_quadVerticesCount + 0] = QuadVertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 1] = QuadVertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 2] = QuadVertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 3] = QuadVertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 0] = Vertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 1] = Vertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 2] = Vertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 3] = Vertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
 
 	m_quadVerticesCount += 4;
 }
@@ -304,10 +304,10 @@ void Renderer::drawLine(const Vector3f& start, const Vector3f& end, const Color&
 		flush();
 
 	Vector4f normColor = color.normalized();
-	m_quadVertices[m_quadVerticesCount + 0] = QuadVertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 1] = QuadVertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 2] = QuadVertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 3] = QuadVertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 0] = Vertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 1] = Vertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 2] = Vertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
+	m_quadVertices[m_quadVerticesCount + 3] = Vertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
 
 	m_quadVerticesCount += 4;
 }

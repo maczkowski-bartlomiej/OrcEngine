@@ -1,6 +1,6 @@
 # 01: Define Canonical Vertex Struct and Update Renderer Batch Buffer
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 **What to build:**
@@ -15,3 +15,7 @@ Define the single canonical `orc::Vertex` structure in `OrcEngine/include/Orc/Gr
 - [ ] Engine and demo compile cleanly.
 
 ## Comments
+
+## Answer
+
+Defined canonical orc::Vertex in Vertex.hpp and updated Renderer dynamic batch buffer to use Vertex.

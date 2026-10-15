@@ -53,7 +53,7 @@ struct GlyphVertex
 	float textureIndex = 0.0f;
 };
 
-struct QuadVertex
+struct Vertex
 {
 	Vector3f position;
 	Vector4f color = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -67,6 +67,8 @@ struct QuadVertex
 	float innerRadius = 0.0f;
 	float radius = 0.0f;
 };
+
+using QuadVertex = Vertex;
 
 struct LineVertex
 {
