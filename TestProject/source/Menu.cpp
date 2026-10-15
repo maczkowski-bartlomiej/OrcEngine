@@ -59,9 +59,8 @@ void Menu::onEvent(const orc::Event& event)
 void Menu::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
-	renderer.begin(camera);
-	renderer.end();
+	renderer.beginScene(camera);
+	renderer.endScene();
 }
 
 void Menu::onGuiRender()

@@ -29,9 +29,8 @@ void AudioTest::onUpdate(float deltaTime)
 void AudioTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
-	renderer.begin(camera);
-	renderer.end();
+	renderer.beginScene(camera);
+	renderer.endScene();
 }
 
 void AudioTest::onEvent(const orc::Event& event)

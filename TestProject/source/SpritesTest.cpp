@@ -81,9 +81,8 @@ void SpritesTest::onEvent(const orc::Event& event)
 void SpritesTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
 
-	renderer.begin(camera);
+	renderer.beginScene(camera);
 
 	renderer.draw(m_sprite1);
 	renderer.draw(m_sprite2);
@@ -113,7 +112,7 @@ void SpritesTest::onRender()
 
 	drawLines();
 
-	renderer.end();
+	renderer.endScene();
 }
 
 void SpritesTest::onGuiRender()

@@ -4,12 +4,11 @@
 
 #include "Graphics/Rect.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Vertex.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
 
-class Circle : public Texturable<CircleVertex, 4>
+class Circle : public Texturable
 {
 public:
 	Circle();
@@ -31,7 +30,7 @@ public:
 	float getBorderThickness() const;
 
 	FloatRect getLocalRect() const override;
-	
+
 private:
 	void updateVerticesPositions() const override;
 
