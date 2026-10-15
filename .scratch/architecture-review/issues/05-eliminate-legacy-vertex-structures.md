@@ -1,6 +1,6 @@
 # Eliminate Legacy Vertex Structures and Untemplate Texturable
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 ## Description
@@ -50,3 +50,7 @@ Because of this template design:
   - Architecture decision recorded at `docs/adr/0002-unify-vertex-and-untemplate-texturable.md`.
   - Domain glossary updated at `GLOSSARY.md`.
 
+
+## Answer
+
+Implemented spec eliminate-legacy-vertex-structures on integration branch feature/eliminate-legacy-vertex-structures across 4 tickets. Unified 2D geometry around canonical orc::Vertex, untemplated Texturable, decoupled Text to std::vector<Vertex>, enabled fast-copy batch submission in Renderer, and completely deleted all legacy vertex structures.

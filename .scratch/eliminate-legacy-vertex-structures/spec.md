@@ -1,6 +1,6 @@
 # Eliminate Legacy Vertex Structures and Untemplate Texturable
 
-Status: ready-for-agent
+Status: resolved
 Role: spec
 
 ## Problem Statement
