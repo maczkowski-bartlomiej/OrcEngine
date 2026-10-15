@@ -34,12 +34,19 @@ Because of this template design:
 
 ## Acceptance Criteria
 
-- [ ] `Vertex.hpp` contains only `QuadVertex` (and any general vertex types needed by the engine).
-- [ ] `Texturable` is non-templated (`class Texturable : public Transformable`).
+- [ ] `Vertex.hpp` contains only `Vertex` (`orc::Vertex`).
+- [ ] `Texturable` is non-templated (`class Texturable : public Transformable`) holding `std::array<Vertex, 4>`.
 - [ ] `Sprite`, `Rectangle`, and `Circle` inherit from non-templated `Texturable`.
-- [ ] `Renderer::draw(...)` copies or generates `QuadVertex` directly without field-by-field transcoding from legacy structs.
+- [ ] `Text` uses `std::vector<Vertex>` directly and remains decoupled from `Texturable`.
+- [ ] `Renderer::draw(...)` fast-copies `Vertex` directly and stamps `textureIndex` without field-by-field transcoding.
+- [ ] Legacy vertex structures (`SpriteVertex`, `RectangleVertex`, `CircleVertex`, `GlyphVertex`, `LineVertex`) are deleted without dummy structs or typedefs.
 - [ ] All `TestProject` demo scenes and engine builds (`windows-debug`, `windows-release`, and Linux presets) build and run without warnings or regressions.
 - [ ] `lint-conventions.ps1` passes with 0 violations.
 
 ## Comments
+
+- Grilling session completed and architectural decisions locked:
+  - Spec produced at `.scratch/eliminate-legacy-vertex-structures/spec.md`.
+  - Architecture decision recorded at `docs/adr/0002-unify-vertex-and-untemplate-texturable.md`.
+  - Domain glossary updated at `GLOSSARY.md`.
 
