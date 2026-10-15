@@ -109,9 +109,8 @@ void CirclesTest::onEvent(const orc::Event& event)
 void CirclesTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
 
-	renderer.begin(camera);
+	renderer.beginScene(camera);
 
 	renderer.draw(m_circle1);
 	renderer.draw(m_circle2);
@@ -141,7 +140,7 @@ void CirclesTest::onRender()
 
 	drawLines();
 
-	renderer.end();
+	renderer.endScene();
 }
 
 void CirclesTest::onGuiRender()
