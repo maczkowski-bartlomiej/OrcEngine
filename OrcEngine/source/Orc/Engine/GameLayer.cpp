@@ -13,7 +13,6 @@ GameLayer::GameLayer()
 	audio(Engine::get().getAudio()),
 	window(Engine::get().getWindow()),
 	renderer(Engine::get().getRenderer()),
-	renderer2D(Engine::get().getRenderer2D()),
 	gameLayerManager(Engine::get().getGameLayerManager()),
 	fontResources(Engine::get().getFontResources()),
 	textureResources(Engine::get().getTextureResources()),

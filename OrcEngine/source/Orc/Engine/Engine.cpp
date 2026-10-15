@@ -17,7 +17,6 @@
 #include <Events/Event.hpp>
 #include <Graphics/FTLibrary.hpp>
 #include <Graphics/Renderer.hpp>
-#include <Graphics/Renderer2D.hpp>
 #include <Graphics/Window.hpp>
 
 namespace orc {
@@ -45,7 +44,6 @@ namespace orc {
 		m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
 		m_renderer = createUniquePtr<Renderer>();
-		m_renderer2D = createUniquePtr<Renderer2D>();
 
 		m_gui = createUniquePtr<Gui>();
 
@@ -68,7 +66,6 @@ namespace orc {
 
 		m_audio.reset();
 		m_gui.reset();
-		m_renderer2D.reset();
 		m_renderer.reset();
 		m_window.reset();
 		m_ftLibary.reset();
@@ -129,11 +126,6 @@ namespace orc {
 	Renderer& Engine::getRenderer()
 	{
 		return *m_renderer;
-	}
-
-	Renderer2D& Engine::getRenderer2D()
-	{
-		return *m_renderer2D;
 	}
 
 	GameLayerManager& Engine::getGameLayerManager()

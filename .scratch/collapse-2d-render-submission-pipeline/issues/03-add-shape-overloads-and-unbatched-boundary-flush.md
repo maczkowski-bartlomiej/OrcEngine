@@ -1,3 +1,4 @@
+Status: resolved
 # 03: Add Shape Overloads and Unbatched Boundary Flush
 
 **What to build:**
@@ -16,3 +17,5 @@ Convenience overloads on `Renderer2D` for `Sprite`, `Circle`, `Rectangle`, and `
 ## Answer
 
 Implemented shape overloads on `Renderer2D` and hooked `Renderer::draw(VertexArray, Shader, Matrix)` to flush active `Renderer2D` scenes.
+
+Integrated lines-as-quads into dynamic batch and added unbatched draw flushes

@@ -1,3 +1,4 @@
+Status: resolved
 # 01: Create Unified Quad Vertex and Composite Shader
 
 **What to build:**
@@ -14,3 +15,5 @@ A unified `QuadVertex` layout and composite shader that can render textured spri
 ## Answer
 
 Defined `QuadVertex` in `OrcEngine/include/Orc/Graphics/Vertex.hpp` and created `composite2d.vert.glsl` and `composite2d.frag.glsl` under `TestProject/shaders/`.
+
+Implemented QuadVertex and composite2d shaders

@@ -1,3 +1,4 @@
+Status: resolved
 # 04: Decouple Engine Lifecycle and Migrate TestProject Layers
 
 **What to build:**
@@ -16,3 +17,5 @@ Remove leaked frame lifecycle (`begin`/`end`) from `Engine::run()`, provide acce
 ## Answer
 
 Decoupled frame lifecycle from `Engine::run()`, exposed `Renderer2D` across engine and layers, migrated all demo screens in `TestProject`, removed legacy batch structures and inverted `zIndex` hacks, and verified clean compilation and execution on `windows-debug` and `windows-release`.
+
+Decoupled Engine frame clear from layer scene scope and migrated all demo scenes

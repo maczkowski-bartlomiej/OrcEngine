@@ -9,7 +9,6 @@ namespace orc {
 class Audio;
 class Window;
 class Renderer;
-class Renderer2D;
 class GameLayerManager;
 
 class GameLayer
@@ -35,7 +34,6 @@ protected:
 	Audio& audio;
 	Window& window;
 	Renderer& renderer;
-	Renderer2D& renderer2D;
 	GameLayerManager& gameLayerManager;
 
 	FontResources& fontResources;

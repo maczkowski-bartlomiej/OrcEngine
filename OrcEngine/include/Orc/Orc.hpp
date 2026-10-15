@@ -31,7 +31,6 @@
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/Rect.hpp"
 #include "Graphics/Renderer.hpp"
-#include "Graphics/Renderer2D.hpp"
 #include "Graphics/Shader.hpp"
 #include "Graphics/Sprite.hpp"
 #include "Graphics/Text.hpp"

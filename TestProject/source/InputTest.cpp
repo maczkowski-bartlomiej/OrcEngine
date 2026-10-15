@@ -62,9 +62,9 @@ void InputTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 
-	renderer2D.beginScene(camera);
-	renderer2D.draw(m_player);
-	renderer2D.endScene();
+	renderer.beginScene(camera);
+	renderer.draw(m_player);
+	renderer.endScene();
 }
 
 void InputTest::onGuiRender()

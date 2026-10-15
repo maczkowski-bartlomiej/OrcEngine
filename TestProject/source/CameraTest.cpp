@@ -42,10 +42,10 @@ void CameraTest::onUpdate(float deltaTime)
 void CameraTest::onRender()
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer2D.beginScene(camera);
-	renderer2D.draw(m_sprite1);
-	renderer2D.draw(m_sprite2);
-	renderer2D.endScene();
+	renderer.beginScene(camera);
+	renderer.draw(m_sprite1);
+	renderer.draw(m_sprite2);
+	renderer.endScene();
 }
 
 void CameraTest::onEvent(const orc::Event& event)
