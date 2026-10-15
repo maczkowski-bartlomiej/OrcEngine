@@ -1,6 +1,6 @@
 # Issue 01: Collapse the 2D Render Submission Pipeline
 
-Status: needs-triage
+Status: ready-for-agent
 
 ## Description
 
@@ -13,6 +13,10 @@ Consolidate 2D primitive rendering behind a unified `Renderer2D` deep module tha
 2. Preserves submission order naturally without relying on artificial z-index inversion hacks.
 3. Cleans the frame rendering lifecycle so layers submit primitives without duplicate `begin`/`end` invocations.
 
-See `.scratch/architecture-review/ideas.md#candidate-1-collapse-the-2d-render-submission-pipeline` for detailed analysis and grilling questions.
+See `.scratch/collapse-2d-render-submission-pipeline/spec.md` for the full synthesized specification.
 
 ## Comments
+
+- 2026-10-15: Grilling interview completed and synthesized into spec.
+- 2026-10-15: GLOSSARY.md updated with domain terms.
+- 2026-10-15: ADR 0001 created in docs/adr/0001-collapse-2d-render-submission-pipeline.md.
