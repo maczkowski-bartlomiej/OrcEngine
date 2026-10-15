@@ -22,9 +22,9 @@
 #ifdef ORC_DEBUG
 	#define ORC_DEBUG_ASSERTS
 
-	#ifdef ORC_PLATFORM_WINDOWS
+	#if defined(ORC_PLATFORM_WINDOWS) || defined(_WIN32)
 		#define ORC_DEBUGBREAK() __debugbreak()
-	#elif defined ORC_PLATFORM_LINUX
+	#elif defined(ORC_PLATFORM_LINUX) || defined(__linux__)
 		#include <signal.h>
 		#define ORC_DEBUGBREAK() raise(SIGTRAP)
 	#else

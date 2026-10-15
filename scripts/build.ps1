@@ -177,7 +177,7 @@ if ($Run) {
     }
 
     if (Test-Path $logFile) {
-        Write-Host "`nRecent entries from $logFile:" -ForegroundColor DarkGray
+        Write-Host "`nRecent entries from ${logFile}:" -ForegroundColor DarkGray
         Get-Content -Path $logFile -Tail 10 | ForEach-Object { Write-Host "  $_" -ForegroundColor Gray }
     }
 }

@@ -71,6 +71,8 @@ target_compile_definitions(OrcEngine
     PUBLIC
         $<$<CONFIG:Debug>:ORC_DEBUG>
         $<$<NOT:$<CONFIG:Debug>>:ORC_RELEASE>
+        $<$<PLATFORM_ID:Windows>:ORC_PLATFORM_WINDOWS>
+        $<$<PLATFORM_ID:Linux>:ORC_PLATFORM_LINUX>
         FMT_USE_OPTIMIZE_PRAGMA=0
 )
 
