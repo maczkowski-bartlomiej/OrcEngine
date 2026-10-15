@@ -1,6 +1,6 @@
 # 03: Decouple Text to Use Dynamic Vertex Vector
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 **What to build:**
@@ -15,3 +15,7 @@ Refactor `Text` in `OrcEngine/include/Orc/Graphics/Text.hpp` and `OrcEngine/sour
 - [ ] No references to `GlyphVertex` remain in `Text.hpp` or `Text.cpp`.
 
 ## Comments
+
+## Answer
+
+Decoupled Text from GlyphVertex to use dynamic std::vector<Vertex>, populating Vertex quads directly and fast-copying them in Renderer::draw(const Text&).

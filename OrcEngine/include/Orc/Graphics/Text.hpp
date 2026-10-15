@@ -27,7 +27,7 @@ public:
 	Ref<Font> getFont() const;
 	const Color& getColor() const;
 	std::string_view getString() const;
-	const std::vector<GlyphVertex>& getVertices() const;
+	const std::vector<Vertex>& getVertices() const;
 
 	FloatRect getLocalRect() const;
 	FloatRect getGlobalRect() const;
@@ -41,7 +41,7 @@ private:
 	Ref<Font> m_font;
 
 	std::string m_string;
-	mutable std::vector<GlyphVertex> m_vertices;
+	mutable std::vector<Vertex> m_vertices;
 
 	mutable FloatRect m_localRect;
 	mutable FloatRect m_globalRect;

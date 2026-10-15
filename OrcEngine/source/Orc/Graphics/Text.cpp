@@ -29,8 +29,9 @@ void Text::setColor(const Color& color)
 {
 	m_color = color;
 
-	for (GlyphVertex& vertex : m_vertices)
-		vertex.color = color.normalized();
+	Vector4f normColor = color.normalized();
+	for (Vertex& vertex : m_vertices)
+		vertex.color = normColor;
 }
 
 void Text::setString(const std::string& string)
@@ -57,7 +58,7 @@ std::string_view Text::getString() const
 	return m_string;
 }
 
-const std::vector<GlyphVertex>& Text::getVertices() const
+const std::vector<Vertex>& Text::getVertices() const
 {
 	if (m_isGeometryUpdateNeeded)
 		updateVertices();
@@ -91,6 +92,7 @@ void Text::updateVertices() const
 	Vector2f position;
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
 	const Matrix& transform = getTransformMatrix();
+	Vector4f normColor = m_color.normalized();
 
 	for (size_t i = 0; i < m_string.size(); i++)
 	{
@@ -111,21 +113,57 @@ void Text::updateVertices() const
 		float positionyY = position.y;
 		position.y -= character.offset.y;
 
-		m_vertices[i * 4 + 0].color = m_color.normalized();
-		m_vertices[i * 4 + 0].position = transform * Vector3f(position, 1.0f);
-		m_vertices[i * 4 + 0].textureCoord = normalizedBitmapCoordStart;
+		m_vertices[i * 4 + 0] = Vertex{
+			.position = transform * Vector3f(position, 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = normalizedBitmapCoordStart,
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f
+		};
 
-		m_vertices[i * 4 + 1].color = m_color.normalized();
-		m_vertices[i * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
-		m_vertices[i * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
+		m_vertices[i * 4 + 1] = Vertex{
+			.position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y),
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f
+		};
 
-		m_vertices[i * 4 + 2].color = m_color.normalized();
-		m_vertices[i * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
-		m_vertices[i * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
+		m_vertices[i * 4 + 2] = Vertex{
+			.position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y),
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f
+		};
 
-		m_vertices[i * 4 + 3].color = m_color.normalized();
-		m_vertices[i * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
-		m_vertices[i * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
+		m_vertices[i * 4 + 3] = Vertex{
+			.position = transform * Vector3f(position + Vector2f(width, height), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = normalizedBitmapCoordEnd,
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f
+		};
 
 		position.y = positionyY;
 		position.x += character.advance;
@@ -134,7 +172,7 @@ void Text::updateVertices() const
 		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
-	for (GlyphVertex& vertex : m_vertices)
+	for (Vertex& vertex : m_vertices)
 	{
 		vertex.position.y += m_localRect.bottom - 1;
 	}
@@ -173,8 +211,8 @@ void Text::calculateGlobalRect() const
 	}
 
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);
-
 }
+
 void Text::onTransformChangeCallback()
 {
 	m_isGeometryUpdateNeeded = true;

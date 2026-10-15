@@ -192,22 +192,11 @@ void Renderer::draw(const Text& text)
 		if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
 			flush();
 
-		for (size_t j = 0; j < 4 && (i + j) < count; ++j)
-		{
-			m_quadVertices[m_quadVerticesCount + j] = Vertex{
-				.position = glyphVertices[i + j].position,
-				.color = glyphVertices[i + j].color,
-				.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-				.textureCoord = glyphVertices[i + j].textureCoord,
-				.localPosition = Vector2f(0.0f, 0.0f),
-				.textureIndex = texSlot,
-				.shapeType = 3.0f,
-				.borderThickness = 0.0f,
-				.innerRadius = 0.0f,
-				.radius = 0.0f
-			};
-		}
-		m_quadVerticesCount += 4;
+		size_t quadsToCopy = std::min<size_t>(4, count - i);
+		std::copy_n(&glyphVertices[i], quadsToCopy, &m_quadVertices[m_quadVerticesCount]);
+		for (size_t j = 0; j < quadsToCopy; ++j)
+			m_quadVertices[m_quadVerticesCount + j].textureIndex = texSlot;
+		m_quadVerticesCount += static_cast<uint32_t>(quadsToCopy);
 	}
 }
 
