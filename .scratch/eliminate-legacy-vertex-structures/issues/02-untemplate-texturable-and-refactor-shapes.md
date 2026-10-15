@@ -1,6 +1,6 @@
 # 02: Untemplate Texturable and Refactor 2D Shapes
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 
 **What to build:**
@@ -20,3 +20,7 @@ Refactor `Texturable` into a clean, non-templated `Transformable` base class hol
 - [ ] `getVertices()` on shapes returns `const std::array<Vertex, 4>&`.
 
 ## Comments
+
+## Answer
+
+Untemplated Texturable to hold 4 Vertex instances directly, implemented methods in Texturable.cpp, deleted Texturable.inl, and updated Sprite, Rectangle, and Circle to inherit from Texturable and configure Vertex fields directly.

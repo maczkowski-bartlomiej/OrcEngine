@@ -146,21 +146,9 @@ void Renderer::draw(const Sprite& sprite)
 		flush();
 
 	const auto& spriteVertices = sprite.getVertices();
+	std::copy_n(spriteVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
 	for (size_t i = 0; i < 4; ++i)
-	{
-		m_quadVertices[m_quadVerticesCount + i] = Vertex{
-			.position = spriteVertices[i].position,
-			.color = spriteVertices[i].color,
-			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-			.textureCoord = spriteVertices[i].textureCoord,
-			.localPosition = Vector2f(0.0f, 0.0f),
-			.textureIndex = texSlot,
-			.shapeType = 0.0f,
-			.borderThickness = 0.0f,
-			.innerRadius = 0.0f,
-			.radius = 0.0f
-		};
-	}
+		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
 	m_quadVerticesCount += 4;
 }
 
@@ -171,21 +159,9 @@ void Renderer::draw(const Rectangle& rectangle)
 		flush();
 
 	const auto& rectVertices = rectangle.getVertices();
+	std::copy_n(rectVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
 	for (size_t i = 0; i < 4; ++i)
-	{
-		m_quadVertices[m_quadVerticesCount + i] = Vertex{
-			.position = rectVertices[i].position,
-			.color = rectVertices[i].fillColor,
-			.secondaryColor = rectVertices[i].borderColor,
-			.textureCoord = rectVertices[i].textureCoord,
-			.localPosition = Vector2f(0.0f, 0.0f),
-			.textureIndex = texSlot,
-			.shapeType = 1.0f,
-			.borderThickness = rectVertices[i].borderThickness,
-			.innerRadius = 0.0f,
-			.radius = 0.0f
-		};
-	}
+		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
 	m_quadVerticesCount += 4;
 }
 
@@ -196,21 +172,9 @@ void Renderer::draw(const Circle& circle)
 		flush();
 
 	const auto& circleVertices = circle.getVertices();
+	std::copy_n(circleVertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
 	for (size_t i = 0; i < 4; ++i)
-	{
-		m_quadVertices[m_quadVerticesCount + i] = Vertex{
-			.position = circleVertices[i].globalPosition,
-			.color = circleVertices[i].fillColor,
-			.secondaryColor = circleVertices[i].borderColor,
-			.textureCoord = circleVertices[i].textureCoord,
-			.localPosition = circleVertices[i].localPosition,
-			.textureIndex = texSlot,
-			.shapeType = 2.0f,
-			.borderThickness = circleVertices[i].borderThickness,
-			.innerRadius = circleVertices[i].innerRadius,
-			.radius = circleVertices[i].radius
-		};
-	}
+		m_quadVertices[m_quadVerticesCount + i].textureIndex = texSlot;
 	m_quadVerticesCount += 4;
 }
 

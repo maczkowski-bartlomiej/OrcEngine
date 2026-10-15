@@ -6,16 +6,22 @@ namespace orc {
 Sprite::Sprite()
 	: m_animator(this)
 {
+	for (auto& vertex : m_vertices)
+		vertex.shapeType = 0.0f;
 }
 
 Sprite::Sprite(Ref<Texture> texture)
 	: Texturable(texture), m_animator(this)
 {
+	for (auto& vertex : m_vertices)
+		vertex.shapeType = 0.0f;
 }
 
 Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
 	: Texturable(texture), m_animator(this)
 {
+	for (auto& vertex : m_vertices)
+		vertex.shapeType = 0.0f;
 	setPosition(position);
 }
 
@@ -23,8 +29,9 @@ void Sprite::setColor(const Color& color)
 {
 	m_color = color;
 
+	Vector4f normColor = color.normalized();
 	for (auto& vertex : m_vertices)
-		vertex.color = color.normalized();
+		vertex.color = normColor;
 }
 
 Color Sprite::getColor() const

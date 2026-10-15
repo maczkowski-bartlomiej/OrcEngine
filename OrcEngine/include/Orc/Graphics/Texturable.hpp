@@ -4,21 +4,21 @@
 #include "Graphics/Rect.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Transformable.hpp"
+#include "Graphics/Vertex.hpp"
 
 #include <array>
 
 namespace orc {
 
-template<typename VertexType, uint64_t VerticesCount>
 class Texturable : public Transformable
 {
 public:
 	Texturable();
 	Texturable(Ref<Texture> texture);
+	virtual ~Texturable() = default;
 
 	void setTexture(Ref<Texture> texture);
 	void setTextureRect(const FloatRect& textureRect);
-	void setVertices(const std::array<VertexType, VerticesCount>& vertices);
 
 	Ref<Texture> getTexture() const;
 	FloatRect getTextureRect() const;
@@ -26,8 +26,7 @@ public:
 	FloatRect getGlobalRect() const;
 	virtual FloatRect getLocalRect() const = 0;
 
-	VertexType getVertex(uint64_t index) const;
-	const std::array<VertexType, VerticesCount>& getVertices() const;
+	const std::array<Vertex, 4>& getVertices() const;
 
 protected:
 	virtual void updateVerticesPositions() const = 0;
@@ -35,16 +34,14 @@ protected:
 	Ref<Texture> m_texture;
 	FloatRect m_textureRect;
 	mutable FloatRect m_globalRect;
-	mutable std::array<VertexType, VerticesCount> m_vertices;
+	mutable std::array<Vertex, 4> m_vertices;
 
 private:
 	void calculateGlobalRect() const;
 	void updateVerticesTexCoords() const;
 	void onTransformChangeCallback() override;
-	
-	mutable bool m_isVertexPositionsUpdateNeeded;
+
+	mutable bool m_isVertexPositionsUpdateNeeded = true;
 };
 
 }
-
-#include "Graphics/Texturable.inl"

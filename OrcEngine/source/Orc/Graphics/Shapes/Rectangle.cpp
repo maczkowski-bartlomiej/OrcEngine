@@ -4,13 +4,21 @@
 
 namespace orc {
 
+Rectangle::Rectangle()
+{
+	for (auto& vertex : m_vertices)
+		vertex.shapeType = 1.0f;
+}
+
 Rectangle::Rectangle(const Vector2f& size, const Color& color)
+	: Rectangle()
 {
 	setSize(size);
 	setFillColor(color);
 }
 
 Rectangle::Rectangle(const Vector2f& position, const Vector2f& size, const Color& color)
+	: Rectangle()
 {
 	setSize(size);
 	setPosition(position);
@@ -20,16 +28,17 @@ Rectangle::Rectangle(const Vector2f& position, const Vector2f& size, const Color
 void Rectangle::setFillColor(const Color& fillColor)
 {
 	m_fillColor = fillColor;
+	Vector4f normColor = m_fillColor.normalized();
 	for (auto& vertex : m_vertices)
-		vertex.fillColor = m_fillColor.normalized();
+		vertex.color = normColor;
 }
 
 void Rectangle::setBorderColor(const Color& borderColor)
 {
 	m_borderColor = borderColor;
-
+	Vector4f normColor = m_borderColor.normalized();
 	for (auto& vertex : m_vertices)
-		vertex.borderColor = m_borderColor.normalized();
+		vertex.secondaryColor = normColor;
 }
 
 void Rectangle::setSize(const Vector2f& size)
