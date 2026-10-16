@@ -5,16 +5,16 @@
 class InputTest : public orc::GameLayer
 {
 public:
-	InputTest();
+	explicit InputTest(orc::LayerContext& context);
 	~InputTest();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(float deltaTime) override;
+	void onUpdate(const orc::FrameContext& ctx) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender() override;
+	void onRender(orc::Renderer& renderer) override;
 	void onGuiRender() override;
 
 private:

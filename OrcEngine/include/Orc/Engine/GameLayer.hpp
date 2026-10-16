@@ -1,44 +1,35 @@
 #pragma once
 
+#include "Engine/FrameContext.hpp"
+#include "Engine/LayerContext.hpp"
 #include "Events/Event.hpp"
 #include "Graphics/Camera.hpp"
-#include "Engine/ResourceHolder.hpp"
 
 namespace orc {
 
-class Audio;
-class Window;
 class Renderer;
-class GameLayerManager;
 
 class GameLayer
 {
 public:
-	GameLayer();
+	explicit GameLayer(LayerContext& context);
 	virtual ~GameLayer() = default;
 
 	virtual void onAttach() {}
 	virtual void onDetach() {}
 
-	virtual void onUpdate(float dt) {}
-	virtual void onEvent(const Event& event) {}
+	virtual void onUpdate(const FrameContext& ctx) {}
+	virtual void onEvent(const Event& event);
 
-	virtual void onRender() {}
+	virtual void onRender(Renderer& renderer) {}
 	virtual void onGuiRender() {}
 
 	Camera& getCamera();
+	LayerContext& getContext();
 
 protected:
+	LayerContext& m_context;
 	Camera camera;
-
-	Audio& audio;
-	Window& window;
-	Renderer& renderer;
-	GameLayerManager& gameLayerManager;
-
-	FontResources& fontResources;
-	TextureResources& textureResources;
-	AnimationResources& animationResources;
 };
 
 }

@@ -8,8 +8,10 @@
 #include "Engine/Debug.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/EntryPoint.hpp"
+#include "Engine/FrameContext.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/GameLayerManager.hpp"
+#include "Engine/LayerContext.hpp"
 #include "Engine/Config.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/Random.hpp"
@@ -45,6 +47,7 @@
 #include "Graphics/Shapes/Circle.hpp"
 #include "Graphics/Shapes/Rectangle.hpp"
 
+#include "Input/Input.hpp"
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"
 

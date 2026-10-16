@@ -1,10 +1,11 @@
 #include "CameraTest.hpp"
 
-CameraTest::CameraTest()
+CameraTest::CameraTest(orc::LayerContext& context)
+	: orc::GameLayer(context)
 {
 	ORC_LOG_INFO("CameraTest init.");
 	
-	orc::Ref<orc::Texture> zombieTexture = textureResources.getResource("zombie_texture");
+	orc::Ref<orc::Texture> zombieTexture = m_context.textureResources.getResource("zombie_texture");
 	m_sprite1 = orc::Sprite(zombieTexture, orc::Vector2f(400.0f, 300.0f));
 	m_sprite1.setOrigin(m_sprite1.getGlobalRect().getSize() / 2.0f);
 
@@ -21,7 +22,7 @@ void CameraTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to CameraTest.");
 	ORC_LOG_INFO("<- AudioTest | CirclesTest ->");
-	window.setTitle("CameraTest");
+	m_context.window.setTitle("CameraTest");
 }
 
 void CameraTest::onDetach()
@@ -29,17 +30,17 @@ void CameraTest::onDetach()
 	ORC_LOG_INFO("Leaving from CameraTest.");
 }
 
-void CameraTest::onUpdate(float deltaTime)
+void CameraTest::onUpdate(const orc::FrameContext& ctx)
 {
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::Q)) camera.rotate(0.1f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::E)) camera.rotate(-0.1f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::W)) camera.move(0.0f, -10.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::S)) camera.move(0.0f, 10.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::A)) camera.move(-10.0f, 0.0f);
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::D)) camera.move(10.0f, 0.0f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::Q)) camera.rotate(0.1f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::E)) camera.rotate(-0.1f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::W)) camera.move(0.0f, -10.0f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::S)) camera.move(0.0f, 10.0f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::A)) camera.move(-10.0f, 0.0f);
+	if (ctx.input.isKeyPressed(orc::Keyboard::Key::D)) camera.move(10.0f, 0.0f);
 }
 
-void CameraTest::onRender()
+void CameraTest::onRender(orc::Renderer& renderer)
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	renderer.beginScene(camera);
@@ -50,13 +51,15 @@ void CameraTest::onRender()
 
 void CameraTest::onEvent(const orc::Event& event)
 {
+	orc::GameLayer::onEvent(event);
+
 	event.visit(
 		[this](const orc::KeyboardKeyPressedEvent& e)
 		{
 			switch (e.key)
 			{
-				case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("AudioTest"); break;
-				case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("CirclesTest"); break;
+				case orc::Keyboard::Key::Left: m_context.gameLayerManager.setActiveLayer("AudioTest"); break;
+				case orc::Keyboard::Key::Right: m_context.gameLayerManager.setActiveLayer("CirclesTest"); break;
 				default: break;
 			}
 		},
@@ -101,21 +104,21 @@ void CameraTest::onGuiRender()
 	ImGui::Begin("Navigation Menu");
 	{
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AnimationTest");
+			m_context.gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AudioTest");
+			m_context.gameLayerManager.setActiveLayer("AudioTest");
 		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CameraTest");
+			m_context.gameLayerManager.setActiveLayer("CameraTest");
 		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CirclesTest");
+			m_context.gameLayerManager.setActiveLayer("CirclesTest");
 		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveLayer("Menu");
+			m_context.gameLayerManager.setActiveLayer("Menu");
 		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("InputTest");
+			m_context.gameLayerManager.setActiveLayer("InputTest");
 		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("RectanglesTest");
+			m_context.gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("SpritesTest");
+			m_context.gameLayerManager.setActiveLayer("SpritesTest");
 	}
 	ImGui::End();
 }

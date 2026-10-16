@@ -1,12 +1,13 @@
 #include "RectanglesTest.hpp"
 
-RectanglesTest::RectanglesTest()
+RectanglesTest::RectanglesTest(orc::LayerContext& context)
+	: orc::GameLayer(context)
 {
 	ORC_LOG_INFO("RectanglesTest init.");
 
-	orc::Ref<orc::Texture> gradientTexture = textureResources.getResource("gradient_texture");
-	orc::Ref<orc::Texture> smallTexture = textureResources.getResource("small_texture");
-	orc::Ref<orc::Font> font = fontResources.getResource("arial_font");
+	orc::Ref<orc::Texture> gradientTexture = m_context.textureResources.getResource("gradient_texture");
+	orc::Ref<orc::Texture> smallTexture = m_context.textureResources.getResource("small_texture");
+	orc::Ref<orc::Font> font = m_context.fontResources.getResource("arial_font");
 
 	m_text1 = orc::Text(font, "Blue Color"); m_text1.setPosition(100.0f, 0.0f); m_text1.setScale(0.25f, 0.25f); m_text1.setOrigin(m_text1.getGlobalRect().getSize() / 2.0f);
 	m_rectangle1 = orc::Rectangle(orc::Vector2f(100.0f, 75.0f), orc::Vector2f(75.0f, 75.0f), orc::Color(0, 0, 255));
@@ -86,7 +87,7 @@ void RectanglesTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to RectanglesTest.");
 	ORC_LOG_INFO("<- Menu | SpritesTest ->");
-	window.setTitle("RectanglesTest");
+	m_context.window.setTitle("RectanglesTest");
 }
 
 void RectanglesTest::onDetach()
@@ -94,25 +95,27 @@ void RectanglesTest::onDetach()
 	ORC_LOG_INFO("Leaving from RectanglesTest.");
 }
 
-void RectanglesTest::onUpdate(float deltaTime)
+void RectanglesTest::onUpdate(const orc::FrameContext& ctx)
 {
-	m_rectangle4.rotate(65.0f * deltaTime);
+	m_rectangle4.rotate(65.0f * ctx.deltaTime);
 }
 
 void RectanglesTest::onEvent(const orc::Event& event)
 {
+	orc::GameLayer::onEvent(event);
+
 	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
 	{
 		switch (kbPressed->key)
 		{
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("SpritesTest"); break;
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("Menu"); break;
+			case orc::Keyboard::Key::Right: m_context.gameLayerManager.setActiveLayer("SpritesTest"); break;
+			case orc::Keyboard::Key::Left: m_context.gameLayerManager.setActiveLayer("Menu"); break;
 			default: break;
 		}
 	}
 }
 
-void RectanglesTest::onRender()
+void RectanglesTest::onRender(orc::Renderer& renderer)
 {
 	renderer.setClearColor(orc::Color(25, 25, 25, 255));
 
@@ -144,7 +147,7 @@ void RectanglesTest::onRender()
 	renderer.draw(m_text11);
 	renderer.draw(m_text12);
 
-	drawLines();
+	drawLines(renderer);
 
 	renderer.endScene();
 }
@@ -154,26 +157,26 @@ void RectanglesTest::onGuiRender()
 	ImGui::Begin("Navigation Menu");
 	{
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AnimationTest");
+			m_context.gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AudioTest");
+			m_context.gameLayerManager.setActiveLayer("AudioTest");
 		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CameraTest");
+			m_context.gameLayerManager.setActiveLayer("CameraTest");
 		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CirclesTest");
+			m_context.gameLayerManager.setActiveLayer("CirclesTest");
 		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveLayer("Menu");
+			m_context.gameLayerManager.setActiveLayer("Menu");
 		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("InputTest");
+			m_context.gameLayerManager.setActiveLayer("InputTest");
 		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("RectanglesTest");
+			m_context.gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("SpritesTest");
+			m_context.gameLayerManager.setActiveLayer("SpritesTest");
 	}
 	ImGui::End();
 }
 
-void RectanglesTest::drawLines()
+void RectanglesTest::drawLines(orc::Renderer& renderer)
 {
 	renderer.drawLine(orc::Vector2f(200.0f, 0.0f), orc::Vector2f(200.0f, 600.0f), orc::Color(255));
 	renderer.drawLine(orc::Vector2f(400.0f, 0.0f), orc::Vector2f(400.0f, 600.0f), orc::Color(255));

@@ -32,16 +32,12 @@ namespace orc {
 			bool numLock = false;
 			bool capsLock = false;
 		};
-
-		static bool isKeyPressed(Key key);
 	};
 
 	namespace glfw {
 
 		Keyboard::Key glfwKeyToOrcKey(int glfwKey, int mods);
 		Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods);
-
-		int orcKeyToGlfwKey(Keyboard::Key key);
 	}
 
 }

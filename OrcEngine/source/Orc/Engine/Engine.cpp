@@ -49,9 +49,22 @@ namespace orc {
 
 		m_audio = createUniquePtr<Audio>(config.audioSettings);
 
+		m_input = createUniquePtr<Input>();
+
 		m_fontResources.loadResources(config.fontsPath);
 		m_textureResources.loadResources(config.texturesPath);
 		m_animationResources.loadResources(config.animationsPath);
+
+		m_layerContext = createUniquePtr<LayerContext>(LayerContext{
+			*m_window,
+			*m_renderer,
+			*m_audio,
+			*m_gameLayerManager,
+			m_fontResources,
+			m_textureResources,
+			m_animationResources,
+			*m_input
+		});
 	}
 
 	Engine::~Engine()
@@ -59,6 +72,9 @@ namespace orc {
 		if (m_instance != this) return;
 
 		m_gameLayerManager->clear();
+
+		m_layerContext.reset();
+		m_input.reset();
 
 		m_animationResources.clear();
 		m_textureResources.clear();
@@ -89,9 +105,10 @@ namespace orc {
 			Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
 			if (gameLayer)
 			{
-				gameLayer->onUpdate(elapsed);
+				FrameContext frameContext{ elapsed, *m_input, *m_layerContext };
+				gameLayer->onUpdate(frameContext);
 
-				gameLayer->onRender();
+				gameLayer->onRender(*m_renderer);
 
 				m_gui->begin();
 				gameLayer->onGuiRender();
@@ -133,6 +150,16 @@ namespace orc {
 		return *m_gameLayerManager;
 	}
 
+	Input& Engine::getInput()
+	{
+		return *m_input;
+	}
+
+	LayerContext& Engine::getLayerContext()
+	{
+		return *m_layerContext;
+	}
+
 	FTLibrary& Engine::getFTLibary()
 	{
 		return *m_ftLibary;
@@ -150,6 +177,8 @@ namespace orc {
 
 	void Engine::onEvent(const Event& event)
 	{
+		m_input->onEvent(event);
+
 		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
 		if (gameLayer)
 		{
@@ -160,14 +189,6 @@ namespace orc {
 			[this, &event](const WindowClosedEvent&)
 			{
 				m_running = false;
-				event.setHandled();
-			},
-			[this, &gameLayer, &event](const WindowResizedEvent& windowResizedEvent)
-			{
-				if (gameLayer)
-				{
-					gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);
-				}
 				event.setHandled();
 			},
 			[&event](auto&&)

@@ -22,6 +22,6 @@ void orc::onEngineStart(orc::Engine& engine)
 {
 	ORC_LOG_INFO("Test Project v.{}.{}.{}", 0, 0, 1);
 
-	engine.getGameLayerManager().addLayer("Menu", orc::createRef<Menu>());
+	engine.getGameLayerManager().addLayer("Menu", orc::createRef<Menu>(engine.getLayerContext()));
 	engine.getGameLayerManager().setActiveLayer("Menu");
 }

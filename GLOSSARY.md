@@ -23,3 +23,15 @@ _Avoid_: Z-index ordering, depth sorting
 **Texturable**:
 A 2D transformable quad element holding texture coordinates, bounds, and four `Vertex` elements directly compatible with dynamic quad batching.
 _Avoid_: TexturedQuad, ShapeVertexArray, QuadDrawable
+
+**LayerContext**:
+The persistent environment context supplied to a layer via constructor injection, granting scoped access to engine subsystems and resources.
+_Avoid_: EngineContext, SystemRegistry, ServiceLocator
+
+**FrameContext**:
+The per-frame execution state supplied to active layers during updates, providing delta time, an input snapshot, and a reference to the layer context.
+_Avoid_: UpdateContext, FrameState, TickContext
+
+**Input**:
+The engine subsystem tracking keyboard, mouse, and cursor state snapshots decoupled from window handles and platform APIs.
+_Avoid_: InputManager, InputState, RawInput

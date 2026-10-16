@@ -77,8 +77,8 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
 ```
                               ┌────────────────────────────────────────┐
                               │            Engine Lifecycle            │
-                              │    (Window, Audio, Renderer, Gui,      │
-                              │     GameLayerManager, Resources)       │
+                              │ (Window, Audio, Renderer, Gui, Input,  │
+                              │  GameLayerManager, Resources, Context) │
                               └───────────────────┬────────────────────┘
                                                   │
                                                   ▼
@@ -88,8 +88,8 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
          │ 1. Clock::restart() -> elapsed delta time                                       │
          │ 2. Renderer::clear()                                                            │
          │ 3. GameLayerManager::getActiveLayer()                                           │
-         │ 4. activeLayer->onUpdate(elapsed)                                               │
-         │ 5. activeLayer->onRender() [inside layer: beginScene(camera) -> draw -> endScene()]│
+         │ 4. activeLayer->onUpdate(FrameContext{ elapsed, input, layerContext })          │
+         │ 5. activeLayer->onRender(renderer) [inside layer: beginScene(camera) -> endScene()]│
          │ 6. Gui::begin() -> activeLayer->onGuiRender() -> Gui::end()                     │
          │ 7. Audio::update()                                                              │
          │ 8. Window::display() -> glfwPollEvents() & glfwSwapBuffers()                    │
@@ -97,7 +97,7 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
 ```
 
 ### 4.1 Engine Coordination & Initialization Order
-`Engine` is the top-level singleton coordinator. It constructs and initializes subsystems in strict sequential order:
+`Engine` is the top-level coordinator. It constructs and initializes subsystems in strict sequential order:
 1. `Logger::init(config.logPath)`: Sets up file and console logging via spdlog.
 2. `GameLayerManager`: Manages layer registration and active layer pointer.
 3. `FTLibrary`: FreeType library context for font glyph loading.
@@ -105,17 +105,21 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
 5. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader.
 6. `Gui`: ImGui GLFW and OpenGL 3 backend context.
 7. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
-8. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`).
+8. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
+9. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`).
+10. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers.
 
 ### 4.2 Game Layers & Layer Management
+The layer runtime and context injection model is detailed in [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
 - `GameLayerManager` stores registered layers by name in a hash map and maintains a pointer to the currently active layer. Switching layers (`setActiveLayer(name)`) invokes `onDetach()` on the outgoing layer and `onAttach()` on the incoming layer.
+- `GameLayer` requires an explicit `LayerContext&` via constructor reference injection (`explicit GameLayer(LayerContext& context)`), storing `m_context` and initializing its `Camera` from `context.window` dimensions (with a `1280x720` fallback when uninitialized/headless).
 - `GameLayer` provides virtual lifecycle hooks:
   - `onAttach()`: Invoked when the layer becomes active (e.g., setting window title, setting up scene state).
   - `onDetach()`: Invoked when transitioning away from the layer.
-  - `onUpdate(float dt)`: Per-frame game logic, input response, and physics simulation.
-  - `onRender()`: Submits 2D primitives within an explicit **Scene Scope** (`renderer.beginScene(camera)` ... `renderer.endScene()`).
+  - `onUpdate(const FrameContext& ctx)`: Per-frame game logic, input response (`ctx.input`), delta time (`ctx.deltaTime`), and subsystem access (`ctx.context`).
+  - `onRender(Renderer& renderer)`: Submits 2D primitives to the supplied `Renderer&` within an explicit **Scene Scope** (`renderer.beginScene(camera)` ... `renderer.endScene()`).
   - `onGuiRender()`: Submits ImGui controls enclosed between `Gui::begin()` and `Gui::end()`.
-  - `onEvent(const Event& event)`: Handles dispatched input and window events.
+  - `onEvent(const Event& event)`: Handles dispatched input and window events. Base `GameLayer::onEvent` automatically updates `camera` viewport dimensions on `WindowResizedEvent`.
 
 ### 4.3 Window, Input, and Events Flow
 - **Event Generation**: GLFW window callbacks (keys, mouse buttons, cursor move, scroll, window resize, window close) trigger lambda dispatchers configured in `Window::setCallbacks()`.
@@ -130,8 +134,8 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
   - Direct conversion: `event.as<T>()` returns `const T&` (throws `std::bad_variant_access` if mismatched)
   - Event dispatch helper: `EventDispatcher(event).dispatch<T>(callback)`
   - Consumption flag: `event.setHandled(bool)` and `event.isHandled()`
-- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. The active `GameLayer` receives first chance to process the event via `gameLayer->onEvent(event)`. Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`, updating active camera viewport on `WindowResizedEvent`).
-- **Input Polling**: For immediate state polling outside event callbacks, `Keyboard::isKeyPressed(key)` and `Mouse::isButtonPressed(button)` query GLFW directly via `Engine::get().getWindow().getNativeWindow()`.
+- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating camera viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
+- **Input Subsystem**: `Input` tracks pressed keys (`isKeyPressed(Keyboard::Key)`), mouse buttons (`isMouseButtonPressed(Mouse::Button)`), and cursor coordinates (`getMousePosition()`) purely from window events without polling native GLFW window handles. Layers query input via `ctx.input` in `onUpdate(const FrameContext& ctx)` or `m_context.input`.
 
 ### 4.4 Graphics & Rendering Subsystem
 

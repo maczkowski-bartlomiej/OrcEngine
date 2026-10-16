@@ -5,20 +5,20 @@
 class SpritesTest : public orc::GameLayer
 {
 public:
-	SpritesTest();
+	explicit SpritesTest(orc::LayerContext& context);
 	~SpritesTest();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(float deltaTime) override;
+	void onUpdate(const orc::FrameContext& ctx) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender() override;
+	void onRender(orc::Renderer& renderer) override;
 	void onGuiRender() override;
 
 private:
-	void drawLines();
+	void drawLines(orc::Renderer& renderer);
 
 	orc::Sprite m_sprite1;
 	orc::Sprite m_sprite2;

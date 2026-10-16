@@ -5,15 +5,15 @@
 class AudioTest : public orc::GameLayer
 {
 public:
-	AudioTest();
+	explicit AudioTest(orc::LayerContext& context);
 	~AudioTest();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(float deltaTime) override;
+	void onUpdate(const orc::FrameContext& ctx) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender() override;
+	void onRender(orc::Renderer& renderer) override;
 	void onGuiRender() override;
 };

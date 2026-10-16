@@ -3,13 +3,16 @@
 #include "Audio/Audio.hpp"
 #include "Core.hpp"
 #include "Engine/Config.hpp"
+#include "Engine/FrameContext.hpp"
 #include "Engine/GameLayerManager.hpp"
+#include "Engine/LayerContext.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Events/Event.hpp"
 #include "Graphics/FTLibrary.hpp"
 #include "Graphics/Gui.hpp"
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Window.hpp"
+#include "Input/Input.hpp"
 
 namespace orc {
 
@@ -26,6 +29,8 @@ public:
 	Renderer& getRenderer();
 	FTLibrary& getFTLibary();
 	GameLayerManager& getGameLayerManager();
+	Input& getInput();
+	LayerContext& getLayerContext();
 
 	FontResources& getFontResources();
 	TextureResources& getTextureResources();
@@ -44,6 +49,8 @@ private:
 	UniquePtr<Renderer> m_renderer;
 	UniquePtr<FTLibrary> m_ftLibary;
 	UniquePtr<GameLayerManager> m_gameLayerManager;
+	UniquePtr<Input> m_input;
+	UniquePtr<LayerContext> m_layerContext;
 
 	FontResources m_fontResources;
 	TextureResources m_textureResources;

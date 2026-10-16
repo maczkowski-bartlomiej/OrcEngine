@@ -1,6 +1,7 @@
 #include "ScriptTest.hpp"
 
-ScriptTest::ScriptTest()
+ScriptTest::ScriptTest(orc::LayerContext& context)
+	: orc::GameLayer(context)
 {
 }
 
@@ -16,15 +17,16 @@ void ScriptTest::onDetach()
 {
 }
 
-void ScriptTest::onUpdate(float deltaTime)
+void ScriptTest::onUpdate(const orc::FrameContext& ctx)
 {
 }
 
 void ScriptTest::onEvent(const orc::Event& event)
 {
+	orc::GameLayer::onEvent(event);
 }
 
-void ScriptTest::onRender()
+void ScriptTest::onRender(orc::Renderer& renderer)
 {
 }
 

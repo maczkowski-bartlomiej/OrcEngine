@@ -66,7 +66,7 @@ The opportunities are prepared for future **grilling sessions** (`/grill-me` or 
 ## Candidate 2: Decouple Layer Runtime from Global Engine Singleton
 
 ### 1. Classification & Scope
-- **Status:** `needs-triage`
+- **Status:** `triaged`
 - **Strength:** `Strong`
 - **Dependency Category:** `in-process`
 - **Primary Files:**

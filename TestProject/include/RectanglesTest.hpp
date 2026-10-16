@@ -5,20 +5,20 @@
 class RectanglesTest : public orc::GameLayer
 {
 public:
-	RectanglesTest();
+	explicit RectanglesTest(orc::LayerContext& context);
 	~RectanglesTest();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(float deltaTime) override;
+	void onUpdate(const orc::FrameContext& ctx) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender() override;
+	void onRender(orc::Renderer& renderer) override;
 	void onGuiRender() override;
 
 private:
-	void drawLines();
+	void drawLines(orc::Renderer& renderer);
 
 	orc::Rectangle m_rectangle1;
 	orc::Rectangle m_rectangle2;
