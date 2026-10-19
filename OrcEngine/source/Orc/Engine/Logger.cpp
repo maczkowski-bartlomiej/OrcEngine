@@ -73,7 +73,7 @@ bool Logger::init(const std::string& logPath)
 	return false;
 }
 
-void Logger::deinit() 
+void Logger::deinit()
 {
 	spdlog::shutdown();
 }

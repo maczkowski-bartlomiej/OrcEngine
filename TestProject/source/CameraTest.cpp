@@ -4,7 +4,7 @@ CameraTest::CameraTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
 	ORC_LOG_INFO("CameraTest init.");
-	
+
 	orc::Ref<orc::Texture> zombieTexture = m_layerContext.textureResources.getResource("zombie_texture");
 	m_sprite1 = orc::Sprite(zombieTexture, orc::Vector2f(400.0f, 300.0f));
 	m_sprite1.setOrigin(m_sprite1.getGlobalRect().getSize() / 2.0f);

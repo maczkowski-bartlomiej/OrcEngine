@@ -13,7 +13,7 @@ namespace orc {
 	{
 		ORC_ASSERT(system, "Uninitialized audio system.");
 
-		FMOD::Studio::Bus* bus = nullptr; 
+		FMOD::Studio::Bus* bus = nullptr;
 		if (!fmodCall(system->getBus(busName.c_str(), &bus)))
 		{
 			ORC_LOG_ERROR("Failed to load bus '{}'.", busName);

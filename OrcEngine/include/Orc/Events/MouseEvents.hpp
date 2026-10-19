@@ -9,7 +9,7 @@ struct MouseButtonPressedEvent
 	Mouse::Button button = Mouse::Button::Invalid;
 
 	MouseButtonPressedEvent() = default;
-	explicit MouseButtonPressedEvent(Mouse::Button button) 
+	explicit MouseButtonPressedEvent(Mouse::Button button)
 		: button(button) {}
 };
 
@@ -18,7 +18,7 @@ struct MouseButtonReleasedEvent
 	Mouse::Button button = Mouse::Button::Invalid;
 
 	MouseButtonReleasedEvent() = default;
-	explicit MouseButtonReleasedEvent(Mouse::Button button) 
+	explicit MouseButtonReleasedEvent(Mouse::Button button)
 		: button(button) {}
 };
 
@@ -28,7 +28,7 @@ struct MouseMovedEvent
 	float y = 0.0f;
 
 	MouseMovedEvent() = default;
-	MouseMovedEvent(float x, float y) 
+	MouseMovedEvent(float x, float y)
 		: x(x), y(y) {}
 };
 
@@ -38,7 +38,7 @@ struct MouseWheelScrolledEvent
 	float yDelta = 0.0f;
 
 	MouseWheelScrolledEvent() = default;
-	MouseWheelScrolledEvent(float xDelta, float yDelta) 
+	MouseWheelScrolledEvent(float xDelta, float yDelta)
 		: xDelta(xDelta), yDelta(yDelta) {}
 };
 

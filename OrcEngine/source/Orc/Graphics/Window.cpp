@@ -40,7 +40,7 @@ Window::~Window()
 	glfwTerminate();
 }
 
-void Window::display() 
+void Window::display()
 {
 	glfwPollEvents();
 	glfwSwapBuffers(m_glfwWindow);
@@ -52,17 +52,17 @@ void Window::setTitle(const std::string& title)
 	glfwSetWindowTitle(m_glfwWindow, m_videoSettings.title.c_str());
 }
 
-void Window::setEventCallback(Window::EventCallback eventCallback) 
+void Window::setEventCallback(Window::EventCallback eventCallback)
 {
 	m_videoSettings.eventCallback = std::move(eventCallback);
 }
 
-bool Window::getVsync() const 
+bool Window::getVsync() const
 {
 	return m_videoSettings.vsync;
 }
 
-void Window::setVsync(bool vsync) 
+void Window::setVsync(bool vsync)
 {
 	if (vsync)
 	{
@@ -76,17 +76,17 @@ void Window::setVsync(bool vsync)
 	m_videoSettings.vsync = vsync;
 }
 
-uint32_t Window::getWidth() const 
+uint32_t Window::getWidth() const
 {
 	return m_videoSettings.width;
 }
 
-uint32_t Window::getHeight() const 
+uint32_t Window::getHeight() const
 {
 	return m_videoSettings.height;
 }
 
-Vector2u Window::getSize() const 
+Vector2u Window::getSize() const
 {
 	return {m_videoSettings.width, m_videoSettings.height};
 }

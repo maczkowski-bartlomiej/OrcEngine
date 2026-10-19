@@ -40,7 +40,7 @@ if [ "$CHANGED_ONLY" -eq 1 ]; then
             if [[ "$f" =~ \.(hpp|cpp|inl)$ ]] && [ -f "$f" ]; then
                 FILES+=("$f")
             fi
-        done < <(git status --porcelain -uall | awk '{print $2}')
+        done < <((git diff --name-only HEAD 2>/dev/null || true; git ls-files --others --exclude-standard 2>/dev/null || true) | sort -u)
     fi
     if [ ${#FILES[@]} -eq 0 ]; then
         printf "\033[32mNo changed C++ files found in git working tree.\033[0m\n"
@@ -93,9 +93,30 @@ for f in "${FILES[@]}"; do
     # 3. Check tab indentation (flag 4+ leading spaces)
     SPACE_LINES=$(grep -nE '^[ ]{4,}[^ *]' "$f" | head -n 1 || true)
     if [ -n "$SPACE_LINES" ]; then
-        LINE_NUM="${SPACE_LINES%%:*}"
-        printf "%s\n  \033[33mLine %s [WARN]: Space-based indentation detected. OrcEngine standard is tab indentation.\033[0m\n" "$f" "$LINE_NUM"
-        FILE_WARNINGS=$((FILE_WARNINGS + 1))
+        if [ "$FIX" -eq 1 ]; then
+            while grep -qE '^\t*[ ]{4}' "$f"; do
+                sed -i -E 's/^(\t*)[ ]{4}/\1\t/' "$f"
+            done
+            sed -i -E 's/[[:space:]]+$//' "$f"
+            printf "%s\n  \033[32m[FIXED]: Converted space-based indentation to tabs and trimmed trailing whitespace\033[0m\n" "$f"
+        else
+            LINE_NUM="${SPACE_LINES%%:*}"
+            printf "%s\n  \033[33mLine %s [WARN]: Space-based indentation detected. OrcEngine standard is tab indentation.\033[0m\n" "$f" "$LINE_NUM"
+            FILE_WARNINGS=$((FILE_WARNINGS + 1))
+        fi
+    fi
+
+    # 4. Check trailing whitespace
+    TRAILING_LINES=$(grep -nE '[[:space:]]+$' "$f" | head -n 1 || true)
+    if [ -n "$TRAILING_LINES" ]; then
+        if [ "$FIX" -eq 1 ]; then
+            sed -i -E 's/[[:space:]]+$//' "$f"
+            printf "%s\n  \033[32m[FIXED]: Stripped trailing whitespace\033[0m\n" "$f"
+        else
+            LINE_NUM="${TRAILING_LINES%%:*}"
+            printf "%s\n  \033[33mLine %s [WARN]: Trailing whitespace detected.\033[0m\n" "$f" "$LINE_NUM"
+            FILE_WARNINGS=$((FILE_WARNINGS + 1))
+        fi
     fi
 
     TOTAL_ERRORS=$((TOTAL_ERRORS + FILE_ERRORS))

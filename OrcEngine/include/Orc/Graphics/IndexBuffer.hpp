@@ -20,7 +20,7 @@ public:
 	}
 
 	~IndexBuffer();
-	
+
 	IndexBuffer(IndexBuffer&& other) noexcept;
 	IndexBuffer& operator=(IndexBuffer&& other) noexcept;
 	IndexBuffer(const IndexBuffer&) = delete;

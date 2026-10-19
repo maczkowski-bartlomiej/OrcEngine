@@ -10,7 +10,7 @@ struct KeyboardKeyPressedEvent
 	Keyboard::SpecialKeys specialKeys{};
 
 	KeyboardKeyPressedEvent() = default;
-	explicit KeyboardKeyPressedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
+	explicit KeyboardKeyPressedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys())
 		: key(key), specialKeys(specialKeys) {}
 };
 
@@ -20,7 +20,7 @@ struct KeyboardKeyReleasedEvent
 	Keyboard::SpecialKeys specialKeys{};
 
 	KeyboardKeyReleasedEvent() = default;
-	explicit KeyboardKeyReleasedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys()) 
+	explicit KeyboardKeyReleasedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys())
 		: key(key), specialKeys(specialKeys) {}
 };
 

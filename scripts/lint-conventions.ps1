@@ -125,12 +125,29 @@ foreach ($filePath in $filesToCheck) {
     }
 
     if ($spaceIndentCount -gt 0) {
-        $fileIssues += [PSCustomObject]@{
-            Level = "WARN"
-            Message = "Space-based indentation detected on $spaceIndentCount line(s). OrcEngine standard is tab indentation."
-            Line = $firstSpaceLine
+        if ($Fix) {
+            $fixedContent = foreach ($line in $lines) {
+                $cur = $line
+                while ($cur -match "^(\t*)    ") {
+                    $cur = $cur -replace "^(\t*)    ", "`$1`t"
+                }
+                $cur = $cur -replace "\s+$", ""
+                $cur
+            }
+            Set-Content -Path $filePath -Value $fixedContent
+            $fileIssues += [PSCustomObject]@{
+                Level = "FIXED"
+                Message = "Converted space-based indentation to tabs and trimmed trailing whitespace"
+                Line = $firstSpaceLine
+            }
+        } else {
+            $fileIssues += [PSCustomObject]@{
+                Level = "WARN"
+                Message = "Space-based indentation detected on $spaceIndentCount line(s). OrcEngine standard is tab indentation."
+                Line = $firstSpaceLine
+            }
+            $totalWarnings++
         }
-        $totalWarnings++
     }
 
     # Report if issues exist

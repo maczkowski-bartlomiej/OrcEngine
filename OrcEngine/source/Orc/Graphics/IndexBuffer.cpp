@@ -33,7 +33,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 	return *this;
 }
 
-IndexBuffer::~IndexBuffer() 
+IndexBuffer::~IndexBuffer()
 {
 	if (m_rendererID)
 	{

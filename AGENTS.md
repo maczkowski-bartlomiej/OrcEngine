@@ -5,7 +5,7 @@
 > Every agent session and subagent working in this repository **must** strictly abide by the following invariants:
 > 1. **Read Core Guidance First**: On session startup, read `AGENTS.md` and `GLOSSARY.md` before executing any task or modifying code.
 > 2. **Script-First Toolchain Primacy**: Always use `.\scripts\build.ps1` (Windows) or `./scripts/build.sh` (Linux) as the primary build command. The scripts automatically discover and activate MSVC/Ninja toolchains and validate environment configurations. Raw `cmake` commands are only a documented fallback.
-> 3. **Conventions Validation**: Run `.\scripts\lint-conventions.ps1 -ChangedOnly` (or `./scripts/lint-conventions.sh`) before completing any turn or committing work. Code must pass with zero errors.
+> 3. **Unified Verification Gate**: Before completing any turn, resolving a ticket, or committing work, run the unified verification gate `.\scripts\verify.ps1` (Windows) or `./scripts/verify.sh` (Linux). The verification gate runs conventions linting, compiles the target build preset, and executes the 5-second smoke test (`TestProject`). All stages must pass with 100% success (zero errors).
 > 4. **Synchronize Documentation as Ticket Condition**: Any changes touching engine architecture, lifecycle, subsystems, or terminology **must** update `GLOSSARY.md`, record an ADR under `docs/adr/` if design trade-offs were made, and update the corresponding subsystem sections in `AGENTS.md`. No ticket is considered resolved until documentation is in sync.
 
 ---
@@ -346,12 +346,16 @@ All engine and demo code must compile with **zero warnings** under these flags a
 - The renderer loads shaders from `shaders/` relative to the current working directory; always execute the demo from `build/<preset>` so relative paths resolve.
 - Do not edit or commit generated build outputs. Checked-in DLLs and binary SDK artifacts are intentional legacy files; replace them only when explicitly required and document their source/version.
 
-### 6.7 Validation Checklist
-Before concluding any implementation task:
-1. **Conventions Linting**: Run `.\scripts\lint-conventions.ps1 -ChangedOnly` (or full `.\scripts\lint-conventions.ps1`) and ensure zero errors.
-2. **Debug Compilation**: Build `windows-debug` (or `linux-debug`) with zero compiler warnings.
-3. **Release Compilation**: Build `windows-release` (or `linux-release`) for changes involving optimization-sensitive logic, packaging, or configuration-specific code.
-4. **Runtime Smoke Run**: Run the demo (`.\scripts\run-demo.ps1 -TimeoutSeconds 5 -FailOnErrorLog`) and check `logs/TestProject.log` or console output for errors or unexpected warnings.
+### 6.7 Unified Verification Gate & Pre-Commit Protection
+Before concluding any implementation task or resolving a ticket, execute the unified verification gate:
+- **Windows**: `.\scripts\verify.ps1`
+- **Linux**: `./scripts/verify.sh`
+
+The verification gate executes three sequential stages:
+1. **Conventions Linting**: `.\scripts\lint-conventions.ps1 -ChangedOnly` (or `./scripts/lint-conventions.sh --changed-only`) verifying tab indentation, `#pragma once`, and namespace rules with zero errors. (Use `-Fix` or `--fix` to automatically convert 4-space indentation to tabs and strip trailing whitespace).
+2. **Compilation**: Compiles the target build preset (`build.ps1` or `build.sh`) with zero compiler errors.
+3. **Runtime Smoke Run**: Runs `TestProject` for 5 seconds with `--fail-on-error-log` (`run-demo.ps1` or `run-demo.sh`) ensuring no crashes, assertion failures, or error logs occur on startup.
+4. **Git Pre-Commit Protection**: Install automated pre-commit conventions checking via `.\scripts\setup-git-hooks.ps1` (Windows) or `./scripts/setup-git-hooks.sh` (Linux) so that convention regressions are blocked automatically before git commits.
 5. **Documentation Synchronization**: Verify that `GLOSSARY.md`, relevant ADRs in `docs/adr/`, and subsystem sections in `AGENTS.md` are up to date.
 
 If FMOD, display, or audio access prevents runtime validation, report that limitation and still perform the strongest available compile check (including both debug and release configurations).
@@ -399,28 +403,23 @@ Blocked by: none
 Use the `ticket.ps1` (Windows) or `ticket.sh` (Linux) script to navigate and update the ticket graph:
 
 1. **List Tickets in Feature**:
-   ```powershell
-   .\scripts\ticket.ps1 list <feature-slug>
-   ```
+   - Windows: `.\scripts\ticket.ps1 list <feature-slug>`
+   - Linux: `./scripts/ticket.sh list <feature-slug>`
 2. **Find Next Unblocked Ticket (Wayfinding Frontier)**:
    Scans `issues/` for open, unblocked tickets in numerical order:
-   ```powershell
-   .\scripts\ticket.ps1 frontier <feature-slug>
-   ```
+   - Windows: `.\scripts\ticket.ps1 frontier <feature-slug>`
+   - Linux: `./scripts/ticket.sh frontier <feature-slug>`
 3. **Claim Ticket Before Starting**:
    Sets `Status: claimed`:
-   ```powershell
-   .\scripts\ticket.ps1 claim .scratch/<feature-slug>/issues/<NN>-<slug>.md
-   ```
+   - Windows: `.\scripts\ticket.ps1 claim .scratch/<feature-slug>/issues/<NN>-<slug>.md`
+   - Linux: `./scripts/ticket.sh claim .scratch/<feature-slug>/issues/<NN>-<slug>.md`
 4. **Resolve Ticket Upon Completion**:
-   Sets `Status: resolved`, appends resolution details to `## Answer`, and updates `map.md` Decisions-so-far:
-   ```powershell
-   .\scripts\ticket.ps1 resolve .scratch/<feature-slug>/issues/<NN>-<slug>.md -Answer "Brief summary of work"
-   ```
+   Sets `Status: resolved`, appends resolution details to `## Answer`, and updates `map.md` Decisions-so-far (only after `./scripts/verify.sh` or `.\scripts\verify.ps1` passes with 100% success):
+   - Windows: `.\scripts\ticket.ps1 resolve .scratch/<feature-slug>/issues/<NN>-<slug>.md -Answer "Brief summary of work"`
+   - Linux: `./scripts/ticket.sh resolve .scratch/<feature-slug>/issues/<NN>-<slug>.md "Brief summary of work"`
 5. **Triage Overview Across Repository**:
-   ```powershell
-   .\scripts\ticket.ps1 triage
-   ```
+   - Windows: `.\scripts\ticket.ps1 triage`
+   - Linux: `./scripts/ticket.sh triage`
 
 ### 7.2 Canonical Triage Labels & Ticket Statuses
 Issue tracking distinguishes between initial evaluation triage roles and active execution statuses:

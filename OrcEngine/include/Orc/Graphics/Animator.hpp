@@ -41,7 +41,7 @@ private:
 	Clock m_currentAnimationClock;
 	uint64_t m_currentAnimationFrame = 0;
 	bool m_currentAnimationLooping = false;
-	
+
 	std::unordered_map<std::string, Ref<Animation>> m_animations;
 };
 

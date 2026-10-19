@@ -15,7 +15,7 @@ Resources<ResourceType>::Resources(const FilePath& xmlPath)
 }
 
 template<typename ResourceType>
-Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) const 
+Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) const
 {
 	if (auto find = m_resources.find(name); find != m_resources.end())
 	{
@@ -90,7 +90,7 @@ bool Resources<Shader>::loadResources(const FilePath& xmlPath)
 
 		errorResult = element->QueryStringAttribute("name", &name);
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
-		
+
 		errorResult = element->QueryStringAttribute("path", &path);
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 

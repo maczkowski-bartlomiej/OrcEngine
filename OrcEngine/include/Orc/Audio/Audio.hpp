@@ -18,7 +18,7 @@ public:
 	{
 		int maxChannels = 512;
 		std::string masterBusName = "bus:/";
-		std::string sfxBusName = "bus:/SFX";	
+		std::string sfxBusName = "bus:/SFX";
 		std::string musicBusName = "bus:/Music";
 		std::vector<FilePath> banks = {
 			"assets/audio/Master.bank",
@@ -26,7 +26,7 @@ public:
 			"assets/audio/Music.bank",
 			"assets/audio/SFX.bank"
 		};
-	};	
+	};
 
 	Audio() = delete;
 	explicit Audio(const AudioSettings& audioSettings);

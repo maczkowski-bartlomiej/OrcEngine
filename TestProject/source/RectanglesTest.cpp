@@ -43,7 +43,7 @@ RectanglesTest::RectanglesTest(orc::LayerContext& layerContext)
 	m_rectangle7.setOrigin(m_rectangle7.getSize() / 2.0f);
 	m_rectangle7.setTexture(gradientTexture);
 	m_rectangle7.setBorderThickness(0.05f); m_rectangle7.setBorderColor(orc::Color(255, 0, 0));
-	
+
 	m_text8 = orc::Text(font, "Green + Textured + Blue Border"); m_text8.setPosition(700.0f, 150.0f); m_text8.setScale(0.25f, 0.25f); m_text8.setOrigin(m_text8.getGlobalRect().getSize() / 2.0f);
 	m_rectangle8 = orc::Rectangle(orc::Vector2f(700.0f, 225.0f), orc::Vector2f(75.0f, 75.0f), orc::Color(0, 255, 0));
 	m_rectangle8.setOrigin(m_rectangle8.getSize() / 2.0f);

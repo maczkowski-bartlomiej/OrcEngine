@@ -5,12 +5,12 @@
 
 namespace orc {
 
-BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized) 
+BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized)
 	: normalized(normalized), name(name), size(getShaderDataTypeSize(type)), offset(0), type(type)
 {
 }
 
-uint32_t BufferLayout::Element::getComponentCount() const 
+uint32_t BufferLayout::Element::getComponentCount() const
 {
 	switch (type)
 	{
@@ -31,12 +31,12 @@ uint32_t BufferLayout::Element::getComponentCount() const
 	}
 }
 
-BufferLayout::BufferLayout() 
+BufferLayout::BufferLayout()
 	: m_stride(0)
 {
 }
 
-BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) 
+BufferLayout::BufferLayout(const std::initializer_list<Element>& elements)
 	: m_stride(0), m_elements(elements)
 {
 	uint32_t offset = 0;
@@ -50,17 +50,17 @@ BufferLayout::BufferLayout(const std::initializer_list<Element>& elements)
 	m_stride = offset;
 }
 
-uint32_t BufferLayout::getStride() const 
+uint32_t BufferLayout::getStride() const
 {
 	return m_stride;
 }
 
-const std::vector<BufferLayout::Element>& BufferLayout::getElements() const 
+const std::vector<BufferLayout::Element>& BufferLayout::getElements() const
 {
 	return m_elements;
 }
 
-uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type) 
+uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 {
 	switch (type)
 	{
@@ -81,7 +81,7 @@ uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 	}
 }
 
-uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type) 
+uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 {
 	switch (type)
 	{

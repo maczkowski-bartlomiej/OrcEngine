@@ -30,7 +30,7 @@ Shader& Shader::operator=(Shader&& other) noexcept
 	return *this;
 }
 
-Shader::~Shader() 
+Shader::~Shader()
 {
 	if (m_rendererID)
 	{
@@ -59,12 +59,12 @@ bool Shader::loadFromString(std::string_view vertexSource, std::string_view frag
 	return true;
 }
 
-void Shader::bind() const 
+void Shader::bind() const
 {
 	glUseProgram(m_rendererID);
 }
 
-void Shader::unbind() const 
+void Shader::unbind() const
 {
 	glUseProgram(0);
 }
@@ -134,7 +134,7 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSource)
 {
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	
+
 	const char* vSource = vertexSource.data();
 	GLint vLength = static_cast<GLint>(vertexSource.size());
 	glShaderSource(vertexShader, 1, &vSource, &vLength);

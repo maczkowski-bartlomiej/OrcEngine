@@ -31,7 +31,7 @@ public:
 	~Window();
 
 	void display();
-	
+
 	void setTitle(const std::string& title);
 	void setEventCallback(EventCallback eventCallback);
 

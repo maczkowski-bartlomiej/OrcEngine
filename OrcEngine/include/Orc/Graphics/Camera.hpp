@@ -37,7 +37,7 @@ private:
 
 	FloatRect m_viewPort;
 	Vector2f m_position;
-	
+
 	float m_zoom = 1.0f;
 	float m_rotation = 0.0f;
 };
