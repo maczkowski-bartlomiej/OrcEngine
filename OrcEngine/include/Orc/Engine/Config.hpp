@@ -10,9 +10,9 @@ namespace orc {
 
 struct Config
 {
-	int32_t majorVersion = 0;
+	int32_t majorVersion = 1;
 	int32_t minorVersion = 0;
-	int32_t patchVersion = 1;
+	int32_t patchVersion = 0;
 
 	std::string gameName = "OrcEngine Game";
 
