@@ -105,7 +105,7 @@ namespace orc {
 			Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
 			if (gameLayer)
 			{
-				FrameContext frameContext{ elapsed, *m_input, *m_layerContext };
+				FrameContext frameContext{ .deltaTime = elapsed, .input = *m_input, .context = *m_layerContext };
 				gameLayer->onUpdate(frameContext);
 
 				gameLayer->onRender(*m_renderer);

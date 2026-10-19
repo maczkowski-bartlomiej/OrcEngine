@@ -12,6 +12,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <utility>
+
 constexpr int OPENGL_MAJOR_VERSION = 4;
 constexpr int OPENGL_MINOR_VERSION = 6;
 
@@ -52,7 +54,7 @@ void Window::setTitle(const std::string& title)
 
 void Window::setEventCallback(Window::EventCallback eventCallback) 
 {
-	m_videoSettings.eventCallback = eventCallback;
+	m_videoSettings.eventCallback = std::move(eventCallback);
 }
 
 bool Window::getVsync() const 
@@ -86,7 +88,7 @@ uint32_t Window::getHeight() const
 
 Vector2u Window::getSize() const 
 {
-	return Vector2u(m_videoSettings.width, m_videoSettings.height);
+	return {m_videoSettings.width, m_videoSettings.height};
 }
 
 void* Window::getNativeWindow() const
