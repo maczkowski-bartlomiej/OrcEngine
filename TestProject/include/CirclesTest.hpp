@@ -5,20 +5,20 @@
 class CirclesTest : public orc::GameLayer
 {
 public:
-	explicit CirclesTest(orc::LayerContext& context);
+	explicit CirclesTest(orc::LayerContext& layerContext);
 	~CirclesTest();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(const orc::FrameContext& ctx) override;
+	void onUpdate(float deltaTime) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender(orc::Renderer& renderer) override;
+	void onRender() override;
 	void onGuiRender() override;
 
 private:
-	void drawLines(orc::Renderer& renderer);
+	void drawLines();
 
 	orc::Circle m_circle1;
 	orc::Circle m_circle2;

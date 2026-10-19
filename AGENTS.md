@@ -88,8 +88,8 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
          │ 1. Clock::restart() -> elapsed delta time                                       │
          │ 2. Renderer::clear()                                                            │
          │ 3. GameLayerManager::getActiveLayer()                                           │
-         │ 4. activeLayer->onUpdate(FrameContext{ elapsed, input, layerContext })          │
-         │ 5. activeLayer->onRender(renderer) [inside layer: beginScene(camera) -> endScene()]│
+         │ 4. activeLayer->onUpdate(elapsed)                                               │
+         │ 5. activeLayer->onRender() [inside layer: beginScene(m_camera) -> endScene()]   │
          │ 6. Gui::begin() -> activeLayer->onGuiRender() -> Gui::end()                     │
          │ 7. Audio::update()                                                              │
          │ 8. Window::display() -> glfwPollEvents() & glfwSwapBuffers()                    │
@@ -100,26 +100,25 @@ OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Render
 `Engine` is the top-level coordinator. It constructs and initializes subsystems in strict sequential order:
 1. `Logger::init(config.logPath)`: Sets up file and console logging via spdlog.
 2. `GameLayerManager`: Manages layer registration and active layer pointer.
-3. `FTLibrary`: FreeType library context for font glyph loading.
-4. `Window`: Initializes GLFW, creates the OpenGL 4.6 context, loads GLAD function pointers, and configures event callbacks.
-5. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader.
-6. `Gui`: ImGui GLFW and OpenGL 3 backend context.
-7. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
-8. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
-9. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`).
-10. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers.
+3. `Window`: Initializes GLFW, creates the OpenGL 4.6 context, loads GLAD function pointers, and configures event callbacks.
+4. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader.
+5. `Gui`: ImGui GLFW and OpenGL 3 backend context initialized with a `Window&` reference.
+6. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
+7. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
+8. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`). `Font::loadFromFile` manages its own local `FT_Library` and `FT_Face` lifecycle while building the glyph bitmap atlas.
+9. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers and application bootstrap via `Engine::getLayerContext()`.
 
 ### 4.2 Game Layers & Layer Management
 The layer runtime and context injection model is detailed in [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
 - `GameLayerManager` stores registered layers by name in a hash map and maintains a pointer to the currently active layer. Switching layers (`setActiveLayer(name)`) invokes `onDetach()` on the outgoing layer and `onAttach()` on the incoming layer.
-- `GameLayer` requires an explicit `LayerContext&` via constructor reference injection (`explicit GameLayer(LayerContext& context)`), storing `m_context` and initializing its `Camera` from `context.window` dimensions (with a `1280x720` fallback when uninitialized/headless).
+- `GameLayer` requires an explicit `LayerContext&` via constructor reference injection (`explicit GameLayer(LayerContext& layerContext)`), storing `m_layerContext` and initializing its `m_camera` from `m_layerContext.window` dimensions.
 - `GameLayer` provides virtual lifecycle hooks:
   - `onAttach()`: Invoked when the layer becomes active (e.g., setting window title, setting up scene state).
   - `onDetach()`: Invoked when transitioning away from the layer.
-  - `onUpdate(const FrameContext& ctx)`: Per-frame game logic, input response (`ctx.input`), delta time (`ctx.deltaTime`), and subsystem access (`ctx.context`).
-  - `onRender(Renderer& renderer)`: Submits 2D primitives to the supplied `Renderer&` within an explicit **Scene Scope** (`renderer.beginScene(camera)` ... `renderer.endScene()`).
+  - `onUpdate(float deltaTime)`: Per-frame game logic and frame delta time, accessing input and subsystems through `m_layerContext`.
+  - `onRender()`: Submits 2D primitives to `m_layerContext.renderer` within an explicit **Scene Scope** (`m_layerContext.renderer.beginScene(m_camera)` ... `m_layerContext.renderer.endScene()`).
   - `onGuiRender()`: Submits ImGui controls enclosed between `Gui::begin()` and `Gui::end()`.
-  - `onEvent(const Event& event)`: Handles dispatched input and window events. Base `GameLayer::onEvent` automatically updates `camera` viewport dimensions on `WindowResizedEvent`.
+  - `onEvent(const Event& event)`: Handles dispatched input and window events. Base `GameLayer::onEvent` automatically updates `m_camera` viewport dimensions on `WindowResizedEvent`.
 
 ### 4.3 Window, Input, and Events Flow
 - **Event Generation**: GLFW window callbacks (keys, mouse buttons, cursor move, scroll, window resize, window close) trigger lambda dispatchers configured in `Window::setCallbacks()`.
@@ -134,8 +133,8 @@ The layer runtime and context injection model is detailed in [ADR 0004](docs/adr
   - Direct conversion: `event.as<T>()` returns `const T&` (throws `std::bad_variant_access` if mismatched)
   - Event dispatch helper: `EventDispatcher(event).dispatch<T>(callback)`
   - Consumption flag: `event.setHandled(bool)` and `event.isHandled()`
-- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating camera viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
-- **Input Subsystem**: `Input` tracks pressed keys (`isKeyPressed(Keyboard::Key)`), mouse buttons (`isMouseButtonPressed(Mouse::Button)`), and cursor coordinates (`getMousePosition()`) purely from window events without polling native GLFW window handles. Layers query input via `ctx.input` in `onUpdate(const FrameContext& ctx)` or `m_context.input`.
+- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating `m_camera` viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
+- **Input Subsystem**: `Input` tracks pressed keys (`isKeyPressed(Keyboard::Key)`), mouse buttons (`isMouseButtonPressed(Mouse::Button)`), and cursor coordinates (`getMousePosition()`) purely from window events without polling native GLFW window handles. Layers query input via `m_layerContext.input`.
 
 ### 4.4 Graphics & Rendering Subsystem
 
@@ -191,7 +190,7 @@ The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-r
 - **XML Manifests**: Loads resource definitions declaratively from XML files (`assets/fonts.xml`, `assets/textures.xml`, `assets/animations.xml`).
 - **Allocation-Free Lookups**: Storage uses `std::unordered_map<std::string, Ref<ResourceType>, string_view_hash, std::equal_to<>>` enabling zero-allocation lookups via `std::string_view`:
   ```cpp
-  Ref<Texture> tex = Engine::get().getTextureResources().getResource("player_idle"); // No std::string allocation
+  Ref<Texture> tex = m_layerContext.textureResources.getResource("player_idle"); // No std::string allocation
   ```
 
 ---

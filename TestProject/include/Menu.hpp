@@ -5,15 +5,15 @@
 class Menu : public orc::GameLayer
 {
 public:
-	explicit Menu(orc::LayerContext& context);
+	explicit Menu(orc::LayerContext& layerContext);
 	~Menu();
 
 	void onAttach() override;
 	void onDetach() override;
 
-	void onUpdate(const orc::FrameContext& ctx) override;
+	void onUpdate(float deltaTime) override;
 	void onEvent(const orc::Event& event) override;
 
-	void onRender(orc::Renderer& renderer) override;
+	void onRender() override;
 	void onGuiRender() override;
 };

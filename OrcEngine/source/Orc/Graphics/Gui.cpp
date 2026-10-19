@@ -1,14 +1,15 @@
 #include "OrcPch.hpp"
 #include "Graphics/Gui.hpp"
+#include "Graphics/Window.hpp"
 #include "Engine/Debug.hpp"
-#include "Engine/Engine.hpp"
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
 namespace orc {
 
-Gui::Gui()
+Gui::Gui(Window& window)
+	: m_window(window)
 {
 	ORC_LOG_INFO("Initializing GUI.");
 
@@ -29,7 +30,7 @@ Gui::Gui()
 	*/
 
 	ImGui::StyleColorsDark();
-	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Engine::get().getWindow().getNativeWindow()), true))
+	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_window.getNativeWindow()), true))
 	{
 		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW.");
 		return;
@@ -61,8 +62,7 @@ void Gui::begin()
 void Gui::end()
 {
 	ImGuiIO& io = ImGui::GetIO();
-	Engine& engine = Engine::get();
-	io.DisplaySize = ImVec2(static_cast<float>(engine.getWindow().getWidth()), static_cast<float>(engine.getWindow().getHeight()));
+	io.DisplaySize = ImVec2(static_cast<float>(m_window.getWidth()), static_cast<float>(m_window.getHeight()));
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -4,129 +4,96 @@ Status: ready-for-agent
 
 ## Problem Statement
 
-Game layers and input polling were tightly coupled to the global `Engine::get()` singleton. When any `GameLayer` was instantiated, its base constructor reached into `Engine::get()` to bind references to seven subsystems (`Audio`, `Window`, `Renderer`, `GameLayerManager`, `FontResources`, `TextureResources`, `AnimationResources`) and fetch window dimensions for camera initialization. Furthermore, static input helpers (`Keyboard::isKeyPressed`, `Mouse::isButtonPressed`, `Mouse::getPosition`) bypassed the layer lifecycle entirely to poll GLFW native window handles through the engine singleton.
+Game layers, input polling, GUI initialization, and font loading were coupled to the global `Engine::get()` singleton. Furthermore, the initial iteration of layer decoupling introduced redundant wrappers (`FrameContext`, `onRender(Renderer&)`), unnecessary getter methods on `Engine` and `GameLayer`, inconsistent parameter naming (`context` instead of `layerContext`), speculative fallback viewport constants, and a public FreeType header leak (`FTLibrary`).
 
-This ambient singleton coupling caused severe architectural friction:
-1. Game layers could not be instantiated, updated, or verified in isolated unit test harnesses without spinning up a live desktop window, an OpenGL 4.6 context, and the FMOD audio engine.
-2. Input polling queried volatile OS window state asynchronously mid-frame, causing intra-frame state inconsistencies and making it impossible to simulate, record, or inject input for automated testing.
-3. Dependencies were hidden inside constructors rather than explicitly declared at the module boundary.
-4. The engine runner reached into active layer internals during window resizing, breaking camera encapsulation.
+Specifically:
+1. `FrameContext` duplicated `Input&` and `LayerContext&`, both of which are already available on the `GameLayer` instance via constructor-injected `m_layerContext`.
+2. Passing `Renderer&` to `onRender` was redundant because `m_layerContext.renderer` is already bound at construction time.
+3. `Engine` still exposed `Engine::get()` and individual subsystem getters (`getAudio`, `getWindow`, `getRenderer`, `getFTLibary`, `getGameLayerManager`, `getInput`, `getFontResources`, `getTextureResources`, `getAnimationResources`) only because `Gui` fetched `Window` via `Engine::get().getWindow()` and `Font` fetched `FT_Library` via `Engine::get().getFTLibary()`.
+4. `FTLibrary` existed as a standalone engine subsystem and leaked `<freetype/freetype.h>` into public headers even though FreeType is linked privately and only needed transiently while loading a font's glyph bitmap atlas.
+5. `GameLayer` exposed `getCamera()` and `getContext()` getters even though layers access `m_layerContext` and `m_camera` directly, and named its camera member `camera` instead of `m_camera`.
+6. `GameLayer` included speculative `DEFAULT_VIEWPORT_WIDTH` / `DEFAULT_VIEWPORT_HEIGHT` fallback logic instead of directly using `m_layerContext.window` dimensions.
 
 ## Solution
 
-Decouple the game layer runtime and input handling from the engine singleton by introducing explicit context seams:
-1. **Constructor Reference Injection**: `GameLayer` requires an explicit `LayerContext&` reference in its constructor, guaranteeing non-null access to persistent engine subsystems without singleton reach-ins.
-2. **Per-Frame Update Seam**: `GameLayer::onUpdate` accepts a `const FrameContext&` bundling delta time, an immutable input state snapshot, and a reference to the active `LayerContext`.
-3. **Explicit Render Target**: `GameLayer::onRender` accepts `Renderer&` directly, making the drawing capability explicit at the scene submission seam.
-4. **Decoupled Input Subsystem**: An engine-managed `Input` service accumulates key and mouse states purely via window events, presenting a stable frame snapshot and allowing input to be tested headlessly.
-5. **Encapsulated Viewport Synchronization**: `GameLayer` synchronizes its camera dimensions from `LayerContext` during construction and handles `WindowResizedEvent` directly inside `onEvent`, eliminating external engine mutations of layer cameras.
+Complete the decoupling of the layer runtime and engine subsystems and eliminate the `Engine::get()` singleton entirely:
+1. **Single Injection Seam (`LayerContext`)**: Inject `LayerContext& layerContext` into `GameLayer`'s constructor (`m_layerContext`) as the sole channel for persistent engine services (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`).
+2. **Eliminate `FrameContext` & Redundant Render Parameter**: Revert `GameLayer::onUpdate` to `virtual void onUpdate(float deltaTime)` and `GameLayer::onRender` to `virtual void onRender()`, with layers accessing `m_layerContext.input` and `m_layerContext.renderer` directly.
+3. **Encapsulate FreeType Inside `Font`**: Remove the `FTLibrary` class and `FT_Face` member from `Font`. Initialize a local `FT_Library` and `FT_Face` inside `Font::loadFromFile`, build the glyph atlas texture, and immediately destroy the face and library handles.
+4. **Inject `Window&` into `Gui`**: Pass `Window& window` directly to the `Gui` constructor instead of reaching into `Engine::get().getWindow()`.
+5. **Eliminate `Engine::get()` & Individual Getters**: Remove the static singleton instance, `Engine::get()`, and all individual subsystem getters from `Engine`, leaving only `Engine::getLayerContext()` alongside lifecycle methods.
+6. **Clean Up `GameLayer` Members & Naming**: Remove `getCamera()` and `getContext()` from `GameLayer`, standardize protected members as `m_layerContext` and `m_camera`, initialize `m_camera` directly from `m_layerContext.window.getWidth()` and `getHeight()`, and standardize parameter names to `LayerContext& layerContext` across engine and demo layers.
 
 ## User Stories
 
-1. As a game developer, I want to instantiate a `GameLayer` with a mock `LayerContext`, so that I can unit test game logic in a headless CI environment without creating a graphical window or initializing audio hardware.
-2. As a game developer, I want `GameLayer` to store a non-null reference to `LayerContext`, so that my layer subclasses can safely access resources, audio, and window services in their constructors without defensive null checks.
-3. As a game developer, I want `onUpdate` to receive a `const FrameContext&`, so that delta time, input state, and engine services are delivered uniformly without reaching into ambient globals.
-4. As a game developer, I want `FrameContext` to expose `deltaTime`, `input`, and `context`, so that per-frame updates have immediate access to everything required to simulate gameplay.
-5. As a game developer, I want `onRender` to accept `Renderer&` directly, so that rendering dependencies are explicit and scoped to scene submission.
-6. As a game developer, I want to query key states via `ctx.input.isKeyPressed(key)`, so that my gameplay logic queries a stable snapshot of input rather than polling OS state.
-7. As a game developer, I want to query mouse button states via `ctx.input.isMouseButtonPressed(button)`, so that mouse interactions are deterministic and repeatable across frames.
-8. As a game developer, I want to retrieve cursor position via `ctx.input.getMousePosition()`, so that aiming, picking, and cursor math remain consistent throughout the frame update.
-9. As a tester, I want to feed synthetic events into an `Input` instance, so that I can simulate complex user input sequences headlessly without an operating system window.
-10. As a tester, I want to feed custom delta time and input states into `GameLayer::onUpdate`, so that I can deterministically test edge cases like pause, frame drops, or rapid button toggles.
-11. As an engine maintainer, I want static input polling functions (`Keyboard::isKeyPressed`, `Mouse::isButtonPressed`, `Mouse::getPosition`) eliminated from the public API, so that developers cannot accidentally re-introduce hidden singleton couplings.
-12. As a game developer, I want `Keyboard.hpp` and `Mouse.hpp` to retain their key and button enum definitions, so that existing keycode constants (`Key::A`, `Button::Left`) remain stable and easy to use.
-13. As an engine maintainer, I want `Input` state to accumulate purely through window events (`KeyboardKeyPressedEvent`, `KeyboardKeyReleasedEvent`, `MouseMovedEvent`, `MouseButtonPressedEvent`, `MouseButtonReleasedEvent`), so that input tracking is completely decoupled from GLFW C-APIs.
-14. As an engine maintainer, I want `GameLayer`'s camera to initialize with fallback viewport dimensions if no window is active, so that tests never crash during layer instantiation.
-15. As a game developer, I want `GameLayer`'s base `onEvent` to automatically update the layer camera on `WindowResizedEvent`, so that camera aspect ratios stay synchronized without engine reach-in.
-16. As a game developer, I want to override `onEvent` in derived layers to customize viewport behavior (e.g., fixed-resolution letterboxing), so that the engine does not dictate camera projection updates.
-17. As an engine maintainer, I want `Engine::run()` to construct and pass `FrameContext` to the active layer each frame, creating a single unified per-frame entry point.
-18. As a demo author, I want `TestProject` demo layers to adopt the new context seams cleanly, so that all interactive tests serve as validated reference implementations.
+1. As a game developer, I want `GameLayer` to receive `LayerContext& layerContext` in its constructor and store it in `m_layerContext`, so that my layer has direct access to all engine subsystems without a global singleton or redundant per-frame context wrappers.
+2. As a game developer, I want `onUpdate(float deltaTime)` to take only the frame delta time, so that the update signature stays minimal while input and subsystems are accessed through `m_layerContext`.
+3. As a game developer, I want `onRender()` to take no parameters, so that layers render using `m_layerContext.renderer` consistently with how they access all other subsystems.
+4. As a game developer, I want `GameLayer` to expose `m_layerContext` and `m_camera` as protected members without redundant `getContext()` or `getCamera()` accessors, so that subclass code has a single, consistent way to reference layer state.
+5. As a game developer, I want `m_camera` initialized directly from `m_layerContext.window.getWidth()` and `m_layerContext.window.getHeight()`, so that there is no dead fallback viewport logic inside `GameLayer`.
+6. As a game developer, I want `GameLayer::onEvent` to update `m_camera` when `WindowResizedEvent` arrives, so that camera viewport dimensions stay synchronized with the window automatically.
+7. As a game developer, I want to query keyboard and mouse state via `m_layerContext.input`, so that input queries read a deterministic event-driven state snapshot rather than polling GLFW globals.
+8. As an engine maintainer, I want `Font::loadFromFile` to manage its own local `FT_Library` and `FT_Face` lifecycle and release both immediately after constructing the glyph atlas texture, so that FreeType headers and handles never leak into public engine interfaces or `Engine` state.
+9. As an engine maintainer, I want `Gui` to accept `Window& window` in its constructor, so that ImGui initialization and per-frame updates do not depend on `Engine::get()`.
+10. As an engine maintainer, I want `Engine::get()`, `Engine::m_instance`, and all individual subsystem getters removed from `Engine`, so that `Engine::getLayerContext()` is the single explicit entry point for accessing engine subsystems.
+11. As an application author, I want the `onEngineStart(Engine& engine)` startup callback to register initial layers via `engine.getLayerContext().gameLayerManager`, so that application bootstrap works cleanly without individual getters on `Engine`.
+12. As a contributor, I want all `LayerContext` constructor parameters consistently named `layerContext` across `GameLayer` and all demo layers, so that the codebase adheres uniformly to the project naming conventions.
 
 ## Implementation Decisions
 
-- **`LayerContext` Structure**:
-  - Encapsulates references to persistent engine subsystems:
-    - `Window& window`
-    - `Renderer& renderer`
-    - `Audio& audio`
-    - `GameLayerManager& gameLayerManager`
-    - `FontResources& fontResources`
-    - `TextureResources& textureResources`
-    - `AnimationResources& animationResources`
-    - `Input& input`
-  - Owned by `Engine` and constructed once during engine initialization.
-  - Exposes accessor `Engine::getLayerContext()`.
+- **Single Context Injection (`LayerContext`)**:
+  - `LayerContext` aggregates references to `Window`, `Renderer`, `Audio`, `GameLayerManager`, `FontResources`, `TextureResources`, `AnimationResources`, and `Input`.
+  - `FrameContext` is removed completely; its header and umbrella header inclusion are deleted.
+  - `GameLayer` constructor accepts `explicit GameLayer(LayerContext& layerContext)` and stores `LayerContext& m_layerContext`.
 
-- **`GameLayer` Constructor Reference Injection**:
-  - `GameLayer` constructor signature: `explicit GameLayer(LayerContext& context)`.
-  - Member `LayerContext& m_context` stored as a protected reference.
-  - Accessor `LayerContext& getContext()` provided for convenience.
-  - Subclasses pass `context` via member initializer list: `MyLayer(LayerContext& context) : GameLayer(context)`.
+- **`GameLayer` Interface & Camera Initialization**:
+  - Lifecycle hooks:
+    - `virtual void onAttach() {}`
+    - `virtual void onDetach() {}`
+    - `virtual void onUpdate(float deltaTime) {}`
+    - `virtual void onRender() {}`
+    - `virtual void onGuiRender() {}`
+    - `virtual void onEvent(const Event& event)`
+  - `getCamera()` and `getContext()` methods are removed from `GameLayer`.
+  - Protected camera member is renamed from `camera` to `m_camera` (conforming to `m_camelCase`).
+  - `GameLayer` initializes `m_camera` directly from `static_cast<float>(m_layerContext.window.getWidth())` and `static_cast<float>(m_layerContext.window.getHeight())` without fallback dimension helpers.
+  - `GameLayer::onEvent` updates `m_camera.setViewportSize(...)` on `WindowResizedEvent` (left as-is until the dedicated event system refactor).
 
-- **`FrameContext` Structure**:
-  - Lightweight value struct passed by `const&` to `onUpdate`:
-    - `float deltaTime`
-    - `const Input& input`
-    - `LayerContext& context`
+- **FreeType Encapsulation in `Font`**:
+  - The standalone `FTLibrary` class is deleted and removed from the build configuration, umbrella header, and `Engine`.
+  - `Font` removes `<freetype/freetype.h>` from its public header and removes the `FT_Face m_face` member variable.
+  - `Font::loadFromFile` initializes a local `FT_Library` via `FT_Init_FreeType` and a local `FT_Face` via `FT_New_Face`, passes `FT_Face` to `calculateBitmap`, and calls `FT_Done_Face` and `FT_Done_FreeType` before returning.
 
-- **Layer Lifecycle Seam Modifications**:
-  - `virtual void onUpdate(const FrameContext& ctx)` replaces `onUpdate(float dt)`.
-  - `virtual void onRender(Renderer& renderer)` replaces `onRender()`.
-  - `virtual void onAttach()` and `virtual void onDetach()` retained for activation hooks.
-  - `virtual void onEvent(const Event& event)` retained for event dispatch.
-  - `virtual void onGuiRender()` retained for ImGui integration.
+- **`Gui` Window Injection**:
+  - `Gui` constructor signature is updated to `explicit Gui(Window& window)`, storing `Window& m_window`.
+  - `Gui` uses `m_window` during initialization and frame beginning instead of calling `Engine::get().getWindow()`.
 
-- **`Input` Subsystem Architecture**:
-  - Explicit engine service owned as `UniquePtr<Input>` inside `Engine`.
-  - Registered as an event listener in `Engine::onEvent` or passed event notifications.
-  - Internal state tracks:
-    - Fixed boolean array/bitset for key states indexed by `Keyboard::Key`.
-    - Fixed boolean array/bitset for mouse button states indexed by `Mouse::Button`.
-    - `Vector2f` for current cursor position.
-  - Query API:
-    - `bool isKeyPressed(Keyboard::Key key) const`
-    - `bool isMouseButtonPressed(Mouse::Button button) const`
-    - `Vector2f getMousePosition() const`
-    - `void onEvent(const Event& event)` (accumulates state from events)
-    - `void reset()` (clears pressed states)
-  - Static polling methods (`Keyboard::isKeyPressed`, `Mouse::isButtonPressed`, `Mouse::getPosition`) are removed from the public engine API.
+- **`Engine` Singleton & Getter Removal**:
+  - `Engine::get()` and `static Engine* m_instance` are removed.
+  - Individual subsystem getters (`getAudio`, `getWindow`, `getRenderer`, `getFTLibary`, `getGameLayerManager`, `getInput`, `getFontResources`, `getTextureResources`, `getAnimationResources`) are removed from `Engine`.
+  - `Engine` retains `LayerContext& getLayerContext()` as the sole accessor for its subsystems.
+  - `Engine::run()` invokes `gameLayer->onUpdate(elapsed)` and `gameLayer->onRender()`.
 
-- **Camera Lifecycle & Viewport Resizing**:
-  - `GameLayer` constructor initializes `camera` using `m_context.window.getWidth()` and `getHeight()`, falling back to 1280x720 if dimensions are zero/uninitialized.
-  - Base `GameLayer::onEvent(const Event& event)` intercepts `WindowResizedEvent` and invokes `camera.setViewportSize(...)`.
-  - `Engine::onEvent` window resize handling stops mutating active layer camera directly.
-
-- **`TestProject` Migration**:
-  - Migrate all demo layers (`AnimationTest`, `AudioTest`, `CameraTest`, `CirclesTest`, `InputTest`, `Menu`, `RectanglesTest`, `ScriptTest`, `SpritesTest`) to:
-    - Accept `LayerContext& context` in constructors.
-    - Query input via `ctx.input.isKeyPressed(...)` and `ctx.input.getMousePosition()` in `onUpdate(const FrameContext& ctx)`.
-    - Accept `Renderer& renderer` in `onRender(Renderer& renderer)`.
-    - Register peer layers in `Menu` passing `m_context`.
+- **Consistent Naming Across Demo Layers**:
+  - All demo layers in `TestProject` standardize their constructor parameter name to `LayerContext& layerContext`, access `m_layerContext` and `m_camera`, implement `onUpdate(float deltaTime)` and `onRender()`, and restore helper signatures (such as `drawLines()`) to use `m_layerContext.renderer`.
+  - Demo bootstrap in `onEngineStart` accesses `engine.getLayerContext().gameLayerManager`.
 
 ## Testing Decisions
 
-- **Single Primary Seam**:
-  - The in-process **`LayerContext` / `FrameContext` Seam**.
-  - All unit testing of game layers occurs by instantiating layers with a mock or headless `LayerContext` and invoking `onUpdate(const FrameContext&)` or `onRender(Renderer&)`.
-  - Good tests verify external observable behaviors: position updates, state transitions, layer switching requests, and event handling. They do not inspect private fields or mock internal counters.
-
-- **`Input` Subsystem Seam**:
-  - Verified by feeding synthetic `KeyboardKeyPressedEvent`, `KeyboardKeyReleasedEvent`, `MouseButtonPressedEvent`, `MouseButtonReleasedEvent`, and `MouseMovedEvent` directly into `Input::onEvent` and asserting on query results.
-  - Zero platform or GLFW dependencies required for full input test coverage.
-
-- **Prior Art & Integration Coverage**:
-  - `TestProject` demo layers serve as visual and interactive smoke tests.
-  - Verification via `./scripts/build.sh --run --timeout 5` confirms runtime stability, layer navigation, and logging without regressions.
+- **Primary Seam (`LayerContext` / `Input` Seam)**:
+  - The highest in-process seam is `GameLayer` constructed with a `LayerContext&` (and `Input::onEvent(const Event&)` for deterministic input state transitions).
+  - Tests and verification exercise observable behavior through `onAttach()`, `onUpdate(float deltaTime)`, `onRender()`, and `onEvent(const Event&)` without relying on any global `Engine::get()` singleton.
+- **Verification & Smoke Testing**:
+  - Build and run the `TestProject` integration suite via the repository's build and smoke-test scripts (`./scripts/build.sh --run --timeout 5`) to verify font loading, ImGui rendering, layer switching, camera updates, and input handling with zero error logs.
+  - Run `./scripts/lint-conventions.sh --changed-only` to verify formatting, header guards, and naming conventions.
 
 ## Out of Scope
 
-- Multi-window or multi-display input routing.
-- Gamepad, controller, or joystick abstraction (future input milestone).
-- Asset manager unification or XML schema changes (belongs to Issue 03).
-- Camera projection lazy matrix evaluation (belongs to Issue 04).
+- Refactoring the event dispatch architecture (`onEvent` and `WindowResizedEvent` handling remain as-is for a dedicated event system refactor).
+- Multi-window or gamepad input support.
+- Resource manager consolidation (covered by a separate architectural issue).
 
 ## Further Notes
 
 - Architectural decision recorded in `docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md`.
-- Canonical domain vocabulary defined in `GLOSSARY.md` (`LayerContext`, `FrameContext`, `Input`).
-- Tracked under `.scratch/architecture-review/issues/02-decouple-layer-runtime-from-engine-singleton.md`.
+- Domain terminology synchronized in `GLOSSARY.md` and `AGENTS.md`.

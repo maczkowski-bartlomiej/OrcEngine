@@ -4,30 +4,24 @@ Status: resolved
 
 ## Description
 
-`Engine::get()` was used as a global service locator. `GameLayer` automatically pulled 7 engine references in its constructor, and static input helpers (`Keyboard::isKeyPressed`, `Mouse::isButtonPressed`, `Mouse::getPosition`) queried the native window directly through the singleton. This prevented headless unit testing and coupled game logic tightly to window/audio contexts.
+`Engine::get()` was used as a global service locator across `GameLayer`, `Keyboard`, `Mouse`, `Gui`, and `Font`. Additionally, the first pass of layer decoupling introduced redundant `FrameContext` and `onRender(Renderer&)` parameters, left unused subsystem getters and `FTLibrary` on `Engine`, kept `getCamera()` / `getContext()` and unprefixed `camera` on `GameLayer`, and included unnecessary fallback viewport dimensions.
 
 ## Objective
 
-1. Adopt constructor reference injection of `LayerContext&` for `GameLayer`, eliminating parameterless constructor ambient reach-ins.
-2. Pass an explicit `const FrameContext&` across `onUpdate` containing delta time, input state snapshot, and context reference.
-3. Supply `Renderer&` directly to `GameLayer::onRender(Renderer& renderer)` at the scene submission seam.
-4. Introduce an event-driven `Input` subsystem tracking key/button states and cursor coordinates without native GLFW polling.
-5. Move camera viewport resizing into `GameLayer::onEvent` for `WindowResizedEvent`, decoupling camera dimensions from `Engine::onEvent`.
-6. Record ADR 0004 (`docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md`) and register `LayerContext`, `FrameContext`, and `Input` in `GLOSSARY.md`.
+1. Inject `LayerContext& layerContext` into `GameLayer`'s constructor (`m_layerContext`) as the single channel for subsystem access; remove `FrameContext` completely.
+2. Use `onUpdate(float deltaTime)` and parameterless `onRender()` on `GameLayer`, accessing `m_layerContext.input` and `m_layerContext.renderer` directly.
+3. Remove `getCamera()` and `getContext()` from `GameLayer`, rename `camera` to `m_camera`, and initialize `m_camera` directly from `m_layerContext.window.getWidth()` and `getHeight()` without fallback constants.
+4. Encapsulate `FT_Library` and `FT_Face` locally within `Font::loadFromFile` and eliminate the `FTLibrary` class.
+5. Inject `Window&` into `Gui`'s constructor (`explicit Gui(Window& window)`).
+6. Remove `Engine::get()`, `Engine::m_instance`, and all individual subsystem getters from `Engine`, leaving only `Engine::getLayerContext()`.
+7. Synchronize `GLOSSARY.md`, `docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md`, and `AGENTS.md`.
 
 ## Settled Decisions
 
-- **Injection Model**: Constructor Reference Injection (`explicit GameLayer(LayerContext& context) : m_context(context)`). Guarantees non-null context throughout the layer's lifetime and permits resource loading directly in layer constructors.
-- **Per-Frame Update**: `virtual void onUpdate(const FrameContext& ctx)` where `FrameContext` bundles `float deltaTime`, `const Input& input`, and `LayerContext& context`.
-- **Render Seam**: `virtual void onRender(Renderer& renderer)` replaces parameterless `onRender()`.
-- **Input Architecture**: Explicit `Input` service accumulates state via window callbacks/events. Eliminates static polling methods on `Keyboard` and `Mouse`.
-- **Camera Resizing**: Initialized using context window dimensions (with fallback) and updated in `GameLayer::onEvent(WindowResizedEvent)`.
-
-## Comments
-
-- Architecture grilled and triaged. ADR 0004 recorded in `docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md`.
-- Terms added to `GLOSSARY.md`.
+- Full specification published at `.scratch/decouple-layer-runtime-from-engine-singleton/spec.md`.
+- Architectural decision recorded in `docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md`.
+- Domain terms updated in `GLOSSARY.md`.
 
 ## Answer
 
---answer
+Completed decoupling of layer runtime, Gui, and Font from Engine singleton; removed Engine::get(), FTLibrary, and FrameContext; synchronized docs.

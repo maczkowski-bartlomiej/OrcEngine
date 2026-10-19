@@ -4,7 +4,8 @@
 #include "Graphics/Texture.hpp"
 #include <cstdint>
 #include <unordered_map>
-#include <freetype/freetype.h>
+
+typedef struct FT_FaceRec_* FT_Face;
 
 namespace orc {
 
@@ -21,19 +22,17 @@ class Font
 public:
 	Font() = default;
 	Font(const FilePath& filePath, uint32_t size = 48);
-	~Font();
 
 	bool loadFromFile(const FilePath& filePath, uint32_t size = 48);
 
 	uint32_t getSize() const;
 	Ref<Texture> getBitmap() const;
-    Character getCharacter(uint32_t character) const;
+	Character getCharacter(uint32_t character) const;
 
 private:
-	void calculateBitmap();
+	void calculateBitmap(FT_Face face);
 
 	uint32_t m_size = 0;
-	FT_Face m_face = nullptr;
 
 	Ref<Texture> m_bitmap;
 	std::unordered_map<uint32_t, Character> m_characters;

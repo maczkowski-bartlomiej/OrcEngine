@@ -8,18 +8,18 @@
 #include "RectanglesTest.hpp"
 #include "SpritesTest.hpp"
 
-Menu::Menu(orc::LayerContext& context)
-	: orc::GameLayer(context)
+Menu::Menu(orc::LayerContext& layerContext)
+	: orc::GameLayer(layerContext)
 {
 	ORC_LOG_INFO("Menu init.");
 
-	m_context.gameLayerManager.addLayer("AnimationTest", orc::createRef<AnimationTest>(m_context));
-	m_context.gameLayerManager.addLayer("AudioTest", orc::createRef<AudioTest>(m_context));
-	m_context.gameLayerManager.addLayer("CameraTest", orc::createRef<CameraTest>(m_context));
-	m_context.gameLayerManager.addLayer("CirclesTest", orc::createRef<CirclesTest>(m_context));
-	m_context.gameLayerManager.addLayer("InputTest", orc::createRef<InputTest>(m_context));
-	m_context.gameLayerManager.addLayer("RectanglesTest", orc::createRef<RectanglesTest>(m_context));
-	m_context.gameLayerManager.addLayer("SpritesTest", orc::createRef<SpritesTest>(m_context));
+	m_layerContext.gameLayerManager.addLayer("AnimationTest", orc::createRef<AnimationTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("AudioTest", orc::createRef<AudioTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("CameraTest", orc::createRef<CameraTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("CirclesTest", orc::createRef<CirclesTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("InputTest", orc::createRef<InputTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("RectanglesTest", orc::createRef<RectanglesTest>(m_layerContext));
+	m_layerContext.gameLayerManager.addLayer("SpritesTest", orc::createRef<SpritesTest>(m_layerContext));
 }
 
 Menu::~Menu()
@@ -31,7 +31,7 @@ void Menu::onAttach()
 {
 	ORC_LOG_INFO("Switching to Menu.");
 	ORC_LOG_INFO("<- InputTest | RectanglesTest ->");
-	m_context.window.setTitle("Menu");
+	m_layerContext.window.setTitle("Menu");
 }
 
 void Menu::onDetach()
@@ -39,7 +39,7 @@ void Menu::onDetach()
 	ORC_LOG_INFO("Leaving from Menu.");
 }
 
-void Menu::onUpdate(const orc::FrameContext& ctx)
+void Menu::onUpdate(float deltaTime)
 {
 
 }
@@ -52,18 +52,18 @@ void Menu::onEvent(const orc::Event& event)
 	{
 		switch (kbPressed->key)
 		{
-			case orc::Keyboard::Key::Left: m_context.gameLayerManager.setActiveLayer("InputTest"); break;
-			case orc::Keyboard::Key::Right: m_context.gameLayerManager.setActiveLayer("RectanglesTest"); break;
+			case orc::Keyboard::Key::Left: m_layerContext.gameLayerManager.setActiveLayer("InputTest"); break;
+			case orc::Keyboard::Key::Right: m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest"); break;
 			default: break;
 		}
 	}
 }
 
-void Menu::onRender(orc::Renderer& renderer)
+void Menu::onRender()
 {
-	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.beginScene(camera);
-	renderer.endScene();
+	m_layerContext.renderer.setClearColor(orc::Color(25, 25, 25, 255));
+	m_layerContext.renderer.beginScene(m_camera);
+	m_layerContext.renderer.endScene();
 }
 
 void Menu::onGuiRender()
@@ -71,21 +71,21 @@ void Menu::onGuiRender()
 	ImGui::Begin("Navigation Menu");
 	{
 		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("AnimationTest");
+			m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
 		if (ImGui::Button("AudioTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("AudioTest");
+			m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
 		if (ImGui::Button("CameraTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("CameraTest");
+			m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
 		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("CirclesTest");
+			m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
 		if (ImGui::Button("Menu", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("Menu");
+			m_layerContext.gameLayerManager.setActiveLayer("Menu");
 		if (ImGui::Button("InputTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("InputTest");
+			m_layerContext.gameLayerManager.setActiveLayer("InputTest");
 		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("RectanglesTest");
+			m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
 		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			m_context.gameLayerManager.setActiveLayer("SpritesTest");
+			m_layerContext.gameLayerManager.setActiveLayer("SpritesTest");
 	}
 	ImGui::End();
 }
