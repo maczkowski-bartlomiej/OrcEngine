@@ -66,31 +66,31 @@ public:
 	}
 
 	template<typename T>
-	[[nodiscard]] bool is() const noexcept
+	bool is() const noexcept
 	{
 		return std::holds_alternative<T>(m_data);
 	}
 
 	template<typename T>
-	[[nodiscard]] const T* getIf() const noexcept
+	const T* getIf() const noexcept
 	{
 		return std::get_if<T>(&m_data);
 	}
 
 	template<typename T>
-	[[nodiscard]] T* getIf() noexcept
+	T* getIf() noexcept
 	{
 		return std::get_if<T>(&m_data);
 	}
 
 	template<typename T>
-	[[nodiscard]] const T& as() const
+	const T& as() const
 	{
 		return std::get<T>(m_data);
 	}
 
 	template<typename T>
-	[[nodiscard]] T& as()
+	T& as()
 	{
 		return std::get<T>(m_data);
 	}
@@ -107,17 +107,17 @@ public:
 		return std::visit(Overload{std::forward<Visitors>(visitors)...}, m_data);
 	}
 
-	[[nodiscard]] const EventVariant& raw() const noexcept
+	const EventVariant& raw() const noexcept
 	{
 		return m_data;
 	}
 
-	[[nodiscard]] EventVariant& raw() noexcept
+	EventVariant& raw() noexcept
 	{
 		return m_data;
 	}
 
-	[[nodiscard]] Type getType() const
+	Type getType() const
 	{
 		return std::visit(Overload{
 			[](std::monostate) { return Type::Invalid; },
@@ -132,7 +132,7 @@ public:
 		}, m_data);
 	}
 
-	[[nodiscard]] Type getEventType() const
+	Type getEventType() const
 	{
 		return getType();
 	}
@@ -145,7 +145,7 @@ private:
 };
 
 template<typename DerivedEvent>
-[[nodiscard]] const DerivedEvent& getEvent(const Event& event)
+const DerivedEvent& getEvent(const Event& event)
 {
 	return event.as<DerivedEvent>();
 }

@@ -22,8 +22,8 @@ struct string_view_hash
     std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
 };
 
-[[nodiscard]] bool fmodCall(FMOD_RESULT result, std::source_location sourceLocation = std::source_location::current());
-[[nodiscard]] bool ftCall(FT_Error result, std::source_location sourceLocation = std::source_location::current());
+bool fmodCall(FMOD_RESULT result, std::source_location sourceLocation = std::source_location::current());
+bool ftCall(FT_Error result, std::source_location sourceLocation = std::source_location::current());
 
 std::string getErrnoMessage(int error);
 
