@@ -57,13 +57,13 @@ case "$COMMAND" in
                     [ -f "$issue_file" ] || continue
                     fname="$(basename "$issue_file")"
                     num="${fname%%-*}"
-                    status="$(grep -iE '^Status:' "$issue_file" | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
+                    status="$( (grep -iE '^Status:' "$issue_file" || true) | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
                     status="${status:-needs-triage}"
-                    type="$(grep -iE '^Type:' "$issue_file" | head -n1 | sed -E 's/^Type:[[:space:]]*//I' | tr -d '\r')"
+                    type="$( (grep -iE '^Type:' "$issue_file" || true) | head -n1 | sed -E 's/^Type:[[:space:]]*//I' | tr -d '\r')"
                     type="${type:-task}"
-                    title="$(grep -iE '^# ' "$issue_file" | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
+                    title="$( (grep -iE '^# ' "$issue_file" || true) | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
                     title="${title:-$fname}"
-                    blockers="$(grep -iE '^Blocked by:' "$issue_file" | head -n1 | sed -E 's/^Blocked by:[[:space:]]*//I' | tr -d '\r')"
+                    blockers="$( (grep -iE '^Blocked by:' "$issue_file" || true) | head -n1 | sed -E 's/^Blocked by:[[:space:]]*//I' | tr -d '\r')"
                     
                     color="\033[37m"
                     case "$status" in
@@ -107,7 +107,7 @@ case "$COMMAND" in
             if [ -d "$ISSUES_DIR" ]; then
                 for issue_file in "$ISSUES_DIR"/*.md; do
                     [ -f "$issue_file" ] || continue
-                    status="$(grep -iE '^Status:' "$issue_file" | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
+                    status="$( (grep -iE '^Status:' "$issue_file" || true) | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
                     fname="$(basename "$issue_file")"
                     num="${fname%%-*}"
                     if [ "$status" = "resolved" ]; then
@@ -128,12 +128,12 @@ case "$COMMAND" in
             if [ -d "$ISSUES_DIR" ]; then
                 for issue_file in $(ls "$ISSUES_DIR"/*.md 2>/dev/null | sort); do
                     [ -f "$issue_file" ] || continue
-                    status="$(grep -iE '^Status:' "$issue_file" | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
+                    status="$( (grep -iE '^Status:' "$issue_file" || true) | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
                     if [ "$status" = "resolved" ] || [ "$status" = "wontfix" ] || [ "$status" = "claimed" ] || [ "$status" = "ready-for-human" ]; then
                         continue
                     fi
 
-                    blockers="$(grep -iE '^Blocked by:' "$issue_file" | head -n1 | sed -E 's/^Blocked by:[[:space:]]*//I' | tr -d '\r')"
+                    blockers="$( (grep -iE '^Blocked by:' "$issue_file" || true) | head -n1 | sed -E 's/^Blocked by:[[:space:]]*//I' | tr -d '\r')"
                     is_blocked=0
                     if [ -n "$blockers" ] && [ "$blockers" != "none" ]; then
                         IFS=',' read -ra B_LIST <<< "$blockers"
@@ -165,9 +165,9 @@ case "$COMMAND" in
         if [ -n "$FOUND_TICKET" ]; then
             fname="$(basename "$FOUND_TICKET")"
             num="${fname%%-*}"
-            title="$(grep -iE '^# ' "$FOUND_TICKET" | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
-            status="$(grep -iE '^Status:' "$FOUND_TICKET" | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
-            type="$(grep -iE '^Type:' "$FOUND_TICKET" | head -n1 | sed -E 's/^Type:[[:space:]]*//I' | tr -d '\r')"
+            title="$( (grep -iE '^# ' "$FOUND_TICKET" || true) | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
+            status="$( (grep -iE '^Status:' "$FOUND_TICKET" || true) | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
+            type="$( (grep -iE '^Type:' "$FOUND_TICKET" || true) | head -n1 | sed -E 's/^Type:[[:space:]]*//I' | tr -d '\r')"
             rel_path="${FOUND_TICKET#$REPO_ROOT/}"
 
             printf "\n\033[36m=== Next Frontier Ticket for Agent ===\033[0m\n"
@@ -289,7 +289,8 @@ EOF
         for f in "$ISSUES_DIR"/*.md; do
             [ -f "$f" ] || continue
             bname="$(basename "$f")"
-            n="${bname%%-*}"
+            raw_n="${bname%%-*}"
+            n=$((10#$raw_n))
             if [ "$n" -gt "$MAX_NUM" ] 2>/dev/null; then
                 MAX_NUM=$n
             fi
@@ -328,7 +329,7 @@ EOF
             MATCHES=()
             for f in "$SCRATCH_DIR"/*/issues/*.md; do
                 [ -f "$f" ] || continue
-                st="$(grep -iE '^Status:' "$f" | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
+                st="$( (grep -iE '^Status:' "$f" || true) | head -n1 | sed -E 's/^Status:[[:space:]]*//I' | tr -d '\r')"
                 st="${st:-needs-triage}"
                 if [ "$st" = "$r" ]; then
                     MATCHES+=("$f")
@@ -337,7 +338,7 @@ EOF
             printf "%b[%s]\033[0m (%d)\n" "$color" "$(echo "$r" | tr '[:lower:]' '[:upper:]')" "${#MATCHES[@]}"
             for m in "${MATCHES[@]}"; do
                 rel_path="${m#$REPO_ROOT/}"
-                title="$(grep -iE '^# ' "$m" | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
+                title="$( (grep -iE '^# ' "$m" || true) | head -n1 | sed -E 's/^#[[:space:]]*//' | tr -d '\r')"
                 printf "  - %s - %s\n" "$rel_path" "$title"
             done
         done

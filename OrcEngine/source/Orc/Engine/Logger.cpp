@@ -12,6 +12,8 @@
 
 namespace orc {
 
+namespace {
+
 class CapitalizedLevelNamesFormatter : public spdlog::custom_flag_formatter
 {
 public:
@@ -28,6 +30,8 @@ public:
 		return spdlog::details::make_unique<CapitalizedLevelNamesFormatter>();
 	}
 };
+
+}
 
 bool Logger::init(const std::string& logPath)
 {

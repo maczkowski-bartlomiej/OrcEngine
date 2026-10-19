@@ -97,7 +97,7 @@ foreach ($filePath in $filesToCheck) {
     }
 
     # 2. Check namespace orc in OrcEngine/ files
-    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp") {
+    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp" -and $relPath -notlike "*EntryPoint.cpp" -and $relPath -notlike "*StbImage.cpp" -and $relPath -notlike "*Debug.hpp" -and $relPath -notlike "*Orc.hpp") {
         if ($content -notmatch "\bnamespace\s+orc\b") {
             $fileIssues += [PSCustomObject]@{
                 Level = "ERROR"

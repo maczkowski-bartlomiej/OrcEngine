@@ -21,10 +21,10 @@ public:
 
 	~IndexBuffer();
 	
-	IndexBuffer(IndexBuffer&&) = delete;
+	IndexBuffer(IndexBuffer&& other) noexcept;
+	IndexBuffer& operator=(IndexBuffer&& other) noexcept;
 	IndexBuffer(const IndexBuffer&) = delete;
-	IndexBuffer operator=(IndexBuffer&&) = delete;
-	IndexBuffer operator=(const IndexBuffer&) = delete;
+	IndexBuffer& operator=(const IndexBuffer&) = delete;
 
 	uint32_t getCount() const;
 	RendererID getRendererID() const;

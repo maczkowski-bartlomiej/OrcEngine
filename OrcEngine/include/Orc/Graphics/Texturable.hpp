@@ -14,8 +14,8 @@ class Texturable : public Transformable
 {
 public:
 	Texturable();
-	Texturable(Ref<Texture> texture);
-	virtual ~Texturable() = default;
+	explicit Texturable(Ref<Texture> texture);
+	~Texturable() override = default;
 
 	void setTexture(Ref<Texture> texture);
 	void setTextureRect(const FloatRect& textureRect);

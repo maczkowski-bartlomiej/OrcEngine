@@ -21,7 +21,7 @@ namespace orc {
 
 static void glfwErrorCallback(int code, const char* description) noexcept
 {
-	ORC_LOG_ERROR("GLFW error occured...\n\tCode: {}\n\tDescription: {}", code, description);
+	ORC_LOG_ERROR("GLFW error occurred...\n\tCode: {}\n\tDescription: {}", code, description);
 }
 
 Window::Window(const VideoSettings& videoSettings)
@@ -122,7 +122,7 @@ bool Window::initGLAD()
 		return false;
 	}
 
-	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
+	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, reinterpret_cast<const char*>(glGetString(GL_VENDOR)), reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);

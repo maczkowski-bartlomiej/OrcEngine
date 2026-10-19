@@ -15,7 +15,7 @@ Resources<ResourceType>::Resources(const FilePath& xmlPath)
 }
 
 template<typename ResourceType>
-Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) 
+Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) const 
 {
 	if (auto find = m_resources.find(name); find != m_resources.end())
 	{

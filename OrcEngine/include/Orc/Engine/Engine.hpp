@@ -17,12 +17,13 @@ namespace orc {
 class Engine
 {
 public:
-	Engine(const Config& config);
+	explicit Engine(const Config& config);
 	~Engine();
 
 	void run();
 
 	LayerContext& getLayerContext();
+	const LayerContext& getLayerContext() const;
 
 private:
 	void onEvent(const Event& event);

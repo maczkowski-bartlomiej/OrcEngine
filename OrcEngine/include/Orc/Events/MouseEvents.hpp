@@ -9,7 +9,7 @@ struct MouseButtonPressedEvent
 	Mouse::Button button = Mouse::Button::Invalid;
 
 	MouseButtonPressedEvent() = default;
-	MouseButtonPressedEvent(Mouse::Button button) 
+	explicit MouseButtonPressedEvent(Mouse::Button button) 
 		: button(button) {}
 };
 
@@ -18,7 +18,7 @@ struct MouseButtonReleasedEvent
 	Mouse::Button button = Mouse::Button::Invalid;
 
 	MouseButtonReleasedEvent() = default;
-	MouseButtonReleasedEvent(Mouse::Button button) 
+	explicit MouseButtonReleasedEvent(Mouse::Button button) 
 		: button(button) {}
 };
 

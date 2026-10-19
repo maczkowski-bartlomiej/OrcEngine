@@ -10,18 +10,18 @@ Text::Text(const std::string& string)
 
 Text::Text(Ref<Font> font)
 {
-	setFont(font);
+	setFont(std::move(font));
 }
 
 Text::Text(Ref<Font> font, const std::string& string)
 {
-	setFont(font);
+	setFont(std::move(font));
 	setString(string);
 }
 
 void Text::setFont(Ref<Font> font)
 {
-	m_font = font;
+	m_font = std::move(font);
 	m_isGeometryUpdateNeeded = true;
 }
 
@@ -112,7 +112,7 @@ void Text::updateVertices() const
 		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
 		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
 
-		float positionyY = position.y;
+		float positionY = position.y;
 		position.y -= character.offset.y;
 
 		m_vertices.push_back(Vertex{
@@ -167,7 +167,7 @@ void Text::updateVertices() const
 			.radius = 0.0f
 		});
 
-		position.y = positionyY;
+		position.y = positionY;
 		position.x += character.advance;
 
 		m_localRect.right = std::max(m_localRect.right, position.x);

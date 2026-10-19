@@ -12,7 +12,7 @@ class Rectangle : public Texturable
 {
 public:
 	Rectangle();
-	Rectangle(const Vector2f& size, const Color& color = Color());
+	explicit Rectangle(const Vector2f& size, const Color& color = Color());
 	Rectangle(const Vector2f& position, const Vector2f& size, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);

@@ -25,7 +25,7 @@ struct Animation
 class Animator
 {
 public:
-	Animator(Sprite* sprite);
+	explicit Animator(Sprite* sprite);
 
 	void addAnimation(const std::string& name, Ref<Animation> animation);
 	void playAnimation(const std::string& name, bool looping = false);

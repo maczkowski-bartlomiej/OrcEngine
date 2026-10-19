@@ -21,7 +21,7 @@ class Font
 {
 public:
 	Font() = default;
-	Font(const FilePath& filePath, uint32_t size = 48);
+	explicit Font(const FilePath& filePath, uint32_t size = 48);
 
 	bool loadFromFile(const FilePath& filePath, uint32_t size = 48);
 

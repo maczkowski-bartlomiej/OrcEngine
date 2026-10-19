@@ -222,26 +222,44 @@ Follow the style of the surrounding file; the repository has no enforced formatt
 - **Buffers & Spans**: Pass contiguous memory via `std::span<const T>` or `std::span<const std::byte>` rather than raw pointers with separate size parameters.
 - **Math & Structures**:
   - Pass compound types (`Vector2f`, `Vector3f`, `Vector4f`, `Matrix`, `Matrix4`, `Color`, `FloatRect`) by `const&`.
-  - Pass primitive types (`float`, `uint32_t`, `int`, `bool`, `size_t`) by value.
-- **Move Semantics & Sinks**: Use pass-by-value with `std::move` or rvalue references (`T&&`) when transferring ownership into member fields.
+  - Pass primitive types (`float`, `uint32_t`, `int`, `bool`, `size_t`) and small enums/enum classes by value.
+  - Pass small proxy objects (`std::initializer_list<T>`) by value.
+- **Smart Pointer Passing (Ref<T>)**:
+  - **Sinks**: When a constructor or setter takes ownership or stores a `Ref<T>` into a member variable or collection, take `Ref<T>` by value and sink it using `std::move(...)` to avoid extra atomic reference-count overhead.
+  - **Observers**: When a method merely inspects, queries, binds, or temporary-draws a resource without retaining ownership, pass `const Ref<T>&` (or `const T&`) to avoid atomic reference count increments and decrements.
 
-### 5.3 Memory Ownership & RAII Rules
-- **Rule of 5**: Resource-owning classes (wrapping OpenGL IDs, GLFW handles, FreeType faces, FMOD objects) must explicitly define move constructor + move assignment and delete copy operations.
+### 5.3 Constructor, Constness, Linkage & Type Safety Invariants
+- **Explicit Constructors**: All single-argument constructors (and multi-argument constructors where trailing parameters have default values) must be marked `explicit` across all engine classes and event structs. The only permitted exception is intentional type-erasure or variant wrappers (e.g. `Event(T&&)`).
+- **Logical Constness**: Logical constness takes strict precedence over handle/pointer constness. Methods that mutate subsystem state, poll OS events, swap buffers, tick timers, advance audio mixers, or upload GPU buffer data must remain non-const, even if internal handles are pointers (`GLFWwindow*`, `FMOD::Studio::System*`) or driver IDs (`RendererID`). Pure inspector methods (e.g. `Texture::bind()`, `Resources::getResource()`, accessors) must be marked `const`.
+- **Linkage Invariant**:
+  - Local helper classes and formatters defined exclusively inside a `.cpp` file and not exposed in any header must be enclosed in an anonymous namespace to prevent symbol leakage across translation units.
+  - Cross-module utility functions declared in public engine headers (such as `fmodCall`, `ftCall`, `getErrnoMessage`) must retain external linkage under `namespace orc`.
+- **Casting & Type Safety**:
+  - Never use C-style casts. Use `static_cast` for value/arithmetic conversions and `reinterpret_cast` for opaque pointer reinterpretation.
+  - Narrowing conversions (such as from `uint32_t` stride/sizes to OpenGL signed `GLsizei`) must be explicitly cast with `static_cast<GLsizei>`.
+- **Modern Syntax & Control Flow**:
+  - Use C++17 concatenated nested namespaces (`namespace orc::glfw { ... }`).
+  - Do not leave empty namespace stubs or stray semicolons after namespace closing braces.
+  - Switch statements over bitmasks or integral states must explicitly provide a `default: break;` case.
+  - Derived class destructors overriding a virtual base destructor must specify `override`.
+
+### 5.4 Memory Ownership & RAII Rules
+- **Rule of 5**: Resource-owning classes (wrapping OpenGL IDs, GLFW handles, FreeType faces, FMOD objects) must explicitly define move constructor + move assignment (zeroing moved-from IDs) and delete copy operations.
 - **Smart Pointer Aliases**:
   - `orc::Ref<T>` (`std::shared_ptr<T>`) via `orc::createRef<T>(...)` for shared resources (`Texture`, `Font`, `Shader`, `GameLayer`).
   - `orc::UniquePtr<T>` (`std::unique_ptr<T>`) via `orc::createUniquePtr<T>(...)` for single-owner subsystems (`Renderer`, `Window`, `Audio`, `GameLayerManager`).
 - **Destructor Teardown**: **Never** call `m_ptr.release()` in destructors to leak memory. Use `m_ptr.reset()` or let RAII destroy the resource automatically.
 
-### 5.4 Error Handling & Logging
+### 5.5 Error Handling & Logging
 - **Logging Macros**: Use the built-in spdlog macros (standardized on ISO C++20 `__VA_OPT__(,) __VA_ARGS__` expansion, permitting calls without trailing format arguments):
   - `ORC_LOG_INFO(message, ...)`: Normal diagnostic messages.
   - `ORC_LOG_WARNING(message, ...)`: Recoverable unexpected states or fallbacks.
-  - `ORC_LOG_ERROR(message, ...)`: Operation failures (e.g. failed asset load).
+  - `ORC_LOG_ERROR(message, ...)`: Operation failures (e.g. failed asset load). Never use legacy `ORC_ERROR` directly in engine source files.
   - `ORC_LOG_FATAL(message, ...)`: Critical unrecoverable errors.
-- **Assertion Macros**: Use `ORC_ASSERT(condition, message, ...)` for debug-only invariant checks (active under `ORC_DEBUG_ASSERTS`), also conforming to ISO C++20 `__VA_OPT__(,)`.
+- **Assertion Macros**: Use `ORC_ASSERT(condition, message, ...)` for debug-only invariant checks (active under `ORC_DEBUG_ASSERTS`), also conforming to ISO C++20 `__VA_OPT__(,)`. Use `!container.empty()` rather than checking `.size()` as a boolean.
 - **Graceful Degradation**: Handle recoverable runtime failures gracefully (e.g. return `false`, `nullptr`, or `std::nullopt`) rather than crashing the engine.
 
-### 5.5 Formatting & File Layout
+### 5.6 Formatting & File Layout
 - **Tabs for Indentation**: Match the repository convention (tab character for indentation, verified by `lint-conventions`).
 - **Braces**: Opening brace on a new line (Allman-style) for classes, methods, and control blocks.
 - **Header Guards**: `#pragma once` at the top of every `.hpp` and `.inl` file.

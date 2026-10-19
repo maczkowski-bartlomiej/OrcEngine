@@ -21,10 +21,10 @@ public:
 
 	~VertexBuffer();
 
-	VertexBuffer(VertexBuffer&&) = delete;
+	VertexBuffer(VertexBuffer&& other) noexcept;
+	VertexBuffer& operator=(VertexBuffer&& other) noexcept;
 	VertexBuffer(const VertexBuffer&) = delete;
-	VertexBuffer operator=(VertexBuffer&&) = delete;
-	VertexBuffer operator=(const VertexBuffer&) = delete;
+	VertexBuffer& operator=(const VertexBuffer&) = delete;
 
 	void setData(const void* data, uint32_t size);
 

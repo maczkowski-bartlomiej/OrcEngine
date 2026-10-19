@@ -12,16 +12,16 @@ Texturable::Texturable()
 Texturable::Texturable(Ref<Texture> texture)
 	: m_isVertexPositionsUpdateNeeded(true)
 {
-	setTexture(texture);
+	setTexture(std::move(texture));
 	updateVerticesTexCoords();
 }
 
 void Texturable::setTexture(Ref<Texture> texture)
 {
-	m_texture = texture;
+	m_texture = std::move(texture);
 	if (m_texture)
 	{
-		setTextureRect(FloatRect(0.0f, 0.0f, texture->getSize().x, texture->getSize().y));
+		setTextureRect(FloatRect(0.0f, 0.0f, m_texture->getSize().x, m_texture->getSize().y));
 	}
 	else
 	{

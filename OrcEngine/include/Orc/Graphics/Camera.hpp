@@ -8,7 +8,7 @@ namespace orc {
 class Camera
 {
 public:
-	Camera(const FloatRect& viewPort);
+	explicit Camera(const FloatRect& viewPort);
 	Camera(float left, float top, float right, float bottom);
 
 	void setZoom(float zoom);

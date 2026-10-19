@@ -96,7 +96,7 @@ namespace orc {
 		ORC_ASSERT(eventDescription, "FMOD returned empty event '{}'.", eventPath);
 
 		FMOD::Studio::EventInstance* eventInstance = nullptr;
-        if (!fmodCall(eventDescription->createInstance(&eventInstance)))
+		if (!fmodCall(eventDescription->createInstance(&eventInstance)))
 		{
 			ORC_LOG_ERROR("Failed to create event instance for '{}'.", eventPath);
 		}
@@ -134,6 +134,21 @@ namespace orc {
 	}
 
 	Bus& Audio::getMasterBus()
+	{
+		return m_masterBus;
+	}
+
+	const Bus& Audio::getSfxBus() const
+	{
+		return m_sfxBus;
+	}
+
+	const Bus& Audio::getMusicBus() const
+	{
+		return m_musicBus;
+	}
+
+	const Bus& Audio::getMasterBus() const
 	{
 		return m_masterBus;
 	}

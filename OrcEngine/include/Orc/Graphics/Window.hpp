@@ -27,7 +27,7 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	Window(const VideoSettings& videoSettings);
+	explicit Window(const VideoSettings& videoSettings);
 	~Window();
 
 	void display();

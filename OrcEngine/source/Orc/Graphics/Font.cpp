@@ -67,7 +67,7 @@ void Font::calculateBitmap(FT_Face face)
 {
 	uint32_t fontHeightInPixels = static_cast<uint32_t>(face->size->metrics.height) >> 6; //26.6 fixed point format, so we need to shift right by 6 to get the pixel value
 	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(static_cast<float>(M_CHARACTER_COUNT))));
-	uint32_t maxDimension= (1 + fontHeightInPixels) * charactersPerRow;
+	uint32_t maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
 
 	uint32_t textureWidth = 1;
 	while (textureWidth < maxDimension)

@@ -30,5 +30,4 @@ private:
 	Ref<IndexBuffer> m_indexBuffer;
 	std::vector<Ref<VertexBuffer>> m_vertexBuffers;
 };
-
-};
+}

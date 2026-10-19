@@ -83,7 +83,7 @@ using Vector4 = glm::tvec4<T>;
 using Vector4i = glm::tvec4<int>;
 using Vector4b = glm::tvec4<bool>;
 using Vector4f = glm::tvec4<float>;
-using Vector4d = glm::tvec3<double>;
+using Vector4d = glm::tvec4<double>;
 using Vector4u = glm::tvec4<unsigned int>;
 
 using Matrix = glm::mat3;

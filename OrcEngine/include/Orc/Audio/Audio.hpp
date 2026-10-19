@@ -29,7 +29,7 @@ public:
 	};	
 
 	Audio() = delete;
-	Audio(const AudioSettings& audioSettings);
+	explicit Audio(const AudioSettings& audioSettings);
 	~Audio();
 
 	Audio(const Audio&) = delete;
@@ -46,13 +46,17 @@ public:
 	Bus& getMusicBus();
 	Bus& getMasterBus();
 
+	const Bus& getSfxBus() const;
+	const Bus& getMusicBus() const;
+	const Bus& getMasterBus() const;
+
 private:
 	Bus m_sfxBus;
 	Bus m_musicBus;
 	Bus m_masterBus;
 
 	FMOD::Studio::System* m_system = nullptr;
-    std::vector<FMOD::Studio::Bank*> m_banks;
+	std::vector<FMOD::Studio::Bank*> m_banks;
 };
 
 }

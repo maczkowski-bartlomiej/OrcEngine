@@ -38,7 +38,7 @@ void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLaye
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
 	ORC_ASSERT(gameLayer, "Game layer is nullptr.");
 
-	if (!m_layers.try_emplace(name, gameLayer).second)
+	if (!m_layers.try_emplace(name, std::move(gameLayer)).second)
 	{
 		ORC_LOG_WARNING("Game layer '{}' is already added.", name);
 	}

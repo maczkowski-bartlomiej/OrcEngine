@@ -48,6 +48,3 @@
 #include "Input/Input.hpp"
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"
-
-namespace orc {
-}

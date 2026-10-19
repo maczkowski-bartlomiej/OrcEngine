@@ -14,7 +14,7 @@ class Sprite : public Texturable
 {
 public:
 	Sprite();
-	Sprite(Ref<Texture> texture);
+	explicit Sprite(Ref<Texture> texture);
 	Sprite(Ref<Texture> texture, const Vector2f& position);
 
 	void setColor(const Color& color);
@@ -23,6 +23,7 @@ public:
 	FloatRect getLocalRect() const override;
 
 	Animator& getAnimator();
+	const Animator& getAnimator() const;
 
 private:
 	void updateVerticesPositions() const override;

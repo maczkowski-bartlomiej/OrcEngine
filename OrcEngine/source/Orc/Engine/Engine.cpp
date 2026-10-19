@@ -108,6 +108,11 @@ namespace orc {
 		return *m_layerContext;
 	}
 
+	const LayerContext& Engine::getLayerContext() const
+	{
+		return *m_layerContext;
+	}
+
 	void Engine::onEvent(const Event& event)
 	{
 		m_input->onEvent(event);

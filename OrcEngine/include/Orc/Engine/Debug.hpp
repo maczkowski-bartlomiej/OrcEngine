@@ -7,9 +7,6 @@
 #include <fmt/format.h>
 #include <source_location>
 
-namespace orc {
-// Preprocessor debug and assertion macros are declared below.
-}
 
 #ifdef ORC_DEBUG_ASSERTS
 

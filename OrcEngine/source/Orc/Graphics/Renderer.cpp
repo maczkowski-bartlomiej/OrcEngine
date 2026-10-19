@@ -115,7 +115,7 @@ void Renderer::flush()
 	startBatch();
 }
 
-float Renderer::getTextureSlot(Ref<Texture> texture)
+float Renderer::getTextureSlot(const Ref<Texture>& texture)
 {
 	if (!texture)
 		return EMPTY_TEXTURE_SLOT;
@@ -200,7 +200,7 @@ void Renderer::drawQuad(const Vector3f& position, const Vector2f& size, const Co
 	drawQuad(transform, size, color);
 }
 
-void Renderer::drawQuad(const Vector3f& position, const Vector2f& size, Ref<Texture> texture, const Color& tintColor)
+void Renderer::drawQuad(const Vector3f& position, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor)
 {
 	Matrix transform = glm::translate(Matrix(1.0f), Vector2f(position.x, position.y));
 	drawQuad(transform, size, texture, tintColor);
@@ -211,7 +211,7 @@ void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, const Col
 	drawQuad(transform, size, nullptr, color);
 }
 
-void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, Ref<Texture> texture, const Color& tintColor)
+void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor)
 {
 	float texSlot = texture ? getTextureSlot(texture) : EMPTY_TEXTURE_SLOT;
 	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
@@ -264,7 +264,7 @@ void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color&
 	drawLine(Vector3f(start.x, start.y, 0.0f), Vector3f(end.x, end.y, 0.0f), color, thickness);
 }
 
-void Renderer::draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform)
+void Renderer::draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const Matrix& transform)
 {
 	// Direct internal flush of any active batch before executing unbatched mesh draw
 	flush();

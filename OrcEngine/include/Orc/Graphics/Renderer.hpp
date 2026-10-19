@@ -38,9 +38,9 @@ public:
 
 	// Raw quad submission
 	void drawQuad(const Vector3f& position, const Vector2f& size, const Color& color);
-	void drawQuad(const Vector3f& position, const Vector2f& size, Ref<Texture> texture, const Color& tintColor = Color());
+	void drawQuad(const Vector3f& position, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor = Color());
 	void drawQuad(const Matrix& transform, const Vector2f& size, const Color& color);
-	void drawQuad(const Matrix& transform, const Vector2f& size, Ref<Texture> texture, const Color& tintColor = Color());
+	void drawQuad(const Matrix& transform, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor = Color());
 
 	// High-level shape overloads
 	void draw(const Sprite& sprite);
@@ -53,11 +53,11 @@ public:
 	void drawLine(const Vector3f& start, const Vector3f& end, const Color& color, float thickness = 1.0f);
 
 	// Unbatched custom geometry pass (flushes active 2D batch before drawing)
-	void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform);
+	void draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const Matrix& transform);
 
 private:
 	void startBatch();
-	float getTextureSlot(Ref<Texture> texture);
+	float getTextureSlot(const Ref<Texture>& texture);
 	void submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot);
 
 	static constexpr uint32_t MAX_QUADS = 2000;

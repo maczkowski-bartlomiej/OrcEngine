@@ -12,7 +12,7 @@ class Circle : public Texturable
 {
 public:
 	Circle();
-	Circle(float radius, const Color& color = Color());
+	explicit Circle(float radius, const Color& color = Color());
 	Circle(const Vector2f& position, float radius, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);

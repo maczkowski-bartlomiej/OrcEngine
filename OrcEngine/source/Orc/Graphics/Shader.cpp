@@ -3,6 +3,7 @@
 #include "Engine/Utility.hpp"
 
 #include <glad/glad.h>
+#include <utility>
 
 namespace orc {
 
@@ -11,9 +12,30 @@ Shader::Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
 	loadFromFile(vertexFilePath, fragmentFilePath);
 }
 
+Shader::Shader(Shader&& other) noexcept
+	: m_rendererID(std::exchange(other.m_rendererID, 0))
+{
+}
+
+Shader& Shader::operator=(Shader&& other) noexcept
+{
+	if (this != &other)
+	{
+		if (m_rendererID)
+		{
+			glDeleteProgram(m_rendererID);
+		}
+		m_rendererID = std::exchange(other.m_rendererID, 0);
+	}
+	return *this;
+}
+
 Shader::~Shader() 
 {
-	glDeleteProgram(m_rendererID);
+	if (m_rendererID)
+	{
+		glDeleteProgram(m_rendererID);
+	}
 }
 
 bool Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
@@ -27,9 +49,9 @@ bool Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragme
 	return true;
 }
 
-bool Shader::loadFromString(std::string_view vertexShaderSource, std::string_view fragmentShaderSource)
+bool Shader::loadFromString(std::string_view vertexSource, std::string_view fragmentSource)
 {
-	if (!compile(vertexShaderSource, fragmentShaderSource))
+	if (!compile(vertexSource, fragmentSource))
 	{
 		return false;
 	}
@@ -90,12 +112,12 @@ bool Shader::readShader(std::string* shader, const FilePath& filePath)
 	std::ifstream shaderFile(filePath, std::ios::in | std::ios::binary);
 	if (!shaderFile.is_open())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
+		ORC_LOG_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
 		success = false;
 	}
 	else if (!shaderFile.good())
 	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
+		ORC_LOG_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
 		success = false;
 	}
 	else
@@ -126,7 +148,7 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		std::vector<char> errorMessage(static_cast<uint32_t>(errorLength));
 		glGetShaderInfoLog(vertexShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
-		ORC_ERROR("Vertex shader compilation\n{}", errorMessage.data());
+		ORC_LOG_ERROR("Vertex shader compilation\n{}", errorMessage.data());
 
 		return false;
 	}
@@ -145,7 +167,7 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		glGetShaderInfoLog(fragmentShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
-		ORC_ERROR("Fragment shader compilation\n{}", errorMessage.data());
+		ORC_LOG_ERROR("Fragment shader compilation\n{}", errorMessage.data());
 
 		return false;
 	}
@@ -165,7 +187,7 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 		glDeleteProgram(m_rendererID);
-		ORC_ERROR("Shader link failure\n{}", errorMessage.data());
+		ORC_LOG_ERROR("Shader link failure\n{}", errorMessage.data());
 
 		return false;
 	}

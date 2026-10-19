@@ -15,13 +15,13 @@ public:
 	Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
 	~Shader();
 
-	Shader(Shader&&) = delete;
+	Shader(Shader&& other) noexcept;
+	Shader& operator=(Shader&& other) noexcept;
 	Shader(const Shader&) = delete;
-	Shader operator=(Shader&&) = delete;
-	Shader operator=(const Shader&) = delete;
+	Shader& operator=(const Shader&) = delete;
 
 	bool loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
-	bool loadFromString(std::string_view vertexShaderSource, std::string_view fragmentShaderSource);
+	bool loadFromString(std::string_view vertexSource, std::string_view fragmentSource);
 
 	void bind() const;
 	void unbind() const;
@@ -42,7 +42,7 @@ public:
 
 private:
 	bool readShader(std::string* shader, const FilePath& filePath);
-	bool compile(std::string_view vertexShaderSource, std::string_view fragmentShaderSource);
+	bool compile(std::string_view vertexSource, std::string_view fragmentSource);
 
 	RendererID m_rendererID = 0;
 };

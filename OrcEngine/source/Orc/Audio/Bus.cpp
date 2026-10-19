@@ -35,7 +35,7 @@ namespace orc {
 	void Bus::pause()
 	{
 		ORC_ASSERT(m_bus, "Attempted to pause a null bus.");
-        if (!fmodCall(m_bus->setPaused(true)))
+		if (!fmodCall(m_bus->setPaused(true)))
 		{
 			ORC_LOG_ERROR("Failed to pause a bus.");
 		}
@@ -55,7 +55,7 @@ namespace orc {
 		ORC_ASSERT(m_bus, "Attempted to get volume from a null bus.");
 
 		float volume = 0.0f;
-        if (!fmodCall(m_bus->getVolume(&volume)))
+		if (!fmodCall(m_bus->getVolume(&volume)))
 		{
 			ORC_LOG_ERROR("Failed to get volume from a bus");
 		}
@@ -65,7 +65,7 @@ namespace orc {
 	void Bus::setVolume(float volume)
 	{
 		ORC_ASSERT(m_bus, "Attempted to set volume from a null bus.");
-		 if (!fmodCall(m_bus->setVolume(volume)))
+		if (!fmodCall(m_bus->setVolume(volume)))
 		{
 			ORC_LOG_ERROR("Failed to set volume of a bus");
 		}

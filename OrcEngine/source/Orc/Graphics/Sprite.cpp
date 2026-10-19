@@ -13,11 +13,11 @@ Sprite::Sprite()
 Sprite::Sprite(Ref<Texture> texture)
 	: Sprite()
 {
-	setTexture(texture);
+	setTexture(std::move(texture));
 }
 
 Sprite::Sprite(Ref<Texture> texture, const Vector2f& position)
-	: Sprite(texture)
+	: Sprite(std::move(texture))
 {
 	setPosition(position);
 }
@@ -42,6 +42,11 @@ FloatRect Sprite::getLocalRect() const
 }
 
 Animator& Sprite::getAnimator()
+{
+	return m_animator;
+}
+
+const Animator& Sprite::getAnimator() const
 {
 	return m_animator;
 }

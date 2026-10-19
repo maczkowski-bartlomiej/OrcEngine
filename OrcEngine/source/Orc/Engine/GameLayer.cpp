@@ -17,7 +17,7 @@ void GameLayer::onEvent(const Event& event)
 {
 	if (const auto* resized = event.getIf<WindowResizedEvent>())
 	{
-		m_camera.setViewportSize(0.0f, static_cast<float>(resized->width), static_cast<float>(resized->height), 0.0f);
+		m_camera.setViewportSize(0.0f, 0.0f, static_cast<float>(resized->width), static_cast<float>(resized->height));
 	}
 }
 

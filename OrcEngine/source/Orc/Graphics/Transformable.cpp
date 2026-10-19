@@ -42,17 +42,10 @@ void Transformable::move(const Vector2f& offset)
 
 void Transformable::setRotation(float angle)
 {
-	m_rotation = angle;
-	
-	if (m_rotation > 0.0f)
+	m_rotation = std::fmod(angle, 360.0f);
+	if (m_rotation < 0.0f)
 	{
-		while (m_rotation > 360.0f)
-			m_rotation -= 360.0f;
-	}
-	else
-	{
-		while (m_rotation < 0.0f)
-			m_rotation += 360.0f;
+		m_rotation += 360.0f;
 	}
 
 	m_isTransformMatrixUpdateNeeded = true;

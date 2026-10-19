@@ -16,8 +16,8 @@ class Text : public Transformable
 {
 public:
 	Text() = default;
-	Text(const std::string& string);
-	Text(Ref<Font> font);
+	explicit Text(const std::string& string);
+	explicit Text(Ref<Font> font);
 	Text(Ref<Font> font, const std::string& string);
 
 	void setFont(Ref<Font> font);
