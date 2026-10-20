@@ -44,4 +44,4 @@ using Vector4u = glm::tvec4<unsigned int>;
 using Matrix = glm::mat3;
 using Matrix4 = glm::mat4;
 
-} // namespace orc
+}

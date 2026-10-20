@@ -1,6 +1,6 @@
 # Resizing Window Does Not Resize Viewport
 
-Status: needs-triage
+Status: resolved
 Type: grilling
 
 ## Raw Proposal
@@ -18,3 +18,7 @@ Currently resizing window does not resize viewport
   `WindowResizedEvent`?
 - ❓ Should camera projection maintain a fixed virtual resolution / aspect ratio or expand visible world bounds with the
   new window dimensions?
+
+## Answer
+
+Specified and transferred into feature .scratch/window-viewport-synchronization/

@@ -22,4 +22,4 @@ constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
 	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
 }
 
-} // namespace orc
+}
