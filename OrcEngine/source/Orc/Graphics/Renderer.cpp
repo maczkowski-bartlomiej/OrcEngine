@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 #include <cmath>
+#include <numeric>
 #include <span>
 
 namespace orc {
@@ -19,11 +20,9 @@ Renderer::Renderer()
 	m_quadShader = createRef<Shader>("shaders/composite2d.vert.glsl", "shaders/composite2d.frag.glsl");
 	m_quadShader->bind();
 
-	int32_t samplers[MAX_TEXTURE_SLOTS] = {};
-	for (uint32_t i = 0; i < MAX_TEXTURE_SLOTS; i++)
-		samplers[i] = static_cast<int32_t>(i);
-
-	m_quadShader->uploadUniformIntArray("u_textures", samplers, MAX_TEXTURE_SLOTS);
+	std::array<int32_t, MAX_TEXTURE_SLOTS> samplers;
+	std::iota(samplers.begin(), samplers.end(), 0);
+	m_quadShader->uploadUniformIntArray("u_textures", samplers.data(), MAX_TEXTURE_SLOTS);
 
 	m_quadVertexBuffer = createRef<VertexBuffer>(nullptr, static_cast<int32_t>(sizeof(Vertex) * MAX_QUAD_VERTICES));
 	m_quadVertexBuffer->setLayout(BufferLayout{
@@ -102,6 +101,8 @@ void Renderer::flush()
 	if (m_quadVerticesCount == 0)
 		return;
 
+	ORC_ASSERT(m_isSceneActive, "Cannot flush renderer outside of active Scene Scope!");
+
 	for (uint32_t s = 0; s < m_textures.size(); ++s)
 		m_textures[s]->bind(s);
 
@@ -136,14 +137,20 @@ float Renderer::getTextureSlot(const Ref<Texture>& texture)
 	return slot;
 }
 
-void Renderer::submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot)
+void Renderer::submitQuad(const std::array<Vertex, 4>& vertices, const Ref<Texture>& texture)
 {
+	ORC_ASSERT(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
+
 	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
 		flush();
 
-	std::copy_n(vertices.data(), 4, &m_quadVertices[m_quadVerticesCount]);
+	float textureSlot = getTextureSlot(texture);
+
 	for (size_t i = 0; i < 4; ++i)
+	{
+		m_quadVertices[m_quadVerticesCount + i] = vertices[i];
 		m_quadVertices[m_quadVerticesCount + i].textureIndex = textureSlot;
+	}
 	m_quadVerticesCount += 4;
 }
 
@@ -152,83 +159,45 @@ void Renderer::draw(const Sprite& sprite)
 	if (!sprite.getTexture())
 		return;
 
-	float texSlot = getTextureSlot(sprite.getTexture());
-	submitQuad(sprite.getVertices(), texSlot);
+	submitQuad(sprite.getVertices(), sprite.getTexture());
 }
 
 void Renderer::draw(const Rectangle& rectangle)
 {
-	float texSlot = rectangle.getTexture() ? getTextureSlot(rectangle.getTexture()) : EMPTY_TEXTURE_SLOT;
-	submitQuad(rectangle.getVertices(), texSlot);
+	submitQuad(rectangle.getVertices(), rectangle.getTexture());
 }
 
 void Renderer::draw(const Circle& circle)
 {
-	float texSlot = circle.getTexture() ? getTextureSlot(circle.getTexture()) : EMPTY_TEXTURE_SLOT;
-	submitQuad(circle.getVertices(), texSlot);
+	submitQuad(circle.getVertices(), circle.getTexture());
 }
 
 void Renderer::draw(const Text& text)
 {
+	ORC_ASSERT(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
+
 	if (!text.getFont() || !text.getFont()->getBitmap())
 		return;
 
 	Ref<Texture> fontBitmap = text.getFont()->getBitmap();
-	float texSlot = getTextureSlot(fontBitmap);
 	const auto& glyphVertices = text.getVertices();
 	size_t count = glyphVertices.size();
 
 	for (size_t i = 0; i < count; i += 4)
 	{
 		if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		{
 			flush();
-			texSlot = getTextureSlot(fontBitmap);
-		}
 
+		float texSlot = getTextureSlot(fontBitmap);
 		size_t verticesToCopy = std::min<size_t>(4, count - i);
-		std::copy_n(&glyphVertices[i], verticesToCopy, &m_quadVertices[m_quadVerticesCount]);
+
 		for (size_t j = 0; j < verticesToCopy; ++j)
+		{
+			m_quadVertices[m_quadVerticesCount + j] = glyphVertices[i + j];
 			m_quadVertices[m_quadVerticesCount + j].textureIndex = texSlot;
+		}
 		m_quadVerticesCount += static_cast<uint32_t>(verticesToCopy);
 	}
-}
-
-void Renderer::drawQuad(const Vector3f& position, const Vector2f& size, const Color& color)
-{
-	Matrix transform = glm::translate(Matrix(1.0f), Vector2f(position.x, position.y));
-	drawQuad(transform, size, color);
-}
-
-void Renderer::drawQuad(const Vector3f& position, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor)
-{
-	Matrix transform = glm::translate(Matrix(1.0f), Vector2f(position.x, position.y));
-	drawQuad(transform, size, texture, tintColor);
-}
-
-void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, const Color& color)
-{
-	drawQuad(transform, size, nullptr, color);
-}
-
-void Renderer::drawQuad(const Matrix& transform, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor)
-{
-	float texSlot = texture ? getTextureSlot(texture) : EMPTY_TEXTURE_SLOT;
-	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		flush();
-
-	Vector4f normColor = tintColor.normalized();
-	Vector3f v0 = transform * Vector3f(0.0f, 0.0f, 1.0f);
-	Vector3f v1 = transform * Vector3f(size.x, 0.0f, 1.0f);
-	Vector3f v2 = transform * Vector3f(0.0f, size.y, 1.0f);
-	Vector3f v3 = transform * Vector3f(size.x, size.y, 1.0f);
-
-	m_quadVertices[m_quadVerticesCount + 0] = Vertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 1] = Vertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 2] = Vertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 3] = Vertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = texSlot, .shapeType = 0.0f };
-
-	m_quadVerticesCount += 4;
 }
 
 void Renderer::drawLine(const Vector3f& start, const Vector3f& end, const Color& color, float thickness)
@@ -242,21 +211,15 @@ void Renderer::drawLine(const Vector3f& start, const Vector3f& end, const Color&
 	Vector2f normal = Vector2f(-dir.y / len, dir.x / len) * (thickness * 0.5f);
 	Vector3f n3 = Vector3f(normal.x, normal.y, 0.0f);
 
-	Vector3f v0 = start + n3;
-	Vector3f v1 = end + n3;
-	Vector3f v2 = start - n3;
-	Vector3f v3 = end - n3;
-
-	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
-		flush();
-
 	Vector4f normColor = color.normalized();
-	m_quadVertices[m_quadVerticesCount + 0] = Vertex{ .position = v0, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 1] = Vertex{ .position = v1, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 2] = Vertex{ .position = v2, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
-	m_quadVertices[m_quadVerticesCount + 3] = Vertex{ .position = v3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f };
+	std::array<Vertex, 4> vertices{
+		Vertex{ .position = start + n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
+		Vertex{ .position = end + n3,   .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
+		Vertex{ .position = start - n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
+		Vertex{ .position = end - n3,   .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f }
+	};
 
-	m_quadVerticesCount += 4;
+	submitQuad(vertices, nullptr);
 }
 
 void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color& color, float thickness)
@@ -266,6 +229,8 @@ void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color&
 
 void Renderer::draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const Matrix& transform)
 {
+	ORC_ASSERT(m_isSceneActive, "Cannot draw geometry outside of active Scene Scope!");
+
 	// Direct internal flush of any active batch before executing unbatched mesh draw
 	flush();
 
@@ -274,7 +239,7 @@ void Renderer::draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shad
 	shader->uploadUniformMatrix3("u_transform", transform);
 
 	glBindVertexArray(vertexArray->getRendererID());
-	glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertexArray->getIndexBuffer()->getCount()), GL_UNSIGNED_INT, nullptr);
 }
 
 }

@@ -1,6 +1,6 @@
 # Remove drawQuad API in Renderer
 
-Status: needs-triage
+Status: resolved
 Type: grilling
 
 ## Raw Proposal
@@ -11,8 +11,11 @@ In Rederer.cpp remove drawQuad API
 
 - **Source:** Standalone (`OrcEngine/source/Orc/Graphics/Renderer.cpp`)
 - **Captured:** 2026-10-15
+- **Resolved:** 2026-10-20
 
-## Frontier Seeds
+## Resolution
 
-- ❓ What primitive submission mechanism replaces `drawQuad` for callers (e.g., shapes, text, sprites)?
-- ❓ How should existing call sites across `TestProject` demo layers be migrated?
+- Confirmed zero callers existed across `OrcEngine` and `TestProject`.
+- Removed all four `drawQuad` overloads from `Renderer.hpp` and `Renderer.cpp`.
+- Removed dead `begin()` and `end()` lifecycle aliases from `Renderer.hpp` in favor of canonical `beginScene()` and `endScene()`.
+- Callers submit 2D primitives via high-level shapes (`Sprite`, `Rectangle`, `Circle`, `Text`) and `drawLine()`.

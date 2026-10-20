@@ -153,8 +153,9 @@ The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-r
   - Procedural parameters: `shapeType` (`0.0f` = standard quad, `1.0f` = procedural circle), `borderThickness`, `innerRadius`, and `radius`.
 - **Texturable & Geometry Submission**:
   - `Texturable` is a non-templated `Transformable` base class holding four `Vertex` instances directly in `m_vertices`.
-  - High-level primitives (`Sprite`, `Rectangle`, `Circle`) inherit from `Texturable`, allowing zero-transcoding memory copies directly into the batch buffer.
-  - `Text` stores a dynamic `std::vector<Vertex>` directly, which is appended into the batch buffer without per-field conversion.
+  - High-level primitives (`Sprite`, `Rectangle`, `Circle`) inherit from `Texturable`, submitting geometry directly to the quad batcher via `submitQuad(vertices, texture)` using a cache-friendly single-pass copy and texture-slot assignment loop. Raw `drawQuad` methods have been removed.
+  - `Text` stores a dynamic `std::vector<Vertex>` directly, which is streamed into the batch buffer via single-pass vertex assignment.
+  - `submitQuad`, `draw`, and `flush` assert active **Scene Scope** (`m_isSceneActive`) in debug builds.
 - **Texture Slot Allocation**:
   - `MAX_TEXTURE_SLOTS = 32`. Textures submitted during draw calls are deduplicated into `m_textures`.
   - Texture unit indices `0..31` are mapped dynamically to the shader sampler array `u_textures`.
@@ -165,7 +166,7 @@ The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-r
   3. `endScene()` is called at the end of the Scene Scope.
   4. An unbatched custom mesh is drawn.
 - **Natural Submission Order**: Geometry is drawn in the exact temporal order submitted by game layers. Z-indexing depth buffer inversions (`1.0f / zIndex`) have been completely eliminated, ensuring correct alpha blending between mixed primitive types.
-- **Lines as Oriented Quads**: `drawLine(start, end, color, thickness)` computes the perpendicular normal offset and submits an oriented quad to the quad batcher, requiring zero pipeline or shader switches.
+- **Lines as Oriented Quads**: `drawLine(start, end, color, thickness)` computes the perpendicular normal offset and routes its oriented quad directly through `submitQuad(vertices, nullptr)`, requiring zero pipeline or shader switches.
 - **Unbatched Custom Geometry**: `Renderer::draw(Ref<VertexArray>, Ref<Shader>, const Matrix&)` automatically flushes any active 2D dynamic batch before binding and drawing custom geometry.
 - **Transform Hierarchy**: `Transformable` maintains `m_position`, `m_rotation`, `m_scale`, and `m_origin`. It lazily updates and caches `m_transformMatrix` (GLM 3x3 affine) and `m_inverseTransformMatrix` via `m_isTransformMatrixUpdateNeeded`.
 

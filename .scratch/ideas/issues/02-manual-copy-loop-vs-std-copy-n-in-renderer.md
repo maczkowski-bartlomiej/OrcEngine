@@ -1,6 +1,6 @@
 # Manual Copy Loop vs std::copy_n in Renderer
 
-Status: needs-triage
+Status: resolved
 Type: grilling
 
 ## Raw Proposal
@@ -11,8 +11,10 @@ in renderer.cpp shouldnt we stick with the manual copy in loop instead calling s
 
 - **Source:** Standalone (`OrcEngine/source/Orc/Graphics/Renderer.cpp`)
 - **Captured:** 2026-10-15
+- **Resolved:** 2026-10-20
 
-## Frontier Seeds
+## Resolution
 
-- ❓ What code quality, readability, or debugging trade-offs exist between an explicit vertex-by-vertex assignment loop versus `std::copy_n` / `std::memcpy`?
-- ❓ Does `std::copy_n` affect optimization, vectorization, or trivial copy guarantees for vertex types compared to a manual loop?
+- Replaced the two-phase `std::copy_n` + secondary mutation loop with a single-pass loop in `submitQuad` and `draw(const Text&)`.
+- Eliminated redundant double memory writes across cache lines, unified texture index stamping in one step, and simplified debugging.
+- Refactored `submitQuad` to accept `const Ref<Texture>&` to eliminate stale texture slot indices on batch capacity flushes.

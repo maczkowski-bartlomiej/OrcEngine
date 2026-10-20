@@ -32,16 +32,6 @@ public:
 	void endScene();
 	void flush();
 
-	// Backward-compatible lifecycle aliases
-	void begin(const Camera& camera) { beginScene(camera); }
-	void end() { endScene(); }
-
-	// Raw quad submission
-	void drawQuad(const Vector3f& position, const Vector2f& size, const Color& color);
-	void drawQuad(const Vector3f& position, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor = Color());
-	void drawQuad(const Matrix& transform, const Vector2f& size, const Color& color);
-	void drawQuad(const Matrix& transform, const Vector2f& size, const Ref<Texture>& texture, const Color& tintColor = Color());
-
 	// High-level shape overloads
 	void draw(const Sprite& sprite);
 	void draw(const Rectangle& rectangle);
@@ -58,7 +48,7 @@ public:
 private:
 	void startBatch();
 	float getTextureSlot(const Ref<Texture>& texture);
-	void submitQuad(const std::array<Vertex, 4>& vertices, float textureSlot);
+	void submitQuad(const std::array<Vertex, 4>& vertices, const Ref<Texture>& texture = nullptr);
 
 	static constexpr uint32_t MAX_QUADS = 2000;
 	static constexpr uint32_t MAX_QUAD_VERTICES = MAX_QUADS * 4;
