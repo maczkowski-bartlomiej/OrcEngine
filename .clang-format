@@ -1,0 +1,112 @@
+# OrcEngine ClangFormat Configuration
+# Matches conventions defined in AGENTS.md:
+# - Tabs for indentation (width = 4)
+# - Allman-style braces for classes, methods, and control blocks
+# - namespace orc { on same line without indentation
+# - Left-aligned pointers/references (Type* ptr, Type& ref)
+# - Access specifiers unindented (offset = -4)
+# - Switch case labels indented
+# - C++20 standard
+# - Regrouped and sorted include directives by category
+
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Latest
+
+# --- Indentation & Tabs ---
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+
+# --- Line Length ---
+# ColumnLimit: 0 preserves developer line breaking without arbitrary rewrapping
+ColumnLimit: 0
+
+# --- Braces (Allman style, except namespace on same line) ---
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: true
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# --- Pointer & Reference Alignment ---
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+
+# --- Namespaces ---
+NamespaceIndentation: None
+CompactNamespaces: false
+FixNamespaceComments: false
+
+# --- Access Specifiers ---
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+# --- Switch & Case Labels ---
+IndentCaseLabels: true
+AllowShortCaseLabelsOnASingleLine: false
+
+# --- Short Blocks & Statements ---
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+
+# --- Spacing ---
+SpaceBeforeParens: ControlStatements
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyBraces: Never
+SpacesInAngles: Never
+SpacesInParens: Never
+SpacesInSquareBrackets: false
+SpacesBeforeTrailingComments: 1
+
+# --- Constructor & Inheritance Initializers ---
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 4
+BreakInheritanceList: BeforeColon
+
+# --- Include Sorting & Regrouping ---
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeIsMainRegex: '([-_](test|unittest))?$'
+IncludeCategories:
+  # 1. Main matching header (implicit Priority 0 / 1 via IncludeIsMainRegex)
+
+  # 2. C++ Standard Library headers (<vector>, <string>, <cmath>, <span>, etc.)
+  - Regex: '^<[a-z0-9_]+>'
+    Priority: 2
+
+  # 3. Third-party library headers (glad, GLFW, FMOD, fmt, spdlog, imgui, freetype, glm, etc.)
+  - Regex: '^[<"](glad|GLFW|fmod|fmt|spdlog|imgui|freetype|glm|tinyxml2|stb_image|Windows|intrin)'
+    Priority: 3
+  - Regex: '^<.*'
+    Priority: 3
+
+  # 4. OrcEngine core headers (<Orc/..., "Orc/...", "Engine/...", "Graphics/...", "OrcPch.hpp", etc.)
+  - Regex: '^[<"](Orc/|OrcPch)'
+    Priority: 4
+  - Regex: '^"(Audio|Engine|Events|Graphics|Input)/'
+    Priority: 4
+
+  # 5. Local application / test headers ("Menu.hpp", "AnimationTest.hpp", etc.)
+  - Regex: '.*'
+    Priority: 5
