@@ -123,17 +123,10 @@ namespace orc {
 			gameLayer->onEvent(event);
 		}
 
-		event.visit(
-			[this, &event](const WindowClosedEvent&)
-			{
-				m_running = false;
-				event.setHandled();
-			},
-			[&event](auto&&)
-			{
-				event.setHandled();
-			}
-		);
+		if (event.getType() == Event::Type::WindowClosed)
+		{
+			m_running = false;
+		}
 	}
 
 }

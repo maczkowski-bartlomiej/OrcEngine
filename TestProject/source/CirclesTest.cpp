@@ -98,9 +98,10 @@ void CirclesTest::onEvent(const orc::Event& event)
 {
 	orc::GameLayer::onEvent(event);
 
-	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
+	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
 	{
-		switch (kbPressed->key)
+		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (kbPressed.key)
 		{
 			case orc::Keyboard::Key::Left: m_layerContext.gameLayerManager.setActiveLayer("CameraTest"); break;
 			case orc::Keyboard::Key::Right: m_layerContext.gameLayerManager.setActiveLayer("InputTest"); break;

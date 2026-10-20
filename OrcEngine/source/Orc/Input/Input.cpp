@@ -1,6 +1,8 @@
 #include "OrcPch.hpp"
 
 #include "Input/Input.hpp"
+#include "Events/KeyboardEvents.hpp"
+#include "Events/MouseEvents.hpp"
 
 namespace orc {
 
@@ -33,29 +35,41 @@ Vector2f Input::getMousePosition() const
 
 void Input::onEvent(const Event& event)
 {
-	event.visit(
-		[this](const KeyboardKeyPressedEvent& e)
+	switch (event.getType())
+	{
+		case Event::Type::KeyboardKeyPressed:
 		{
+			const auto& e = getEvent<KeyboardKeyPressedEvent>(event);
 			setKeyState(e.key, true);
-		},
-		[this](const KeyboardKeyReleasedEvent& e)
+			break;
+		}
+		case Event::Type::KeyboardKeyReleased:
 		{
+			const auto& e = getEvent<KeyboardKeyReleasedEvent>(event);
 			setKeyState(e.key, false);
-		},
-		[this](const MouseButtonPressedEvent& e)
+			break;
+		}
+		case Event::Type::MouseButtonPressed:
 		{
+			const auto& e = getEvent<MouseButtonPressedEvent>(event);
 			setMouseButtonState(e.button, true);
-		},
-		[this](const MouseButtonReleasedEvent& e)
+			break;
+		}
+		case Event::Type::MouseButtonReleased:
 		{
+			const auto& e = getEvent<MouseButtonReleasedEvent>(event);
 			setMouseButtonState(e.button, false);
-		},
-		[this](const MouseMovedEvent& e)
+			break;
+		}
+		case Event::Type::MouseMoved:
 		{
+			const auto& e = getEvent<MouseMovedEvent>(event);
 			m_mousePosition = Vector2f(e.x, e.y);
-		},
-		[](auto&&) {}
-	);
+			break;
+		}
+		default:
+			break;
+	}
 }
 
 void Input::reset()

@@ -31,3 +31,7 @@ _Avoid_: EngineContext, SystemRegistry, ServiceLocator
 **Input**:
 The engine subsystem tracking keyboard, mouse, and cursor state snapshots decoupled from window handles and platform APIs.
 _Avoid_: InputManager, InputState, RawInput
+
+**Event**:
+The lightweight polymorphic base class representing discrete window, keyboard, and mouse occurrences dispatched through `onEvent` using `getType()` and `getEvent<T>()`.
+_Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage

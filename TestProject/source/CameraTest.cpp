@@ -53,25 +53,24 @@ void CameraTest::onEvent(const orc::Event& event)
 {
 	orc::GameLayer::onEvent(event);
 
-	event.visit(
-		[this](const orc::KeyboardKeyPressedEvent& e)
+	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	{
+		const auto& e = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
+		switch (e.key)
 		{
-			switch (e.key)
-			{
-				case orc::Keyboard::Key::Left: m_layerContext.gameLayerManager.setActiveLayer("AudioTest"); break;
-				case orc::Keyboard::Key::Right: m_layerContext.gameLayerManager.setActiveLayer("CirclesTest"); break;
-				default: break;
-			}
-		},
-		[this](const orc::MouseWheelScrolledEvent& wheelScrolled)
-		{
-			if (wheelScrolled.yDelta > 0)
-				m_camera.zoom(0.01f);
-			else if (wheelScrolled.yDelta < 0)
-				m_camera.zoom(-0.01f);
-		},
-		[](auto&&) {}
-	);
+			case orc::Keyboard::Key::Left: m_layerContext.gameLayerManager.setActiveLayer("AudioTest"); break;
+			case orc::Keyboard::Key::Right: m_layerContext.gameLayerManager.setActiveLayer("CirclesTest"); break;
+			default: break;
+		}
+	}
+	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)
+	{
+		const auto& wheelScrolled = orc::getEvent<orc::MouseWheelScrolledEvent>(event);
+		if (wheelScrolled.yDelta > 0)
+			m_camera.zoom(0.01f);
+		else if (wheelScrolled.yDelta < 0)
+			m_camera.zoom(-0.01f);
+	}
 }
 
 void CameraTest::onGuiRender()

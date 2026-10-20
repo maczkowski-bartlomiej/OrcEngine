@@ -121,18 +121,16 @@ The layer runtime and context injection model is detailed in [ADR 0004](docs/adr
   - `onEvent(const Event& event)`: Handles dispatched input and window events. Base `GameLayer::onEvent` automatically updates `m_camera` viewport dimensions on `WindowResizedEvent`.
 
 ### 4.3 Window, Input, and Events Flow
+The polymorphic event hierarchy and downcasting architecture is detailed in [ADR 0005](docs/adr/0005-revert-to-polymorphic-event-hierarchy.md).
 - **Event Generation**: GLFW window callbacks (keys, mouse buttons, cursor move, scroll, window resize, window close) trigger lambda dispatchers configured in `Window::setCallbacks()`.
-- **Event Representation**: `Event` uses value semantics wrapping a type-safe `std::variant`:
+- **Event Representation**: `Event` is an open polymorphic base class storing an `Event::Type` enum (`m_type`), initialized via an `explicit Event(Type type)` constructor and cleaned up via a virtual destructor. Concrete event structs inherit publicly from `Event`:
   - `WindowResizedEvent`, `WindowClosedEvent`
   - `KeyboardKeyPressedEvent`, `KeyboardKeyReleasedEvent`
   - `MouseButtonPressedEvent`, `MouseButtonReleasedEvent`, `MouseMovedEvent`, `MouseWheelScrolledEvent`
-- **Inspection & Pattern Matching**:
-  - Type-safe visitation: `event.visit(Overload{ [](const KeyboardKeyPressedEvent& e) { ... }, [](auto&&) {} });`
-  - Type query: `event.is<T>()`
-  - Safe pointer extraction: `event.getIf<T>()` returns `const T*` (or `nullptr`)
-  - Direct conversion: `event.as<T>()` returns `const T&` (throws `std::bad_variant_access` if mismatched)
-  - Event dispatch helper: `EventDispatcher(event).dispatch<T>(callback)`
-  - Consumption flag: `event.setHandled(bool)` and `event.isHandled()`
+- **Inspection & Downcasting**:
+  - Type query: `event.getType()` returning `Event::Type`.
+  - Type downcasting: `getEvent<T>(event)` returns `static_cast<const T&>(event)`, with an `ORC_ASSERT` verifying the runtime downcast (`dynamic_cast`) in debug builds.
+  - Pattern matching: Standard C++ `switch (event.getType())` or `if (event.getType() == Event::Type::...)` statements.
 - **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating `m_camera` viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
 - **Input Subsystem**: `Input` tracks pressed keys (`isKeyPressed(Keyboard::Key)`), mouse buttons (`isMouseButtonPressed(Mouse::Button)`), and cursor coordinates (`getMousePosition()`) purely from window events without polling native GLFW window handles. Layers query input via `m_layerContext.input`.
 
@@ -205,7 +203,7 @@ Follow the style of the surrounding file; the repository has no enforced formatt
 | Category | Convention | Examples |
 | :--- | :--- | :--- |
 | **Namespaces** | lowercase snake_case | `orc`, `orc::version`, `orc::glfw` |
-| **Types / Classes / Structs** | PascalCase | `GameLayer`, `EventDispatcher`, `Vertex`, `AudioSettings` |
+| **Types / Classes / Structs** | PascalCase | `GameLayer`, `WindowResizedEvent`, `Vertex`, `AudioSettings` |
 | **Functions / Methods** | camelCase | `loadFromFile()`, `isKeyPressed()`, `onAttach()`, `setViewportSize()` |
 | **Local Variables** | camelCase | `elapsed`, `windowResizedEvent`, `gameLayer`, `dt` |
 | **Member Variables** | `m_camelCase` | `m_running`, `m_videoSettings`, `m_glfwWindow`, `m_texture`, `m_camera` |
@@ -229,7 +227,7 @@ Follow the style of the surrounding file; the repository has no enforced formatt
   - **Observers**: When a method merely inspects, queries, binds, or temporary-draws a resource without retaining ownership, pass `const Ref<T>&` (or `const T&`) to avoid atomic reference count increments and decrements.
 
 ### 5.3 Constructor, Constness, Linkage & Type Safety Invariants
-- **Explicit Constructors**: All single-argument constructors (and multi-argument constructors where trailing parameters have default values) must be marked `explicit` across all engine classes and event structs. The only permitted exception is intentional type-erasure or variant wrappers (e.g. `Event(T&&)`).
+- **Explicit Constructors**: All single-argument constructors (and multi-argument constructors where trailing parameters have default values) must be marked `explicit` across all engine classes and event structs. The only permitted exception is intentional type-erasure wrappers.
 - **Logical Constness**: Logical constness takes strict precedence over handle/pointer constness. Methods that mutate subsystem state, poll OS events, swap buffers, tick timers, advance audio mixers, or upload GPU buffer data must remain non-const, even if internal handles are pointers (`GLFWwindow*`, `FMOD::Studio::System*`) or driver IDs (`RendererID`). Pure inspector methods (e.g. `Texture::bind()`, `Resources::getResource()`, accessors) must be marked `const`.
 - **Linkage Invariant**:
   - Local helper classes and formatters defined exclusively inside a `.cpp` file and not exposed in any header must be enclosed in an anonymous namespace to prevent symbol leakage across translation units.
