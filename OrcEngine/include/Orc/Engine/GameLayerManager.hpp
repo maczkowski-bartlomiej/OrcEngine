@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Engine/GameLayer.hpp"
-
 #include <string>
 #include <string_view>
 #include <unordered_map>
+
+#include "Engine/Core.hpp"
+#include "Engine/GameLayer.hpp"
 
 namespace orc {
 

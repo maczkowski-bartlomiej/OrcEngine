@@ -1,8 +1,10 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/IndexBuffer.hpp"
 
-#include <glad/glad.h>
 #include <utility>
+
+#include <glad/glad.h>
 
 namespace orc {
 

@@ -8,6 +8,7 @@
 # - Switch case labels indented
 # - C++20 standard
 # - Regrouped and sorted include directives by category
+# - OrcPch.hpp included before all other headers
 
 BasedOnStyle: LLVM
 Language: Cpp
@@ -58,7 +59,7 @@ AccessModifierOffset: -4
 
 # --- Switch & Case Labels ---
 IndentCaseLabels: true
-AllowShortCaseLabelsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 
 # --- Short Blocks & Statements ---
 AllowShortFunctionsOnASingleLine: Inline
@@ -89,24 +90,33 @@ SortIncludes: CaseSensitive
 IncludeBlocks: Regroup
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeCategories:
-  # 1. Main matching header (implicit Priority 0 / 1 via IncludeIsMainRegex)
+  # 1. Precompiled header (OrcPch.hpp must always be the very first include)
+  - Regex: '^"OrcPch\.hpp"'
+    Priority: 1
+    SortPriority: -1
 
-  # 2. C++ Standard Library headers (<vector>, <string>, <cmath>, <span>, etc.)
+  # 2. Main matching header (implicit Priority 0/1 via IncludeIsMainRegex, but OrcPch SortPriority -1 takes precedence)
+
+  # 3. C++ Standard Library headers (<vector>, <string>, <cmath>, <span>, etc.)
   - Regex: '^<[a-z0-9_]+>'
     Priority: 2
 
-  # 3. Third-party library headers (glad, GLFW, FMOD, fmt, spdlog, imgui, freetype, glm, etc.)
-  - Regex: '^[<"](glad|GLFW|fmod|fmt|spdlog|imgui|freetype|glm|tinyxml2|stb_image|Windows|intrin)'
+  # 4. GLAD loader header (must always precede GLFW and OpenGL headers)
+  - Regex: '^[<"]glad/'
     Priority: 3
+
+  # 5. Third-party library headers (GLFW, FMOD, fmt, spdlog, imgui, freetype, glm, etc.)
+  - Regex: '^[<"](GLFW|fmod|fmt|spdlog|imgui|freetype|glm|tinyxml2|stb_image|Windows|intrin)'
+    Priority: 4
   - Regex: '^<.*'
-    Priority: 3
-
-  # 4. OrcEngine core headers (<Orc/..., "Orc/...", "Engine/...", "Graphics/...", "OrcPch.hpp", etc.)
-  - Regex: '^[<"](Orc/|OrcPch)'
-    Priority: 4
-  - Regex: '^"(Audio|Engine|Events|Graphics|Input)/'
     Priority: 4
 
-  # 5. Local application / test headers ("Menu.hpp", "AnimationTest.hpp", etc.)
-  - Regex: '.*'
+  # 6. OrcEngine core headers (<Orc/..., "Orc/...", "Engine/...", "Graphics/...", etc.)
+  - Regex: '^[<"]Orc/'
     Priority: 5
+  - Regex: '^"(Audio|Engine|Events|Graphics|Input)/'
+    Priority: 5
+
+  # 7. Local application / test headers ("Menu.hpp", "AnimationTest.hpp", etc.)
+  - Regex: '.*'
+    Priority: 6

@@ -1,9 +1,11 @@
 #include "OrcPch.hpp"
 
-#include "Engine/Debug.hpp"
 #include "Engine/GameLayerManager.hpp"
+
 #include <string>
+
 #include "Engine/Core.hpp"
+#include "Engine/Debug.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/Logger.hpp"
 
@@ -59,6 +61,5 @@ Ref<GameLayer> GameLayerManager::getActiveLayer() const
 {
 	return m_activeLayer;
 }
-
 
 }

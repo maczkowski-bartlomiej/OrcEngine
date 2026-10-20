@@ -1,20 +1,20 @@
 #include "OrcPch.hpp"
-#include "Engine/ResourceHolder.hpp"
-#include "Engine/Utility.hpp"
 
-#include <tinyxml2.h>
+#include "Engine/ResourceHolder.hpp"
 
 #include <sstream>
 
+#include <tinyxml2.h>
+
 namespace orc {
 
-template<typename ResourceType>
+template <typename ResourceType>
 Resources<ResourceType>::Resources(const FilePath& xmlPath)
 {
 	loadResources(xmlPath);
 }
 
-template<typename ResourceType>
+template <typename ResourceType>
 Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) const
 {
 	if (auto find = m_resources.find(name); find != m_resources.end())
@@ -28,7 +28,7 @@ Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) co
 	}
 }
 
-template<typename ResourceType>
+template <typename ResourceType>
 void Resources<ResourceType>::clear()
 {
 	m_resources.clear();
@@ -66,7 +66,7 @@ bool Resources<Font>::loadResources(const FilePath& xmlPath)
 			ORC_LOG_ERROR("Failed to load resource '{}'.\n\tPath: '{}'", name, path);
 	}
 
-	return true; //Temporary without error checking
+	return true; // Temporary without error checking
 }
 
 template <>
@@ -104,7 +104,7 @@ bool Resources<Shader>::loadResources(const FilePath& xmlPath)
 			ORC_LOG_ERROR("Failed to load resource '{}'...\n\tPath: '{}'\n\tPath 2: '{}'", name, path, path2);
 	}
 
-	return true; //Temporary without error checking
+	return true; // Temporary without error checking
 }
 
 template <>
@@ -138,7 +138,7 @@ bool Resources<Texture>::loadResources(const FilePath& xmlPath)
 			ORC_LOG_ERROR("Failed to load resource '{}'...\n\tPath: '{}'", name, path);
 	}
 
-	return true; //Temporary without error checking
+	return true; // Temporary without error checking
 }
 
 template <>
@@ -209,7 +209,7 @@ bool Resources<Animation>::loadResources(const FilePath& xmlPath)
 		}
 	}
 
-	return true; //Temporary without error checking
+	return true; // Temporary without error checking
 }
 
 template class Resources<Font>;

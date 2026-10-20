@@ -1,21 +1,20 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
-#include "Graphics/Font.hpp"
-#include "Graphics/Shader.hpp"
-#include "Graphics/Texture.hpp"
-#include "Graphics/Animator.hpp"
-
-#include "Utility.hpp"
-
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
+#include "Engine/Core.hpp"
+#include "Graphics/Animator.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/Shader.hpp"
+#include "Graphics/Texture.hpp"
+
+#include "Utility.hpp"
+
 namespace orc {
 
-template<typename ResourceType>
+template <typename ResourceType>
 class Resources
 {
 public:

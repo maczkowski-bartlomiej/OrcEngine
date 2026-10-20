@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Graphics/Texture.hpp"
 #include <cstdint>
 #include <unordered_map>
+
+#include "Engine/Core.hpp"
+#include "Graphics/Texture.hpp"
 
 typedef struct FT_FaceRec_* FT_Face;
 
@@ -37,7 +38,7 @@ private:
 	Ref<Texture> m_bitmap;
 	std::unordered_map<uint32_t, Character> m_characters;
 
-	const uint32_t M_CHARACTER_COUNT = 127; //Load only ascii characters.
+	const uint32_t M_CHARACTER_COUNT = 127; // Load only ascii characters.
 };
 
 }

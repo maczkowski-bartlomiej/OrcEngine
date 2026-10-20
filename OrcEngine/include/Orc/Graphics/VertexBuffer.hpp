@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Graphics/BufferLayout.hpp"
-
 #include <cstdint>
 #include <span>
+
+#include "Engine/Core.hpp"
+#include "Graphics/BufferLayout.hpp"
 
 namespace orc {
 
@@ -13,7 +13,7 @@ class VertexBuffer
 public:
 	VertexBuffer(const void* vertices, uint32_t size);
 
-	template<typename T>
+	template <typename T>
 	explicit VertexBuffer(std::span<T> vertices)
 		: VertexBuffer(vertices.data(), static_cast<uint32_t>(vertices.size_bytes()))
 	{
@@ -28,7 +28,7 @@ public:
 
 	void setData(const void* data, uint32_t size);
 
-	template<typename T>
+	template <typename T>
 	void setData(std::span<T> data)
 	{
 		setData(data.data(), static_cast<uint32_t>(data.size_bytes()));

@@ -10,7 +10,7 @@ class VertexArray
 {
 public:
 	VertexArray();
- 	~VertexArray();
+	~VertexArray();
 
 	VertexArray(VertexArray&&) = delete;
 	VertexArray(const VertexArray&) = delete;

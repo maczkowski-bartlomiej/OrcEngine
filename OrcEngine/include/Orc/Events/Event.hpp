@@ -36,7 +36,7 @@ private:
 	Type m_type;
 };
 
-template<typename EventType>
+template <typename EventType>
 const EventType& getEvent(const Event& event)
 {
 	ORC_ASSERT(dynamic_cast<const EventType*>(&event) != nullptr, "Invalid event downcast!");

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <cstdint>
 #include <span>
+
+#include "Engine/Core.hpp"
 
 namespace orc {
 
@@ -13,7 +13,7 @@ public:
 	IndexBuffer() = default;
 	IndexBuffer(const uint32_t* indices, uint32_t count);
 
-	template<typename T>
+	template <typename T>
 	explicit IndexBuffer(std::span<T> indices)
 		: IndexBuffer(indices.data(), static_cast<uint32_t>(indices.size()))
 	{

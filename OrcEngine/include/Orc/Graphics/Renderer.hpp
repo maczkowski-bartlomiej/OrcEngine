@@ -1,21 +1,21 @@
 #pragma once
 
+#include <array>
+#include <vector>
+
 #include "Engine/Core.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Color.hpp"
+#include "Graphics/IndexBuffer.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Shapes/Circle.hpp"
+#include "Graphics/Shapes/Rectangle.hpp"
+#include "Graphics/Sprite.hpp"
+#include "Graphics/Text.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Vertex.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/VertexBuffer.hpp"
-#include "Graphics/IndexBuffer.hpp"
-#include "Graphics/Text.hpp"
-#include "Graphics/Sprite.hpp"
-#include "Graphics/Shapes/Circle.hpp"
-#include "Graphics/Shapes/Rectangle.hpp"
-
-#include <array>
-#include <vector>
 
 namespace orc {
 

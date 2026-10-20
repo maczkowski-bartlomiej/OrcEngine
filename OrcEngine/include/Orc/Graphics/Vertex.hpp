@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/Core.hpp"
-#include "Graphics/Color.hpp"
 
 namespace orc {
 

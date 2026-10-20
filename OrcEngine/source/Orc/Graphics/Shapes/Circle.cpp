@@ -1,18 +1,16 @@
 #include "OrcPch.hpp"
-#include "Graphics/Shapes/Circle.hpp"
 
-#include <cmath>
+#include "Graphics/Shapes/Circle.hpp"
 
 namespace orc {
 
 Circle::Circle()
 {
 	constexpr std::array<Vector2f, 4> localPositions = {
-		Vector2f(-1.0f,  1.0f),
-		Vector2f(1.0f,  1.0f),
+		Vector2f(-1.0f, 1.0f),
+		Vector2f(1.0f, 1.0f),
 		Vector2f(-1.0f, -1.0f),
-		Vector2f(1.0f, -1.0f)
-	};
+		Vector2f(1.0f, -1.0f)};
 
 	for (size_t i = 0; i < m_vertices.size(); ++i)
 	{

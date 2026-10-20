@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 namespace orc {
 
 class BufferLayout
 {
 public:
+	// clang-format off
 	enum class ShaderDataType
 	{
 		Invalid = -1,
@@ -17,6 +18,7 @@ public:
 		Int, Int2, Int3, Int4,
 		Float, Float2, Float3, Float4,
 	};
+	// clang-format on
 
 	struct Element
 	{

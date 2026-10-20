@@ -1,9 +1,12 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/Shader.hpp"
-#include "Engine/Utility.hpp"
+
+#include <utility>
 
 #include <glad/glad.h>
-#include <utility>
+
+#include "Engine/Utility.hpp"
 
 namespace orc {
 
@@ -42,9 +45,12 @@ bool Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragme
 {
 	std::string vertexShaderSource, fragmentShaderSource;
 
-	if (!readShader(&vertexShaderSource, vertexFilePath))      return false;
-	if (!readShader(&fragmentShaderSource, fragmentFilePath))  return false;
-	if (!compile(vertexShaderSource, fragmentShaderSource))    return false;
+	if (!readShader(&vertexShaderSource, vertexFilePath))
+		return false;
+	if (!readShader(&fragmentShaderSource, fragmentFilePath))
+		return false;
+	if (!compile(vertexShaderSource, fragmentShaderSource))
+		return false;
 
 	return true;
 }

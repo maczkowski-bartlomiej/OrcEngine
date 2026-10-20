@@ -1,6 +1,7 @@
 #include "OrcPch.hpp"
 
 #include "Input/Input.hpp"
+
 #include "Events/KeyboardEvents.hpp"
 #include "Events/MouseEvents.hpp"
 
@@ -37,32 +38,27 @@ void Input::onEvent(const Event& event)
 {
 	switch (event.getType())
 	{
-		case Event::Type::KeyboardKeyPressed:
-		{
+		case Event::Type::KeyboardKeyPressed: {
 			const auto& e = getEvent<KeyboardKeyPressedEvent>(event);
 			setKeyState(e.key, true);
 			break;
 		}
-		case Event::Type::KeyboardKeyReleased:
-		{
+		case Event::Type::KeyboardKeyReleased: {
 			const auto& e = getEvent<KeyboardKeyReleasedEvent>(event);
 			setKeyState(e.key, false);
 			break;
 		}
-		case Event::Type::MouseButtonPressed:
-		{
+		case Event::Type::MouseButtonPressed: {
 			const auto& e = getEvent<MouseButtonPressedEvent>(event);
 			setMouseButtonState(e.button, true);
 			break;
 		}
-		case Event::Type::MouseButtonReleased:
-		{
+		case Event::Type::MouseButtonReleased: {
 			const auto& e = getEvent<MouseButtonReleasedEvent>(event);
 			setMouseButtonState(e.button, false);
 			break;
 		}
-		case Event::Type::MouseMoved:
-		{
+		case Event::Type::MouseMoved: {
 			const auto& e = getEvent<MouseMovedEvent>(event);
 			m_mousePosition = Vector2f(e.x, e.y);
 			break;

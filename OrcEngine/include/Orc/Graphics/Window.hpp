@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Events/Event.hpp"
-
-#include <string>
 #include <cstdint>
 #include <functional>
+#include <string>
+
+#include "Events/Event.hpp"
 
 struct GLFWwindow;
 

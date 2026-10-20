@@ -1,8 +1,10 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>
+
+#include "Graphics/BufferLayout.hpp"
 
 namespace orc {
 
@@ -29,12 +31,11 @@ void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 	const BufferLayout& bufferLayout = vertexBuffer->getLayout();
 	const std::vector<BufferLayout::Element>& bufferElements = bufferLayout.getElements();
 	glVertexArrayVertexBuffer(
-		m_rendererID,									// VAO
-		static_cast<uint32_t>(m_vertexBuffers.size()),  // current VBO number linked to VAO
-		vertexBuffer->getRendererID(),					// VBO
-		0,												// offset of the first element in the VBO
-		static_cast<GLsizei>(bufferLayout.getStride())
-		);
+		m_rendererID,								   // VAO
+		static_cast<uint32_t>(m_vertexBuffers.size()), // current VBO number linked to VAO
+		vertexBuffer->getRendererID(),				   // VBO
+		0,											   // offset of the first element in the VBO
+		static_cast<GLsizei>(bufferLayout.getStride()));
 
 	for (uint32_t i = 0; i < bufferElements.size(); i++)
 	{
@@ -47,8 +48,7 @@ void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 			static_cast<GLint>(element.getComponentCount()),
 			BufferLayout::shaderDataTypeToOpenGLType(element.type),
 			element.normalized ? GL_TRUE : GL_FALSE,
-			element.offset
-		);
+			element.offset);
 
 		glVertexArrayAttribBinding(m_rendererID, i, static_cast<uint32_t>(m_vertexBuffers.size()));
 	}

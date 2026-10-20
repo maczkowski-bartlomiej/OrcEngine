@@ -4,7 +4,7 @@
 
 namespace orc {
 
-template<typename T>
+template <typename T>
 struct Rect
 {
 public:
@@ -14,7 +14,7 @@ public:
 	Rect(T x, T y, T width, T height)
 		: left(x), top(y), right(width), bottom(height) {}
 
-	template<typename U>
+	template <typename U>
 	explicit Rect(const Rect<U>& other)
 		: left(static_cast<T>(other.left)), top(static_cast<T>(other.top)), right(static_cast<T>(other.right)), bottom(static_cast<T>(other.bottom)) {}
 

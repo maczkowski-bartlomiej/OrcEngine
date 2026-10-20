@@ -1,18 +1,18 @@
 #include "OrcPch.hpp"
-#include "Engine/Core.hpp"
-#include "Engine/Debug.hpp"
-#include "Engine/Logger.hpp"
-#include "Graphics/Font.hpp"
-#include "Engine/Utility.hpp"
 
-#include <cmath>
+#include "Graphics/Font.hpp"
+
 #include <cstdint>
 #include <vector>
 
 #include <freetype/freetype.h>
-#include <freetype/fterrors.h>
-#include <freetype/fttypes.h>
 #include <freetype/ftimage.h>
+#include <freetype/fttypes.h>
+
+#include "Engine/Core.hpp"
+#include "Engine/Debug.hpp"
+#include "Engine/Logger.hpp"
+#include "Engine/Utility.hpp"
 
 namespace orc {
 
@@ -65,7 +65,7 @@ bool Font::loadFromFile(const FilePath& filePath, uint32_t size)
 
 void Font::calculateBitmap(FT_Face face)
 {
-	uint32_t fontHeightInPixels = static_cast<uint32_t>(face->size->metrics.height) >> 6; //26.6 fixed point format, so we need to shift right by 6 to get the pixel value
+	uint32_t fontHeightInPixels = static_cast<uint32_t>(face->size->metrics.height) >> 6; // 26.6 fixed point format, so we need to shift right by 6 to get the pixel value
 	uint32_t charactersPerRow = static_cast<uint32_t>(std::ceilf(sqrtf(static_cast<float>(M_CHARACTER_COUNT))));
 	uint32_t maxDimension = (1 + fontHeightInPixels) * charactersPerRow;
 

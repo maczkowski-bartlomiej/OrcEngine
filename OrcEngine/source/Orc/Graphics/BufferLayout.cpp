@@ -12,6 +12,7 @@ BufferLayout::Element::Element(ShaderDataType type, const std::string& name, boo
 
 uint32_t BufferLayout::Element::getComponentCount() const
 {
+	// clang-format off
 	switch (type)
 	{
 		case ShaderDataType::Bool:		return 1;
@@ -29,6 +30,7 @@ uint32_t BufferLayout::Element::getComponentCount() const
 		case ShaderDataType::Invalid:
 		default:						return 0u;
 	}
+	// clang-format on
 }
 
 BufferLayout::BufferLayout()
@@ -62,6 +64,7 @@ const std::vector<BufferLayout::Element>& BufferLayout::getElements() const
 
 uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 {
+	// clang-format off
 	switch (type)
 	{
 		case ShaderDataType::Bool:		return 1;
@@ -79,10 +82,12 @@ uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 		case ShaderDataType::Invalid:
 		default:					     return 0u;
 	}
+	// clang-format on
 }
 
 uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 {
+	// clang-format off
 	switch (type)
 	{
 		case orc::BufferLayout::ShaderDataType::Bool:		return GL_BOOL;
@@ -100,6 +105,7 @@ uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 		case ShaderDataType::Invalid:
 		default:											return 0u;
 	}
+	// clang-format on
 }
 
 }

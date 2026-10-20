@@ -1,19 +1,20 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/Texture.hpp"
 
-#include <stb_image.h>
-#include <glad/glad.h>
 #include <utility>
+
+#include <glad/glad.h>
+
+#include <stb_image.h>
 
 namespace orc {
 
 Texture::Texture()
-	: m_rendererID(0)
 {
 }
 
 Texture::Texture(const FilePath& filePath)
-	: m_rendererID(0)
 {
 	loadFromFile(filePath);
 }
@@ -22,7 +23,7 @@ Texture::Texture(Texture&& other) noexcept
 	: m_size(other.m_size),
 	  m_rendererID(std::exchange(other.m_rendererID, 0))
 {
-	other.m_size = { 0.0f, 0.0f };
+	other.m_size = {0.0f, 0.0f};
 }
 
 Texture& Texture::operator=(Texture&& other) noexcept
@@ -35,7 +36,7 @@ Texture& Texture::operator=(Texture&& other) noexcept
 		}
 		m_size = other.m_size;
 		m_rendererID = std::exchange(other.m_rendererID, 0);
-		other.m_size = { 0.0f, 0.0f };
+		other.m_size = {0.0f, 0.0f};
 	}
 	return *this;
 }
@@ -117,12 +118,24 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	GLenum openGLTextureMode = 0;
 	switch (textureMode)
 	{
-		case TextureMode::RED:   openGLTextureMode = GL_RED;   break;
-		case TextureMode::GREEN: openGLTextureMode = GL_GREEN; break;
-		case TextureMode::BLUE:  openGLTextureMode = GL_BLUE;  break;
-		case TextureMode::RGB:   openGLTextureMode = GL_RGB;   break;
-		case TextureMode::RGBA:  openGLTextureMode = GL_RGBA;  break;
-		default:                 openGLTextureMode = GL_RGBA;  break;
+		case TextureMode::RED:
+			openGLTextureMode = GL_RED;
+			break;
+		case TextureMode::GREEN:
+			openGLTextureMode = GL_GREEN;
+			break;
+		case TextureMode::BLUE:
+			openGLTextureMode = GL_BLUE;
+			break;
+		case TextureMode::RGB:
+			openGLTextureMode = GL_RGB;
+			break;
+		case TextureMode::RGBA:
+			openGLTextureMode = GL_RGBA;
+			break;
+		default:
+			openGLTextureMode = GL_RGBA;
+			break;
 	}
 
 	m_size = Vector2f(width, height);

@@ -2,8 +2,9 @@
 
 #include "Graphics/VertexBuffer.hpp"
 
-#include <glad/glad.h>
 #include <utility>
+
+#include <glad/glad.h>
 
 namespace orc {
 

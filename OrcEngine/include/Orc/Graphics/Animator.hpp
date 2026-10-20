@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Clock.hpp"
-#include "Graphics/Rect.hpp"
-
 #include <string>
 #include <unordered_map>
+
+#include "Engine/Clock.hpp"
+#include "Graphics/Rect.hpp"
 
 namespace orc {
 

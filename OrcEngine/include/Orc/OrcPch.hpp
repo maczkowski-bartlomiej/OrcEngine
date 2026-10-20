@@ -22,20 +22,18 @@
 #include <Windows.h>
 #endif
 
-#include <string>
-#include <fstream>
-#include <string_view>
-#include <source_location>
-
-#include <ranges>
-#include <memory>
-#include <cstdint>
-#include <functional>
-
 #include <any>
-#include <vector>
+#include <cstdint>
+#include <fstream>
+#include <functional>
+#include <memory>
+#include <ranges>
+#include <source_location>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include "Engine/Core.hpp"
 #include "Engine/Debug.hpp"

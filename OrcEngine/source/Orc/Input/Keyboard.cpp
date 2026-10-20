@@ -1,4 +1,3 @@
-#include "OrcPch.hpp"
 #include "Input/Keyboard.hpp"
 
 #include <GLFW/glfw3.h>
@@ -11,15 +10,15 @@ Keyboard::Key glfwKeyToOrcKey(int glfwKey, int /*mods*/)
 	{
 		case GLFW_KEY_UNKNOWN: return Keyboard::Key::Invalid;
 
-		case GLFW_KEY_F1:  return Keyboard::Key::F1;
-		case GLFW_KEY_F2:  return Keyboard::Key::F2;
-		case GLFW_KEY_F3:  return Keyboard::Key::F3;
-		case GLFW_KEY_F4:  return Keyboard::Key::F4;
-		case GLFW_KEY_F5:  return Keyboard::Key::F5;
-		case GLFW_KEY_F6:  return Keyboard::Key::F6;
-		case GLFW_KEY_F7:  return Keyboard::Key::F7;
-		case GLFW_KEY_F8:  return Keyboard::Key::F8;
-		case GLFW_KEY_F9:  return Keyboard::Key::F9;
+		case GLFW_KEY_F1: return Keyboard::Key::F1;
+		case GLFW_KEY_F2: return Keyboard::Key::F2;
+		case GLFW_KEY_F3: return Keyboard::Key::F3;
+		case GLFW_KEY_F4: return Keyboard::Key::F4;
+		case GLFW_KEY_F5: return Keyboard::Key::F5;
+		case GLFW_KEY_F6: return Keyboard::Key::F6;
+		case GLFW_KEY_F7: return Keyboard::Key::F7;
+		case GLFW_KEY_F8: return Keyboard::Key::F8;
+		case GLFW_KEY_F9: return Keyboard::Key::F9;
 		case GLFW_KEY_F10: return Keyboard::Key::F10;
 		case GLFW_KEY_F11: return Keyboard::Key::F11;
 		case GLFW_KEY_F12: return Keyboard::Key::F12;
@@ -87,57 +86,57 @@ Keyboard::Key glfwKeyToOrcKey(int glfwKey, int /*mods*/)
 		case GLFW_KEY_KP_9: return Keyboard::Key::Numpad9;
 
 		case GLFW_KEY_KP_MULTIPLY: return Keyboard::Key::NumpadMultiply;
-		case GLFW_KEY_KP_DIVIDE:   return Keyboard::Key::NumpadDivide;
+		case GLFW_KEY_KP_DIVIDE: return Keyboard::Key::NumpadDivide;
 		case GLFW_KEY_KP_SUBTRACT: return Keyboard::Key::NumpadMinus;
-		case GLFW_KEY_KP_ADD:      return Keyboard::Key::NumpadAdd;
-		case GLFW_KEY_KP_ENTER:    return Keyboard::Key::NumpadEnter;
-		case GLFW_KEY_KP_DECIMAL:  return Keyboard::Key::NumpadDecimal;
-		case GLFW_KEY_KP_EQUAL:    return Keyboard::Key::NumpadEqual;
+		case GLFW_KEY_KP_ADD: return Keyboard::Key::NumpadAdd;
+		case GLFW_KEY_KP_ENTER: return Keyboard::Key::NumpadEnter;
+		case GLFW_KEY_KP_DECIMAL: return Keyboard::Key::NumpadDecimal;
+		case GLFW_KEY_KP_EQUAL: return Keyboard::Key::NumpadEqual;
 
-		case GLFW_KEY_UP:    return Keyboard::Key::Up;
-		case GLFW_KEY_DOWN:  return Keyboard::Key::Down;
-		case GLFW_KEY_LEFT:  return Keyboard::Key::Left;
+		case GLFW_KEY_UP: return Keyboard::Key::Up;
+		case GLFW_KEY_DOWN: return Keyboard::Key::Down;
+		case GLFW_KEY_LEFT: return Keyboard::Key::Left;
 		case GLFW_KEY_RIGHT: return Keyboard::Key::Right;
 
-		case GLFW_KEY_LEFT_ALT:     return Keyboard::Key::LeftAlt;
-		case GLFW_KEY_LEFT_SHIFT:   return Keyboard::Key::LeftShift;
-		case GLFW_KEY_LEFT_SUPER:   return Keyboard::Key::LeftSystem;
+		case GLFW_KEY_LEFT_ALT: return Keyboard::Key::LeftAlt;
+		case GLFW_KEY_LEFT_SHIFT: return Keyboard::Key::LeftShift;
+		case GLFW_KEY_LEFT_SUPER: return Keyboard::Key::LeftSystem;
 		case GLFW_KEY_LEFT_CONTROL: return Keyboard::Key::LeftControl;
 		case GLFW_KEY_LEFT_BRACKET: return Keyboard::Key::LeftBracket;
 
-		case GLFW_KEY_RIGHT_ALT:     return Keyboard::Key::RightAlt;
-		case GLFW_KEY_RIGHT_SHIFT:   return Keyboard::Key::RightShift;
-		case GLFW_KEY_RIGHT_SUPER:   return Keyboard::Key::RightSystem;
+		case GLFW_KEY_RIGHT_ALT: return Keyboard::Key::RightAlt;
+		case GLFW_KEY_RIGHT_SHIFT: return Keyboard::Key::RightShift;
+		case GLFW_KEY_RIGHT_SUPER: return Keyboard::Key::RightSystem;
 		case GLFW_KEY_RIGHT_CONTROL: return Keyboard::Key::RightControl;
 		case GLFW_KEY_RIGHT_BRACKET: return Keyboard::Key::RightBracket;
 
-		case GLFW_KEY_COMMA:  return Keyboard::Key::Comma;
-		case GLFW_KEY_EQUAL:  return Keyboard::Key::Equal;
-		case GLFW_KEY_MINUS:  return Keyboard::Key::Minus;
+		case GLFW_KEY_COMMA: return Keyboard::Key::Comma;
+		case GLFW_KEY_EQUAL: return Keyboard::Key::Equal;
+		case GLFW_KEY_MINUS: return Keyboard::Key::Minus;
 		case GLFW_KEY_PERIOD: return Keyboard::Key::Period;
 
-		case GLFW_KEY_SEMICOLON:    return Keyboard::Key::Semicolon;
+		case GLFW_KEY_SEMICOLON: return Keyboard::Key::Semicolon;
 		case GLFW_KEY_GRAVE_ACCENT: return Keyboard::Key::Grave;
-		case GLFW_KEY_SLASH:        return Keyboard::Key::Slash;
-		case GLFW_KEY_APOSTROPHE:   return Keyboard::Key::Apostrophe;
-		case GLFW_KEY_BACKSLASH:    return Keyboard::Key::Backslash;
+		case GLFW_KEY_SLASH: return Keyboard::Key::Slash;
+		case GLFW_KEY_APOSTROPHE: return Keyboard::Key::Apostrophe;
+		case GLFW_KEY_BACKSLASH: return Keyboard::Key::Backslash;
 
-		case GLFW_KEY_SPACE:        return Keyboard::Key::Space;
-		case GLFW_KEY_ENTER:        return Keyboard::Key::Enter;
-		case GLFW_KEY_NUM_LOCK:     return Keyboard::Key::NumLock;
-		case GLFW_KEY_CAPS_LOCK:    return Keyboard::Key::CapsLock;
-		case GLFW_KEY_SCROLL_LOCK:  return Keyboard::Key::ScrollLock;
-		case GLFW_KEY_PAUSE:        return Keyboard::Key::PauseBreak;
+		case GLFW_KEY_SPACE: return Keyboard::Key::Space;
+		case GLFW_KEY_ENTER: return Keyboard::Key::Enter;
+		case GLFW_KEY_NUM_LOCK: return Keyboard::Key::NumLock;
+		case GLFW_KEY_CAPS_LOCK: return Keyboard::Key::CapsLock;
+		case GLFW_KEY_SCROLL_LOCK: return Keyboard::Key::ScrollLock;
+		case GLFW_KEY_PAUSE: return Keyboard::Key::PauseBreak;
 		case GLFW_KEY_PRINT_SCREEN: return Keyboard::Key::PrintScreen;
 
-		case GLFW_KEY_END:       return Keyboard::Key::End;
-		case GLFW_KEY_TAB:       return Keyboard::Key::Tab;
-		case GLFW_KEY_MENU:      return Keyboard::Key::Menu;
-		case GLFW_KEY_HOME:      return Keyboard::Key::Home;
-		case GLFW_KEY_DELETE:    return Keyboard::Key::Delete;
-		case GLFW_KEY_ESCAPE:    return Keyboard::Key::Escape;
-		case GLFW_KEY_INSERT:    return Keyboard::Key::Insert;
-		case GLFW_KEY_PAGE_UP:   return Keyboard::Key::PageUp;
+		case GLFW_KEY_END: return Keyboard::Key::End;
+		case GLFW_KEY_TAB: return Keyboard::Key::Tab;
+		case GLFW_KEY_MENU: return Keyboard::Key::Menu;
+		case GLFW_KEY_HOME: return Keyboard::Key::Home;
+		case GLFW_KEY_DELETE: return Keyboard::Key::Delete;
+		case GLFW_KEY_ESCAPE: return Keyboard::Key::Escape;
+		case GLFW_KEY_INSERT: return Keyboard::Key::Insert;
+		case GLFW_KEY_PAGE_UP: return Keyboard::Key::PageUp;
 		case GLFW_KEY_PAGE_DOWN: return Keyboard::Key::PageDown;
 		case GLFW_KEY_BACKSPACE: return Keyboard::Key::Backspace;
 
@@ -154,12 +153,12 @@ Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods)
 	{
 		switch (mods & mask)
 		{
-			case GLFW_MOD_SHIFT:	 specialKeys.shift = true;		break;
-			case GLFW_MOD_CONTROL:	 specialKeys.control = true;		break;
-			case GLFW_MOD_ALT:		 specialKeys.alt = true;			break;
-			case GLFW_MOD_SUPER:	 specialKeys.system = true;		break;
-			case GLFW_MOD_CAPS_LOCK: specialKeys.capsLock = true;	break;
-			case GLFW_MOD_NUM_LOCK:	 specialKeys.numLock = true;		break;
+			case GLFW_MOD_SHIFT: specialKeys.shift = true; break;
+			case GLFW_MOD_CONTROL: specialKeys.control = true; break;
+			case GLFW_MOD_ALT: specialKeys.alt = true; break;
+			case GLFW_MOD_SUPER: specialKeys.system = true; break;
+			case GLFW_MOD_CAPS_LOCK: specialKeys.capsLock = true; break;
+			case GLFW_MOD_NUM_LOCK: specialKeys.numLock = true; break;
 			default: break;
 		}
 
@@ -171,4 +170,3 @@ Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods)
 }
 
 }
-

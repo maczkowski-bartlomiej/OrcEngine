@@ -1,7 +1,8 @@
 #include "OrcPch.hpp"
 
-#include "Graphics/Sprite.hpp"
 #include "Graphics/Animator.hpp"
+
+#include "Graphics/Sprite.hpp"
 
 namespace orc {
 

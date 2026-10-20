@@ -1,10 +1,12 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/Gui.hpp"
-#include "Graphics/Window.hpp"
-#include "Engine/Debug.hpp"
 
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+
+#include "Engine/Debug.hpp"
+#include "Graphics/Window.hpp"
 
 namespace orc {
 

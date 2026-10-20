@@ -32,12 +32,18 @@ void CameraTest::onDetach()
 
 void CameraTest::onUpdate(float deltaTime)
 {
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::Q)) m_camera.rotate(0.1f);
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::E)) m_camera.rotate(-0.1f);
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::W)) m_camera.move(0.0f, -10.0f);
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::S)) m_camera.move(0.0f, 10.0f);
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A)) m_camera.move(-10.0f, 0.0f);
-	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::D)) m_camera.move(10.0f, 0.0f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::Q))
+		m_camera.rotate(0.1f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::E))
+		m_camera.rotate(-0.1f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::W))
+		m_camera.move(0.0f, -10.0f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::S))
+		m_camera.move(0.0f, 10.0f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A))
+		m_camera.move(-10.0f, 0.0f);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::D))
+		m_camera.move(10.0f, 0.0f);
 }
 
 void CameraTest::onRender()
@@ -58,9 +64,14 @@ void CameraTest::onEvent(const orc::Event& event)
 		const auto& e = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
 		switch (e.key)
 		{
-			case orc::Keyboard::Key::Left: m_layerContext.gameLayerManager.setActiveLayer("AudioTest"); break;
-			case orc::Keyboard::Key::Right: m_layerContext.gameLayerManager.setActiveLayer("CirclesTest"); break;
-			default: break;
+			case orc::Keyboard::Key::Left:
+				m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
+				break;
+			case orc::Keyboard::Key::Right:
+				m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
+				break;
+			default:
+				break;
 		}
 	}
 	else if (event.getType() == orc::Event::Type::MouseWheelScrolled)
@@ -102,21 +113,21 @@ void CameraTest::onGuiRender()
 
 	ImGui::Begin("Navigation Menu");
 	{
-		if (ImGui::Button("AnimationTest", { 200, 50 }))
+		if (ImGui::Button("AnimationTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
-		if (ImGui::Button("AudioTest", { 200, 50 }))
+		if (ImGui::Button("AudioTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
-		if (ImGui::Button("CameraTest", { 200, 50 }))
+		if (ImGui::Button("CameraTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
-		if (ImGui::Button("CirclesTest", { 200, 50 }))
+		if (ImGui::Button("CirclesTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
-		if (ImGui::Button("Menu", { 200, 50 }))
+		if (ImGui::Button("Menu", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("Menu");
-		if (ImGui::Button("InputTest", { 200, 50 }))
+		if (ImGui::Button("InputTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("InputTest");
-		if (ImGui::Button("RectanglesTest", { 200, 50 }))
+		if (ImGui::Button("RectanglesTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
-		if (ImGui::Button("SpritesTest", { 200, 50 }))
+		if (ImGui::Button("SpritesTest", {200, 50}))
 			m_layerContext.gameLayerManager.setActiveLayer("SpritesTest");
 	}
 	ImGui::End();

@@ -1,11 +1,13 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Logger.hpp"
-
 #include <cstdlib>
-#include <fmt/format.h>
 #include <source_location>
+
+#include <fmt/format.h>
+
+#include "Engine/Core.hpp"
+
+#include "Logger.hpp"
 
 
 #ifdef ORC_DEBUG_ASSERTS

@@ -2,8 +2,8 @@
 
 #include "Audio/Audio.hpp"
 #include "Audio/Bus.hpp"
-
 #include "Engine/Clock.hpp"
+#include "Engine/Config.hpp"
 #include "Engine/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Engine.hpp"
@@ -11,17 +11,14 @@
 #include "Engine/GameLayer.hpp"
 #include "Engine/GameLayerManager.hpp"
 #include "Engine/LayerContext.hpp"
-#include "Engine/Config.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/Random.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Engine/Utility.hpp"
-
 #include "Events/Event.hpp"
 #include "Events/KeyboardEvents.hpp"
 #include "Events/MouseEvents.hpp"
 #include "Events/WindowEvents.hpp"
-
 #include "Graphics/Animator.hpp"
 #include "Graphics/BufferLayout.hpp"
 #include "Graphics/Camera.hpp"
@@ -32,6 +29,8 @@
 #include "Graphics/Rect.hpp"
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Shapes/Circle.hpp"
+#include "Graphics/Shapes/Rectangle.hpp"
 #include "Graphics/Sprite.hpp"
 #include "Graphics/Text.hpp"
 #include "Graphics/Texturable.hpp"
@@ -41,10 +40,6 @@
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/VertexBuffer.hpp"
 #include "Graphics/Window.hpp"
-
-#include "Graphics/Shapes/Circle.hpp"
-#include "Graphics/Shapes/Rectangle.hpp"
-
 #include "Input/Input.hpp"
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"

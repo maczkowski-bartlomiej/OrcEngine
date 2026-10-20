@@ -38,6 +38,7 @@ bool ftCall(FT_Error result, std::source_location sourceLocation)
 
 std::string getErrnoMessage(int error)
 {
+	// clang-format off
 	switch (error)
 	{
 		case 1:   return "Operation not permitted";
@@ -173,6 +174,7 @@ std::string getErrnoMessage(int error)
 		case 133: return "Memory page has hardware error";
 		default:  return "Unknown error";
 	}
+	// clang-format on
 }
 
 }

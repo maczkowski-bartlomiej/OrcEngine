@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Audio/Bus.hpp"
-#include "Engine/Core.hpp"
-
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include <fmod_studio.hpp>
+
+#include "Audio/Bus.hpp"
+#include "Engine/Core.hpp"
 
 namespace orc {
 
@@ -24,8 +24,7 @@ public:
 			"assets/audio/Master.bank",
 			"assets/audio/Master.strings.bank",
 			"assets/audio/Music.bank",
-			"assets/audio/SFX.bank"
-		};
+			"assets/audio/SFX.bank"};
 	};
 
 	Audio() = delete;

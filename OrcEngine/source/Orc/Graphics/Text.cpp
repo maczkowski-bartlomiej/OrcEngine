@@ -1,4 +1,5 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/Text.hpp"
 
 namespace orc {
@@ -125,8 +126,7 @@ void Text::updateVertices() const
 			.shapeType = 3.0f,
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
-			.radius = 0.0f
-		});
+			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f),
@@ -138,8 +138,7 @@ void Text::updateVertices() const
 			.shapeType = 3.0f,
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
-			.radius = 0.0f
-		});
+			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f),
@@ -151,8 +150,7 @@ void Text::updateVertices() const
 			.shapeType = 3.0f,
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
-			.radius = 0.0f
-		});
+			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
 			.position = transform * Vector3f(position + Vector2f(width, height), 1.0f),
@@ -164,8 +162,7 @@ void Text::updateVertices() const
 			.shapeType = 3.0f,
 			.borderThickness = 0.0f,
 			.innerRadius = 0.0f,
-			.radius = 0.0f
-		});
+			.radius = 0.0f});
 
 		position.y = positionY;
 		position.x += character.advance;
@@ -191,8 +188,7 @@ void Text::calculateGlobalRect() const
 		transform * Vector3f(m_localRect.left, m_localRect.top, 1.0f),
 		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.bottom, 1.0f),
 		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top, 1.0f),
-		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)
-	};
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)};
 
 	float left = points[0].x;
 	float top = points[0].y;

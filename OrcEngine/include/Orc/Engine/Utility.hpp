@@ -4,11 +4,10 @@
 #include <string_view>
 
 #include <fmod_common.h>
-
 #include <freetype/freetype.h>
 #include <freetype/fterrors.h>
-#include <freetype/fttypes.h>
 #include <freetype/ftimage.h>
+#include <freetype/fttypes.h>
 
 namespace orc {
 

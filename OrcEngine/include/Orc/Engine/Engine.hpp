@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Audio/Audio.hpp"
-#include "Core.hpp"
 #include "Engine/Config.hpp"
 #include "Engine/GameLayerManager.hpp"
 #include "Engine/LayerContext.hpp"
@@ -11,6 +10,8 @@
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Window.hpp"
 #include "Input/Input.hpp"
+
+#include "Core.hpp"
 
 namespace orc {
 

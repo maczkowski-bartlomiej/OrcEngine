@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <cstdint>
+
+#include "Engine/Core.hpp"
 
 namespace orc {
 
@@ -39,7 +39,7 @@ public:
 	RendererID getRendererID() const;
 
 private:
-	Vector2f m_size = { 0.0f, 0.0f };
+	Vector2f m_size = {0.0f, 0.0f};
 	RendererID m_rendererID = 0;
 };
 

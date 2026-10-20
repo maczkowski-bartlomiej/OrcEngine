@@ -1,11 +1,11 @@
 #pragma once
 
+#include <array>
+
 #include "Engine/Core.hpp"
 #include "Events/Event.hpp"
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"
-
-#include <array>
 
 namespace orc {
 
@@ -31,7 +31,7 @@ private:
 
 	std::array<bool, MAX_KEYS> m_keys{};
 	std::array<bool, MAX_MOUSE_BUTTONS> m_mouseButtons{};
-	Vector2f m_mousePosition{ 0.0f, 0.0f };
+	Vector2f m_mousePosition{0.0f, 0.0f};
 };
 
 }

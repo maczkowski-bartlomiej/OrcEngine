@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <span>
 #include <string>
 #include <string_view>
+
+#include "Engine/Core.hpp"
 
 namespace orc {
 
@@ -29,7 +29,7 @@ public:
 	void uploadUniformInt(const std::string& name, int integer) const;
 	void uploadUniformIntArray(const std::string& name, const int* array, uint32_t size) const;
 
-	template<typename T>
+	template <typename T>
 	void uploadUniformIntArray(const std::string& name, std::span<T> array) const
 	{
 		uploadUniformIntArray(name, array.data(), static_cast<uint32_t>(array.size()));

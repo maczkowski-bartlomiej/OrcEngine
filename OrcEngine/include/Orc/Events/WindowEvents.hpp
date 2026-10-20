@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Events/Event.hpp"
-
 #include <cstdint>
+
+#include "Events/Event.hpp"
 
 namespace orc {
 

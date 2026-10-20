@@ -1,5 +1,5 @@
-#include "OrcPch.hpp"
 #include "Graphics/Camera.hpp"
+
 #include "Engine/Core.hpp"
 
 namespace orc {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
-#include "Graphics/Rect.hpp"
-#include "Graphics/Font.hpp"
-#include "Graphics/Vertex.hpp"
-#include "Graphics/Transformable.hpp"
-
 #include <string>
 #include <vector>
+
+#include "Engine/Core.hpp"
+#include "Graphics/Color.hpp"
+#include "Graphics/Font.hpp"
+#include "Graphics/Rect.hpp"
+#include "Graphics/Transformable.hpp"
+#include "Graphics/Vertex.hpp"
 
 namespace orc {
 

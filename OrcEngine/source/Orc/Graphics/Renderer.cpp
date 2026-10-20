@@ -1,11 +1,14 @@
 #include "OrcPch.hpp"
-#include "Graphics/Renderer.hpp"
-#include "Engine/Debug.hpp"
 
-#include <glad/glad.h>
+#include "Graphics/Renderer.hpp"
+
 #include <cmath>
 #include <numeric>
 #include <span>
+
+#include <glad/glad.h>
+
+#include "Engine/Debug.hpp"
 
 namespace orc {
 
@@ -26,17 +29,16 @@ Renderer::Renderer()
 
 	m_quadVertexBuffer = createRef<VertexBuffer>(nullptr, static_cast<int32_t>(sizeof(Vertex) * MAX_QUAD_VERTICES));
 	m_quadVertexBuffer->setLayout(BufferLayout{
-		{ BufferLayout::ShaderDataType::Float3, "a_position" },
-		{ BufferLayout::ShaderDataType::Float4, "a_color" },
-		{ BufferLayout::ShaderDataType::Float4, "a_secondaryColor" },
-		{ BufferLayout::ShaderDataType::Float2, "a_textureCoord" },
-		{ BufferLayout::ShaderDataType::Float2, "a_localPosition" },
-		{ BufferLayout::ShaderDataType::Float,  "a_textureIndex" },
-		{ BufferLayout::ShaderDataType::Float,  "a_shapeType" },
-		{ BufferLayout::ShaderDataType::Float,  "a_borderThickness" },
-		{ BufferLayout::ShaderDataType::Float,  "a_innerRadius" },
-		{ BufferLayout::ShaderDataType::Float,  "a_radius" }
-	});
+		{BufferLayout::ShaderDataType::Float3, "a_position"},
+		{BufferLayout::ShaderDataType::Float4, "a_color"},
+		{BufferLayout::ShaderDataType::Float4, "a_secondaryColor"},
+		{BufferLayout::ShaderDataType::Float2, "a_textureCoord"},
+		{BufferLayout::ShaderDataType::Float2, "a_localPosition"},
+		{BufferLayout::ShaderDataType::Float, "a_textureIndex"},
+		{BufferLayout::ShaderDataType::Float, "a_shapeType"},
+		{BufferLayout::ShaderDataType::Float, "a_borderThickness"},
+		{BufferLayout::ShaderDataType::Float, "a_innerRadius"},
+		{BufferLayout::ShaderDataType::Float, "a_radius"}});
 
 	std::vector<uint32_t> quadIndices(MAX_QUAD_INDICES);
 	uint32_t offset = 0;
@@ -108,7 +110,7 @@ void Renderer::flush()
 
 	m_quadShader->bind();
 	m_quadShader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
-	m_quadVertexBuffer->setData(std::span{ m_quadVertices.data(), m_quadVerticesCount });
+	m_quadVertexBuffer->setData(std::span{m_quadVertices.data(), m_quadVerticesCount});
 
 	glBindVertexArray(m_quadVertexArray->getRendererID());
 	glDrawElements(GL_TRIANGLES, static_cast<GLsizei>((m_quadVerticesCount / 4) * 6), GL_UNSIGNED_INT, nullptr);
@@ -213,11 +215,10 @@ void Renderer::drawLine(const Vector3f& start, const Vector3f& end, const Color&
 
 	Vector4f normColor = color.normalized();
 	std::array<Vertex, 4> vertices{
-		Vertex{ .position = start + n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
-		Vertex{ .position = end + n3,   .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
-		Vertex{ .position = start - n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f },
-		Vertex{ .position = end - n3,   .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f }
-	};
+		Vertex{.position = start + n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f},
+		Vertex{.position = end + n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 0.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f},
+		Vertex{.position = start - n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(0.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f},
+		Vertex{.position = end - n3, .color = normColor, .secondaryColor = Vector4f(1.0f), .textureCoord = Vector2f(1.0f, 1.0f), .localPosition = Vector2f(0.0f), .textureIndex = EMPTY_TEXTURE_SLOT, .shapeType = 0.0f}};
 
 	submitQuad(vertices, nullptr);
 }
