@@ -2,6 +2,7 @@
 
 #include "Audio/Audio.hpp"
 #include "Audio/Bus.hpp"
+#include "Audio/SoundHandle.hpp"
 #include "Engine/Clock.hpp"
 #include "Engine/Config.hpp"
 #include "Core/Core.hpp"

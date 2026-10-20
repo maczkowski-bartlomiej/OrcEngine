@@ -1,9 +1,9 @@
 #pragma once
 
+#include <source_location>
 #include <string>
 #include <string_view>
 
-#include <fmod_common.h>
 #include <freetype/freetype.h>
 #include <freetype/fterrors.h>
 #include <freetype/ftimage.h>
@@ -21,9 +21,8 @@ struct string_view_hash
 	std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
 };
 
-bool fmodCall(FMOD_RESULT result, std::source_location sourceLocation = std::source_location::current());
 bool ftCall(FT_Error result, std::source_location sourceLocation = std::source_location::current());
 
 std::string getErrnoMessage(int error);
 
-}
+} // namespace orc

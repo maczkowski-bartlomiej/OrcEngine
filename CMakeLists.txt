@@ -54,8 +54,6 @@ target_link_libraries(OrcEngine
         glm::glm
         fmt::fmt
         spdlog::spdlog
-        FMOD::Studio
-        FMOD::Core
     PRIVATE
         glfw
         glad::glad
@@ -63,6 +61,8 @@ target_link_libraries(OrcEngine
         Freetype::Freetype
         OpenGL::GL
         imgui::imgui
+        FMOD::Studio
+        FMOD::Core
 )
 
 # PUBLIC: Core/Platform.hpp (a public header) branches on these macros, so the engine

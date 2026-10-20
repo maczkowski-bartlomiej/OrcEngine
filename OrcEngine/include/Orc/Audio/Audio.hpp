@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
+#include <cstdint>
 #include <string_view>
 #include <vector>
 
-#include <fmod_studio.hpp>
-
 #include "Audio/Bus.hpp"
+#include "Audio/SoundHandle.hpp"
 #include "Core/Core.hpp"
 
 namespace orc {
@@ -17,9 +16,6 @@ public:
 	struct AudioSettings
 	{
 		int maxChannels = 512;
-		std::string masterBusName = "bus:/";
-		std::string sfxBusName = "bus:/SFX";
-		std::string musicBusName = "bus:/Music";
 		std::vector<FilePath> banks = {
 			"assets/audio/Master.bank",
 			"assets/audio/Master.strings.bank",
@@ -38,24 +34,25 @@ public:
 
 	bool loadBank(const FilePath& filePath);
 
-	void play(const std::string& eventPath);
+	void playOneShot(std::string_view eventPath);
+	SoundHandle play(std::string_view eventPath);
 	void update();
 
-	Bus& getSfxBus();
-	Bus& getMusicBus();
-	Bus& getMasterBus();
-
-	const Bus& getSfxBus() const;
-	const Bus& getMusicBus() const;
-	const Bus& getMasterBus() const;
+	Bus getBus(std::string_view busPath);
 
 private:
-	Bus m_sfxBus;
-	Bus m_musicBus;
-	Bus m_masterBus;
+	friend class SoundHandle;
 
-	FMOD::Studio::System* m_system = nullptr;
-	std::vector<FMOD::Studio::Bank*> m_banks;
+	bool isSoundValid(uint32_t index, uint32_t generation) const;
+	void stopSound(uint32_t index, uint32_t generation, bool immediate = false);
+	void pauseSound(uint32_t index, uint32_t generation);
+	void resumeSound(uint32_t index, uint32_t generation);
+	void setSoundVolume(uint32_t index, uint32_t generation, float volume);
+	void setSoundPitch(uint32_t index, uint32_t generation, float pitch);
+	void setSoundParameter(uint32_t index, uint32_t generation, std::string_view name, float value);
+
+	struct Impl;
+	UniquePtr<Impl> m_impl;
 };
 
-}
+} // namespace orc
