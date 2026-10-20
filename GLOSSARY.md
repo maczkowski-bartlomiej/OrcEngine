@@ -39,3 +39,11 @@ _Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage
 **Core**:
 The foundational Layer 0 module providing universal primitives, platform macros, memory ownership aliases, math vectors/matrices, and semantic version constants decoupled from engine lifecycle coordination.
 _Avoid_: Engine/Core, EngineCore, Base, Common, UtilityModule
+
+**Viewport**:
+The rasterization rectangle configured authoritatively via `Renderer::setViewport`, synchronizing OpenGL `glViewport` with the window's physical framebuffer bounds.
+_Avoid_: RenderArea, ScreenBounds, WindowRect
+
+**Framebuffer Dimensions**:
+The physical pixel resolution of the window rendering surface queried via `Window::getFramebufferSize()`, distinct from logical window screen coordinates on high-DPI and Retina displays.
+_Avoid_: WindowPixels, ScreenResolution, RenderTargetSize

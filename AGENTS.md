@@ -101,7 +101,7 @@ OrcEngine is organized into six core subsystems (**Engine**, **Graphics & Render
 1. `Logger::init(config.logPath)`: Sets up file and console logging via spdlog.
 2. `GameLayerManager`: Manages layer registration and active layer pointer.
 3. `Window`: Initializes GLFW, creates the OpenGL 4.6 context, loads GLAD function pointers, and configures event callbacks.
-4. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader.
+4. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader. Initialized with explicit `setViewport` from window physical framebuffer bounds.
 5. `Gui`: ImGui GLFW and OpenGL 3 backend context initialized with a `Window&` reference.
 6. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
 7. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
@@ -109,8 +109,8 @@ OrcEngine is organized into six core subsystems (**Engine**, **Graphics & Render
 9. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers and application bootstrap via `Engine::getLayerContext()`.
 
 ### 4.2 Game Layers & Layer Management
-The layer runtime and context injection model is detailed in [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
-- `GameLayerManager` stores registered layers by name in a hash map and maintains a pointer to the currently active layer. Switching layers (`setActiveLayer(name)`) invokes `onDetach()` on the outgoing layer and `onAttach()` on the incoming layer.
+The layer runtime and context injection model is detailed in [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md) and [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
+- `GameLayerManager` stores registered layers by name in a hash map and maintains a pointer to the currently active layer. Switching layers (`setActiveLayer(name)`) invokes `onDetach()` on the outgoing layer, automatically synchronizes the incoming layer's camera viewport to current window bounds via `syncCameraWithWindow()`, and then invokes `onAttach()`.
 - `GameLayer` requires an explicit `LayerContext&` via constructor reference injection (`explicit GameLayer(LayerContext& layerContext)`), storing `m_layerContext` and initializing its `m_camera` from `m_layerContext.window` dimensions.
 - `GameLayer` provides virtual lifecycle hooks:
   - `onAttach()`: Invoked when the layer becomes active (e.g., setting window title, setting up scene state).
@@ -119,10 +119,11 @@ The layer runtime and context injection model is detailed in [ADR 0004](docs/adr
   - `onRender()`: Submits 2D primitives to `m_layerContext.renderer` within an explicit **Scene Scope** (`m_layerContext.renderer.beginScene(m_camera)` ... `m_layerContext.renderer.endScene()`).
   - `onGuiRender()`: Submits ImGui controls enclosed between `Gui::begin()` and `Gui::end()`.
   - `onEvent(const Event& event)`: Handles dispatched input and window events. Base `GameLayer::onEvent` automatically updates `m_camera` viewport dimensions on `WindowResizedEvent`.
+  - `syncCameraWithWindow()`: Authoritatively aligns `m_camera` viewport dimensions with `m_layerContext.window.getWidth()` and `getHeight()`.
 
 ### 4.3 Window, Input, and Events Flow
 The polymorphic event hierarchy and downcasting architecture is detailed in [ADR 0005](docs/adr/0005-revert-to-polymorphic-event-hierarchy.md).
-- **Event Generation**: GLFW window callbacks (keys, mouse buttons, cursor move, scroll, window resize, window close) trigger lambda dispatchers configured in `Window::setCallbacks()`.
+- **Event Generation**: GLFW window callbacks (keys, mouse buttons, cursor move, scroll, window resize, window close) trigger lambda dispatchers configured in `Window::setCallbacks()`. `Window` tracks physical framebuffer dimensions via `glfwGetFramebufferSize` (`getFramebufferWidth()`, `getFramebufferHeight()`, `getFramebufferSize()`) alongside logical dimensions, eliminating direct raw `glViewport` calls from window callbacks.
 - **Event Representation**: `Event` is an open polymorphic base class storing an `Event::Type` enum (`m_type`), initialized via an `explicit Event(Type type)` constructor and cleaned up via a virtual destructor. Concrete event structs inherit publicly from `Event`:
   - `WindowResizedEvent`, `WindowClosedEvent`
   - `KeyboardKeyPressedEvent`, `KeyboardKeyReleasedEvent`
@@ -131,7 +132,7 @@ The polymorphic event hierarchy and downcasting architecture is detailed in [ADR
   - Type query: `event.getType()` returning `Event::Type`.
   - Type downcasting: `getEvent<T>(event)` returns `static_cast<const T&>(event)`, with an `ORC_ASSERT` verifying the runtime downcast (`dynamic_cast`) in debug builds.
   - Pattern matching: Standard C++ `switch (event.getType())` or `if (event.getType() == Event::Type::...)` statements.
-- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating `m_camera` viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
+- **Event Propagation**: `Window` invokes its `EventCallback` which routes to `Engine::onEvent()`. First, `Input::onEvent(event)` updates the internal input state snapshot. Upon `WindowResizedEvent`, `Engine` updates `Renderer::setViewport` with the window's physical framebuffer dimensions. Next, the active `GameLayer` processes the event via `gameLayer->onEvent(event)` (updating `m_camera` viewport size on `WindowResizedEvent`). Afterwards, `Engine` processes engine-level hooks (setting `m_running = false` on `WindowClosedEvent`).
 - **Input Subsystem**: `Input` tracks pressed keys (`isKeyPressed(Keyboard::Key)`), mouse buttons (`isMouseButtonPressed(Mouse::Button)`), and cursor coordinates (`getMousePosition()`) purely from window events without polling native GLFW window handles. Layers query input via `m_layerContext.input`.
 
 ### 4.4 Graphics & Rendering Subsystem
@@ -139,6 +140,7 @@ The polymorphic event hierarchy and downcasting architecture is detailed in [ADR
 The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md) and [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md).
 
 - **Renderer Model**: 2D dynamic batch renderer using OpenGL 4.6 (Core Profile).
+- **Authoritative Viewport Management**: Viewport rasterization bounds are centrally encapsulated in `Renderer::setViewport(width, height)` and `setViewport(x, y, width, height)`, issuing typed `glViewport` commands and eliminating scattered OpenGL calls in platform windowing loops.
 - **Scene Scope**: Rendering occurs within an explicit submission scope bounded by `renderer.beginScene(camera)` and `renderer.endScene()`. `beginScene` binds the camera's view-projection matrix to `m_quadShader` and initializes batch counters; `endScene` flushes any remaining queued geometry.
 - **Quad Batcher**: All 2D geometry (sprites, rectangles, procedural circles, font glyphs, and lines) is aggregated into a single dynamic vertex and index buffer inside `Renderer`:
   - Static index buffer: Pre-allocated for `MAX_QUADS = 2000` quads (12,000 indices) following the repeating `[0, 1, 2, 2, 3, 0]` pattern.
@@ -445,8 +447,8 @@ Issue tracking distinguishes between initial evaluation triage roles and active 
 
 ### 7.3 Domain Documentation & Architectural Records
 OrcEngine uses a single-context domain documentation layout, documented in [docs/agents/domain.md](docs/agents/domain.md):
-- **`GLOSSARY.md`**: Ubiquitous language dictionary for the repository. Always use terms as defined (e.g. `Renderer`, `Scene Scope`, `Quad Batcher`, `Submission Order`, `Texturable`) and strictly avoid their `_Avoid_` synonyms.
-- **`docs/adr/`**: Architectural Decision Records documenting non-trivial design decisions and trade-offs (e.g. [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md), [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md)). Always inspect existing ADRs before proposing architectural changes. If an approach contradicts an ADR, explicitly highlight the contradiction.
+- **`GLOSSARY.md`**: Ubiquitous language dictionary for the repository. Always use terms as defined (e.g. `Renderer`, `Scene Scope`, `Quad Batcher`, `Submission Order`, `Texturable`, `Viewport`, `Framebuffer Dimensions`) and strictly avoid their `_Avoid_` synonyms.
+- **`docs/adr/`**: Architectural Decision Records documenting non-trivial design decisions and trade-offs (e.g. [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md), [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md), [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md)). Always inspect existing ADRs before proposing architectural changes. If an approach contradicts an ADR, explicitly highlight the contradiction.
 
 ### 7.4 Strict Documentation Synchronization Rule
 To prevent architectural documentation drift, the following condition is mandatory for every agent task:
@@ -457,5 +459,3 @@ To prevent architectural documentation drift, the following condition is mandato
 > 3. `AGENTS.md`: Update the relevant subsystem architecture (Section 4), code patterns (Section 5), or build instructions (Section 6).
 >
 > A ticket is **not complete** until all three documentation surfaces are synchronized with the code.
-
-

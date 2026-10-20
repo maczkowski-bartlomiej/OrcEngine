@@ -21,6 +21,8 @@ public:
 	virtual void onRender() {}
 	virtual void onGuiRender() {}
 
+	void syncCameraWithWindow();
+
 protected:
 	LayerContext& m_layerContext;
 	Camera m_camera;

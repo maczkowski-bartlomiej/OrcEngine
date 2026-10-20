@@ -74,6 +74,16 @@ void Renderer::setClearColor(const Color& color)
 	glClearColor(normalizedColor.x, normalizedColor.y, normalizedColor.z, normalizedColor.w);
 }
 
+void Renderer::setViewport(uint32_t width, uint32_t height)
+{
+	setViewport(0, 0, width, height);
+}
+
+void Renderer::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	glViewport(static_cast<GLint>(x), static_cast<GLint>(y), static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+}
+
 void Renderer::beginScene(const Camera& camera)
 {
 	m_viewProjectionMatrix = camera.getViewProjectionMatrix();

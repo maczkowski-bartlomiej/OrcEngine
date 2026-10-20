@@ -27,6 +27,8 @@ public:
 
 	void clear();
 	void setClearColor(const Color& color);
+	void setViewport(uint32_t width, uint32_t height);
+	void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 	void beginScene(const Camera& camera);
 	void endScene();

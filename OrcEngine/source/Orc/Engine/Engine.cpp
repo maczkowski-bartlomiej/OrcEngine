@@ -32,6 +32,7 @@ Engine::Engine(const Config& config)
 	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
 	m_renderer = createUniquePtr<Renderer>();
+	m_renderer->setViewport(m_window->getFramebufferWidth(), m_window->getFramebufferHeight());
 
 	m_gui = createUniquePtr<Gui>(*m_window);
 
@@ -115,6 +116,11 @@ const LayerContext& Engine::getLayerContext() const
 void Engine::onEvent(const Event& event)
 {
 	m_input->onEvent(event);
+
+	if (event.getType() == Event::Type::WindowResized)
+	{
+		m_renderer->setViewport(m_window->getFramebufferWidth(), m_window->getFramebufferHeight());
+	}
 
 	Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
 	if (gameLayer)

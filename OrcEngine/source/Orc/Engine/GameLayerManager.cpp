@@ -27,6 +27,7 @@ void GameLayerManager::setActiveLayer(const std::string& name)
 			m_activeLayer->onDetach();
 
 		m_activeLayer = find->second;
+		m_activeLayer->syncCameraWithWindow();
 		m_activeLayer->onAttach();
 	}
 	else

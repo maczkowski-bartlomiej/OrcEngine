@@ -1,6 +1,6 @@
 # 01: Add Renderer setViewport and Window Framebuffer Support
 
-Status: ready-for-agent
+Status: completed
 Type: task
 Blocked by: none
 
@@ -8,9 +8,9 @@ Blocked by: none
 
 **Blocked by:** None (can start immediately)
 
-- [ ] `Renderer` provides public `setViewport(uint32_t width, uint32_t height)` and `setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)` encapsulating `glViewport`
-- [ ] `Window` tracks physical framebuffer dimensions via `glfwGetFramebufferSize` alongside logical dimensions, exposing accessors for pixel dimensions
-- [ ] `Window` eliminates direct `glViewport` calls inside its low-level framebuffer size callback
-- [ ] `Engine` explicitly initializes `Renderer::setViewport` during engine bootstrap with initial framebuffer dimensions
-- [ ] `Engine::onEvent` updates `Renderer::setViewport` upon `WindowResizedEvent` prior to propagating the event to game layers
-- [ ] The engine static library and demo compile and run with zero errors
+- [x] `Renderer` provides public `setViewport(uint32_t width, uint32_t height)` and `setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)` encapsulating `glViewport`
+- [x] `Window` tracks physical framebuffer dimensions via `glfwGetFramebufferSize` alongside logical dimensions, exposing accessors for pixel dimensions
+- [x] `Window` eliminates direct `glViewport` calls inside its low-level framebuffer size callback
+- [x] `Engine` explicitly initializes `Renderer::setViewport` during engine bootstrap with initial framebuffer dimensions
+- [x] `Engine::onEvent` updates `Renderer::setViewport` upon `WindowResizedEvent` prior to propagating the event to game layers
+- [x] The engine static library and demo compile and run with zero errors
