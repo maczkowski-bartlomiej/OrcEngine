@@ -2,13 +2,6 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <memory>
-
-#if defined(_MSC_VER)
-#include <intrin.h>
-#endif
-
-#include <utility>
 
 #define GLM_FORCE_CTOR_INIT
 #define GLM_ENABLE_EXPERIMENTAL
@@ -19,45 +12,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
 
-#ifdef ORC_DEBUG
-#define ORC_DEBUG_ASSERTS
-
-#if defined(ORC_PLATFORM_WINDOWS) || defined(_WIN32)
-#define ORC_DEBUGBREAK() __debugbreak()
-#elif defined(ORC_PLATFORM_LINUX) || defined(__linux__)
-#include <signal.h>
-#define ORC_DEBUGBREAK() raise(SIGTRAP)
-#else
-#error "Platform doesn't support debugbreak!"
-#endif
-
-#endif
-
-#ifdef ORC_RELEASE
-#define ORC_DEBUGBREAK()
-#endif
-
 namespace orc {
 
 using FilePath = std::filesystem::path;
-
-template <typename T>
-using Ref = std::shared_ptr<T>;
-template <typename T>
-using UniquePtr = std::unique_ptr<T>;
-
-template <typename T, typename... Arguments>
-constexpr Ref<T> createRef(Arguments&&... arguments)
-{
-	return std::make_shared<T>(std::forward<Arguments>(arguments)...);
-}
-
-template <typename T, typename... Arguments>
-constexpr UniquePtr<T> createUniquePtr(Arguments&&... arguments)
-{
-	return std::make_unique<T>(std::forward<Arguments>(arguments)...);
-}
-
 using RendererID = uint32_t;
 
 template <typename T>
@@ -87,10 +44,4 @@ using Vector4u = glm::tvec4<unsigned int>;
 using Matrix = glm::mat3;
 using Matrix4 = glm::mat4;
 
-namespace version {
-static inline constexpr uint32_t MAJOR_VERSION = 0;
-static inline constexpr uint32_t MINOR_VERSION = 0;
-static inline constexpr uint32_t PATCH_VERSION = 1;
-}
-
-}
+} // namespace orc

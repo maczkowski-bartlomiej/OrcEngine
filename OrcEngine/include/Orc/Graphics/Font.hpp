@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Graphics/Texture.hpp"
 
 typedef struct FT_FaceRec_* FT_Face;

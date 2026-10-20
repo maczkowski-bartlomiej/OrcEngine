@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Graphics/Color.hpp"
 #include "Graphics/Font.hpp"
 #include "Graphics/Rect.hpp"

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 #include "Graphics/BufferLayout.hpp"
 
 namespace orc {

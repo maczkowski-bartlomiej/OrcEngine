@@ -35,3 +35,7 @@ _Avoid_: InputManager, InputState, RawInput
 **Event**:
 The lightweight polymorphic base class representing discrete window, keyboard, and mouse occurrences dispatched through `onEvent` using `getType()` and `getEvent<T>()`.
 _Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage
+
+**Core**:
+The foundational Layer 0 module providing universal primitives, platform macros, memory ownership aliases, math vectors/matrices, and semantic version constants decoupled from engine lifecycle coordination.
+_Avoid_: Engine/Core, EngineCore, Base, Common, UtilityModule

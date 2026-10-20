@@ -9,7 +9,7 @@
 #include <freetype/ftimage.h>
 #include <freetype/fttypes.h>
 
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/Utility.hpp"

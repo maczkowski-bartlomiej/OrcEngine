@@ -72,7 +72,7 @@ In addition to the [Mandatory Agent Invariants](#mandatory-agent-invariants) at 
 
 ## 4. Subsystem Architecture & Lifecycle
 
-OrcEngine is organized into six core subsystems: **Engine**, **Graphics & Renderer**, **Audio**, **Input & Events**, **GUI**, and **Resources**.
+OrcEngine is organized into six core subsystems (**Engine**, **Graphics & Renderer**, **Audio**, **Input & Events**, **GUI**, and **Resources**) built upon the foundational **Core** primitives module.
 
 ```
                               ┌────────────────────────────────────────┐
@@ -191,6 +191,16 @@ The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-r
   ```cpp
   Ref<Texture> tex = m_layerContext.textureResources.getResource("player_idle"); // No std::string allocation
   ```
+
+### 4.7 Core Foundation Module (`Orc/Core/`)
+The foundational domain modularization is detailed in [ADR 0006](docs/adr/0006-modularize-core-primitives.md).
+- **Domain Role**: Layer 0 foundational primitives independent of engine runtime coordination or OS windowing loops. All engine subsystems and client applications depend on `Orc/Core/`.
+- **Granular Organization**:
+  - `Platform.hpp`: Platform identification macros (`ORC_PLATFORM_WINDOWS`, `ORC_PLATFORM_LINUX`), debug assertions toggle (`ORC_DEBUG_ASSERTS`), platform-specific debugbreak trigger (`ORC_DEBUGBREAK()`), and compiler intrinsic headers.
+  - `Memory.hpp`: Universal smart pointer type aliases (`Ref<T>`, `UniquePtr<T>`) and standard forwarding factory functions (`createRef<T>`, `createUniquePtr<T>`).
+  - `Types.hpp`: GLM initialization settings (`GLM_FORCE_CTOR_INIT`, `GLM_ENABLE_EXPERIMENTAL`), math aliases (`Vector2/3/4` families, `Matrix`, `Matrix4`), file path alias (`FilePath`), and driver handle types (`RendererID`).
+  - `Version.hpp`: Semantic engine version constants (`MAJOR_VERSION`, `MINOR_VERSION`, `PATCH_VERSION`) defined under `orc::version`.
+  - `Core.hpp`: Umbrella aggregator header including `Platform.hpp`, `Memory.hpp`, `Types.hpp`, and `Version.hpp`.
 
 ---
 
@@ -447,3 +457,5 @@ To prevent architectural documentation drift, the following condition is mandato
 > 3. `AGENTS.md`: Update the relevant subsystem architecture (Section 4), code patterns (Section 5), or build instructions (Section 6).
 >
 > A ticket is **not complete** until all three documentation surfaces are synchronized with the code.
+
+

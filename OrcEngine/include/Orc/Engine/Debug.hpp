@@ -5,7 +5,7 @@
 
 #include <fmt/format.h>
 
-#include "Engine/Core.hpp"
+#include "Core/Platform.hpp"
 
 #include "Logger.hpp"
 

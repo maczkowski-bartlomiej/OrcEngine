@@ -1,6 +1,6 @@
 #include "Graphics/Camera.hpp"
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 
 namespace orc {
 

@@ -34,6 +34,9 @@ if ($ChangedOnly) {
     foreach ($line in $gitOutput) {
         if ($line -match "^[ MADRCU?]{2}\s+(.+)$") {
             $relPath = $matches[1].Trim()
+            if ($relPath -match " -> ") {
+                $relPath = ($relPath -split " -> ")[1].Trim()
+            }
             if ($relPath -match "\.(hpp|cpp|inl)$" -and (Test-Path $relPath)) {
                 $filesToCheck += (Resolve-Path $relPath).Path
             }
@@ -97,7 +100,7 @@ foreach ($filePath in $filesToCheck) {
     }
 
     # 2. Check namespace orc in OrcEngine/ files
-    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp" -and $relPath -notlike "*EntryPoint.cpp" -and $relPath -notlike "*StbImage.cpp" -and $relPath -notlike "*Debug.hpp" -and $relPath -notlike "*Orc.hpp") {
+    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp" -and $relPath -notlike "*EntryPoint.cpp" -and $relPath -notlike "*StbImage.cpp" -and $relPath -notlike "*Debug.hpp" -and $relPath -notlike "*Orc.hpp" -and $relPath -notlike "*Platform.hpp" -and $relPath -notlike "*Core.hpp") {
         if ($content -notmatch "\bnamespace\s+orc\b") {
             $fileIssues += [PSCustomObject]@{
                 Level = "ERROR"

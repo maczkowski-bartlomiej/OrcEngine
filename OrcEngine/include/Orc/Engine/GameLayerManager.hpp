@@ -4,7 +4,7 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "Engine/Core.hpp"
+#include "Core/Memory.hpp"
 #include "Engine/GameLayer.hpp"
 
 namespace orc {

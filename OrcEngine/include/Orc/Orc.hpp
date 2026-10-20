@@ -4,7 +4,7 @@
 #include "Audio/Bus.hpp"
 #include "Engine/Clock.hpp"
 #include "Engine/Config.hpp"
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/EntryPoint.hpp"

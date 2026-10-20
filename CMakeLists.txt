@@ -65,7 +65,7 @@ target_link_libraries(OrcEngine
         imgui::imgui
 )
 
-# PUBLIC: Engine/Core.hpp (a public header) branches on these macros, so the engine
+# PUBLIC: Core/Platform.hpp (a public header) branches on these macros, so the engine
 # and every consumer must agree on them. Every non-Debug config counts as release.
 target_compile_definitions(OrcEngine
     PUBLIC

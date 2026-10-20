@@ -16,7 +16,7 @@
 #include <Graphics/Window.hpp>
 
 #include "Engine/Clock.hpp"
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 
 namespace orc {
 

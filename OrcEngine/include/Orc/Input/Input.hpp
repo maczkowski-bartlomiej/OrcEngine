@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 #include "Events/Event.hpp"
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"

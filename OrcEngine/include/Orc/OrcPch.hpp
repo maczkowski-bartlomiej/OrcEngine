@@ -35,6 +35,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Logger.hpp"

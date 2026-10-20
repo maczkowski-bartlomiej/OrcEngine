@@ -3,7 +3,7 @@
 #include <array>
 #include <vector>
 
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Graphics/Camera.hpp"
 #include "Graphics/Color.hpp"
 #include "Graphics/IndexBuffer.hpp"

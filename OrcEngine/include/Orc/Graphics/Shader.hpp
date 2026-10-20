@@ -4,7 +4,7 @@
 #include <string>
 #include <string_view>
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 
 namespace orc {
 

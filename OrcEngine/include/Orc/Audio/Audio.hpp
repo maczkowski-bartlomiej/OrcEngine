@@ -7,7 +7,7 @@
 #include <fmod_studio.hpp>
 
 #include "Audio/Bus.hpp"
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 
 namespace orc {
 

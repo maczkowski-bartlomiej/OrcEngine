@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "Engine/Core.hpp"
+#include "Core/Memory.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/Logger.hpp"

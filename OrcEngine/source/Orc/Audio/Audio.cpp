@@ -11,7 +11,7 @@
 #include <fmod_studio_common.h>
 
 #include "Audio/Bus.hpp"
-#include "Engine/Core.hpp"
+#include "Core/Core.hpp"
 #include "Engine/Debug.hpp"
 #include "Engine/Logger.hpp"
 #include "Engine/Utility.hpp"
