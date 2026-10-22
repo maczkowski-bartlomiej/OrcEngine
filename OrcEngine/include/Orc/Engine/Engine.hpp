@@ -10,7 +10,7 @@
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Window.hpp"
 #include "Input/Input.hpp"
-
+#include "Script/Mono.hpp"
 #include "Core/Core.hpp"
 
 namespace orc {
@@ -38,6 +38,7 @@ private:
 	UniquePtr<GameLayerManager> m_gameLayerManager;
 	UniquePtr<Input> m_input;
 	UniquePtr<LayerContext> m_layerContext;
+	UniquePtr<Mono> m_mono;
 
 	FontResources m_fontResources;
 	TextureResources m_textureResources;

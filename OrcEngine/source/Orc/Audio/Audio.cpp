@@ -20,7 +20,7 @@ namespace orc {
 
 Audio::Audio(const AudioSettings& audioSettings)
 {
-	ORC_LOG_INFO("Initializing audio.");
+	ORC_LOG_INFO("Initializing audio...");
 
 	fmodCall(FMOD::Studio::System::create(&m_system), "Failed to create FMOD system");
 	fmodCall(m_system->initialize(audioSettings.maxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr), "Failed to initialize FMOD system");

@@ -1,0 +1,141 @@
+Yes, having CMake supply the paths is much cleaner and eliminates hardcoded paths from C++.
+
+Here are the two best ways to do this, depending on your preferred workflow:
+
+Option 1: Inject Paths via CMake Compile Definitions (Recommended for Dev)
+
+In this approach, FindMono.cmake resolves the lib and etc directories from the detected installation and passes them to C++ via compile definitions on the Mono::Mono target.
+
+1. Update cmake/FindMono.cmake
+
+Inside the if(Mono_FOUND) block, resolve the directories and attach them as INTERFACE_COMPILE_DEFINITIONS:
+
+cmake
+if(Mono_FOUND)
+    set(MONO_INCLUDE_DIRS "${MONO_INCLUDE_DIR}")
+    set(MONO_LIBRARIES "${MONO_LIBRARY}")
+    # Derive lib and etc directories from detected files
+    get_filename_component(_mono_lib_dir "${MONO_LIBRARY}" DIRECTORY)
+    get_filename_component(_mono_root "${_mono_lib_dir}" DIRECTORY)
+    set(MONO_LIB_DIR "${_mono_lib_dir}")
+    set(MONO_ETC_DIR "${_mono_root}/etc")
+    if(WIN32)
+        get_filename_component(MONO_SONAME "${MONO_DLL}" NAME)
+        if(NOT TARGET Mono::Mono)
+            add_library(Mono::Mono SHARED IMPORTED)
+            set_target_properties(Mono::Mono PROPERTIES
+                IMPORTED_LOCATION "${MONO_DLL}"
+                IMPORTED_IMPLIB "${MONO_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${MONO_INCLUDE_DIR}"
+                INTERFACE_LINK_LIBRARIES "ws2_32;psapi;winmm;version"
+                INTERFACE_COMPILE_DEFINITIONS
+                    "ORC_MONO_ASSEMBLY_DIR=\"${MONO_LIB_DIR}\";ORC_MONO_CONFIG_DIR=\"${MONO_ETC_DIR}\""
+            )
+        endif()
+    else()
+        _mono_soname("${MONO_LIBRARY}" MONO_SONAME)
+        if(NOT TARGET Mono::Mono)
+            add_library(Mono::Mono SHARED IMPORTED)
+            set_target_properties(Mono::Mono PROPERTIES
+                IMPORTED_LOCATION "${MONO_LIBRARY}"
+                IMPORTED_SONAME "${MONO_SONAME}"
+                INTERFACE_INCLUDE_DIRECTORIES "${MONO_INCLUDE_DIR}"
+                INTERFACE_LINK_LIBRARIES "${CMAKE_DL_LIBS};m;pthread"
+                INTERFACE_COMPILE_DEFINITIONS
+                    "ORC_MONO_ASSEMBLY_DIR=\"${MONO_LIB_DIR}\";ORC_MONO_CONFIG_DIR=\"${MONO_ETC_DIR}\""
+            )
+        endif()
+    endif()
+endif()
+2. Update OrcEngine/source/Orc/Script/Mono.cpp
+
+Now Mono.cpp has zero hardcoded paths and uses the CMake-provided definitions:
+
+cpp
+#include "Script/Mono.hpp"
+#include "Engine/Logger.hpp"
+#include <filesystem>
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
+namespace orc {
+namespace {
+void configureMonoDirectories()
+{
+    namespace fs = std::filesystem;
+    fs::path assemblyDir;
+    fs::path configDir;
+    // 1. Check for standalone/bundled deployment next to the executable
+    if (fs::exists("mono/lib/mono/4.5/mscorlib.dll"))
+    {
+        assemblyDir = fs::absolute("mono/lib");
+        configDir   = fs::absolute("mono/etc");
+    }
+#if defined(ORC_MONO_ASSEMBLY_DIR) && defined(ORC_MONO_CONFIG_DIR)
+    // 2. Use paths discovered and passed by CMake
+    else if (fs::exists(ORC_MONO_ASSEMBLY_DIR))
+    {
+        assemblyDir = ORC_MONO_ASSEMBLY_DIR;
+        configDir   = ORC_MONO_CONFIG_DIR;
+    }
+#endif
+    if (!assemblyDir.empty())
+    {
+        mono_set_dirs(assemblyDir.string().c_str(), configDir.string().c_str());
+        ORC_LOG_INFO("Configured Mono directories: lib='{}', etc='{}'", assemblyDir.string(), configDir.string());
+    }
+    else
+    {
+        ORC_LOG_ERROR("Could not locate Mono assemblies directory.");
+    }
+}
+} // namespace
+Mono::Mono()
+{
+    ORC_LOG_INFO("Initializing Mono...");
+    configureMonoDirectories();
+    m_domain = mono_jit_init("OrcEngine");
+    if (!m_domain)
+    {
+        ORC_LOG_ERROR("Failed to initialize Mono domain.");
+        return;
+    }
+    ORC_LOG_INFO("Mono domain initialized successfully.");
+}
+Mono::~Mono()
+{
+    ORC_LOG_INFO("Deinitializing Mono.");
+    if (m_domain)
+    {
+        mono_jit_cleanup(m_domain);
+        m_domain = nullptr;
+    }
+}
+} // namespace orc
+Option 2: Copy Mono BCL to Build Directory via CMake (Standalone Distribution)
+
+If you prefer build/windows-debug/ to be completely self-contained and run on computers without Mono installed:
+
+In CMakeLists.txt, add the assemblies and config directories to TestProject's POST_BUILD step:
+
+cmake
+    add_custom_command(TARGET TestProject POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:Mono::Mono>"
+            "$<TARGET_FILE_DIR:TestProject>/${MONO_SONAME}"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${MONO_LIB_DIR}/mono"
+            "$<TARGET_FILE_DIR:TestProject>/mono/lib/mono"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${MONO_ETC_DIR}/mono"
+            "$<TARGET_FILE_DIR:TestProject>/mono/etc/mono"
+        # ... other copy commands ...
+        VERBATIM
+    )
+
+And in C++, you only need:
+
+cpp
+mono_set_dirs("mono/lib", "mono/etc");
+Trade-offs:
+Option 1: Fast build times (doesn't copy ~76MB of assemblies on every build), automatically tracks wherever CMake finds Mono on any developer's machine, and falls back to a bundled folder when distributing.
+Option 2: Completely standalone output folder, but copies 76MB of assemblies into build/.

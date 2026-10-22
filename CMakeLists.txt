@@ -26,8 +26,10 @@ find_path(STB_INCLUDE_DIRS stb_image.h REQUIRED)
 # System
 find_package(OpenGL REQUIRED)
 
-# Manually installed SDK (cmake/FindFMOD.cmake)
+# Manually installed SDKs (cmake/FindFMOD.cmake, cmake/FindMono.cmake)
 find_package(FMOD REQUIRED)
+find_package(Mono REQUIRED)
+
 
 # --- OrcEngine --------------------------------------------------------------
 set(ORC_ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/OrcEngine")
@@ -63,6 +65,7 @@ target_link_libraries(OrcEngine
         Freetype::Freetype
         OpenGL::GL
         imgui::imgui
+        Mono::Mono
 )
 
 # PUBLIC: Core/Platform.hpp (a public header) branches on these macros, so the engine
@@ -112,6 +115,9 @@ if(ORC_BUILD_TEST_PROJECT)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "$<TARGET_FILE:FMOD::Studio>"
             "$<TARGET_FILE_DIR:TestProject>/${FMOD_STUDIO_SONAME}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:Mono::Mono>"
+            "$<TARGET_FILE_DIR:TestProject>/${MONO_SONAME}"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${TEST_PROJECT_DIR}/assets"
             "$<TARGET_FILE_DIR:TestProject>/assets"
