@@ -67,8 +67,6 @@ In addition to the [Mandatory Agent Invariants](#mandatory-agent-invariants) at 
    - Keep changes tightly scoped to the immediate task requested by the user. Avoid drive-by refactoring or unrelated cleanup.
 5. **Documentation Synchronization**:
    - In accordance with the [Mandatory Agent Invariants](#mandatory-agent-invariants), synchronize `GLOSSARY.md`, architectural records (`docs/adr/`), and `AGENTS.md` subsystem documentation alongside every code change as an integral condition of ticket resolution.
-6. **Fail-Fast & Crash-Early Invariant**:
-   - The engine follows a strict fail-fast engineering philosophy: when code encounters an invalid state, missing asset, unregistered bus, or failed subsystem initialization, it must crash/assert immediately (`ORC_ASSERT`, `ORC_LOG_FATAL`). Never hide bugs behind defensive fallbacks, dummy values, or silent error suppression. Crashing early ensures bugs are surfaced and corrected immediately during development.
 
 ---
 
@@ -175,14 +173,14 @@ The rendering architecture is detailed in [ADR 0001](docs/adr/0001-collapse-2d-r
 - **Transform Hierarchy**: `Transformable` maintains `m_position`, `m_rotation`, `m_scale`, and `m_origin`. It lazily updates and caches `m_transformMatrix` (GLM 3x3 affine) and `m_inverseTransformMatrix` via `m_isTransformMatrixUpdateNeeded`.
 
 ### 4.5 Audio Subsystem (FMOD Studio)
-The architecture and lifetime model is detailed in [ADR 0008](docs/adr/0008-encapsulate-audio-and-deepen-instance-lifecycle.md).
-- **PIMPL Encapsulation**: All native FMOD types (`FMOD::Studio::System*`, `FMOD::Studio::Bank*`, event descriptions) are completely encapsulated behind an opaque `UniquePtr<Audio::Impl> m_impl` inside `Audio.cpp`. Engine public headers (`Audio.hpp`, `Bus.hpp`, `SoundHandle.hpp`) contain zero third-party FMOD includes or types. `FMOD::Studio` and `FMOD::Core` are linked as `PRIVATE` CMake dependencies.
-- **Bank Loading**: Pre-loads configured banks (`Master.bank`, `Master.strings.bank`, `Music.bank`, `SFX.bank`) and loads sample data into memory during initialization. Missing banks or corrupt audio state trigger immediate `ORC_ASSERT` crashes per the Fail-Fast invariant.
-- **Dynamic Bus Hierarchy**: Replaces hardcoded bus getters with dynamic bus lookup via `audio.getBus(busPath)` returning an opaque `Bus` handle. Predefined constants (`Bus::Master`, `Bus::SFX`, `Bus::Music`) provide type-safe access while supporting arbitrary project-defined mixing buses (`"bus:/UI"`, `"bus:/Voice"`, `"bus:/Ambience"`).
-- **Dual Playback Interface**:
-  - `playOneShot(std::string_view path)`: Fire-and-forget playback for transient audio effects (footsteps, impacts, UI clicks), starting and releasing immediately.
-  - `play(std::string_view path) -> SoundHandle`: Registers the event instance into an active generational slot pool and returns a lightweight `SoundHandle` for runtime control (`stop()`, `pause()`, `resume()`, `setVolume()`, `setParameter()`).
-- **Automatic Lifecycle Reaping**: `Audio::update()` is executed every frame inside `Engine::run()`, ticking the FMOD system, sweeping finished sound instances (`FMOD_STUDIO_PLAYBACK_STOPPED`), releasing their native instances, and incrementing generation counters to safely invalidate stale `SoundHandle` copies without dangling pointers.
+- **Engine Core**: Built on `FMOD::Studio::System`.
+- **Bank Loading**: Pre-loads configured banks (`Master.bank`, `Master.strings.bank`, `Music.bank`, `SFX.bank`) and loads sample data into memory during initialization.
+- **Bus Control**: Exposes three dedicated audio buses for independent hierarchy volume and pause control:
+  - `m_masterBus` (`bus:/`)
+  - `m_musicBus` (`bus:/Music`)
+  - `m_sfxBus` (`bus:/SFX`)
+- **Playback & Lifetime**: `Audio::play("event:/path")` queries `FMOD::Studio::EventDescription`, creates an `FMOD::Studio::EventInstance`, starts it, and immediately calls `release()` so FMOD cleans up the instance automatically when playback ends.
+- **Per-Frame Tick**: `Audio::update()` is called inside `Engine::run()` every frame, advancing 3D positions, streaming buffers, and processing FMOD event callbacks.
 
 ### 4.6 Resource Management Subsystem
 - **Template Architecture**: `Resources<ResourceType>` template instantiated for:

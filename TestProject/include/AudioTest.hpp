@@ -16,7 +16,4 @@ public:
 
 	void onRender() override;
 	void onGuiRender() override;
-
-private:
-	orc::SoundHandle m_musicHandle;
 };

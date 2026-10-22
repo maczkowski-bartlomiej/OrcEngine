@@ -1,19 +1,15 @@
 #pragma once
 
-#include <string_view>
+#include <string>
+
+#include <fmod_studio.hpp>
 
 namespace orc {
-
-class Audio;
 
 class Bus
 {
 public:
-	static constexpr std::string_view Master = "bus:/";
-	static constexpr std::string_view SFX = "bus:/SFX";
-	static constexpr std::string_view Music = "bus:/Music";
-
-	Bus() = default;
+	void load(FMOD::Studio::System* system, const std::string& busName);
 
 	void stop();
 	void pause();
@@ -24,13 +20,8 @@ public:
 
 	bool isPaused() const;
 
-	bool isValid() const;
-
 private:
-	friend class Audio;
-	explicit Bus(void* nativeBus);
-
-	void* m_nativeBus = nullptr;
+	FMOD::Studio::Bus* m_bus = nullptr;
 };
 
-} // namespace orc
+}

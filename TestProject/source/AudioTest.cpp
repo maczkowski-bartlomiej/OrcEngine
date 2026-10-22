@@ -59,101 +59,72 @@ void AudioTest::onGuiRender()
 {
 	ImGui::Begin("Audio testing");
 	{
-		if (ImGui::Button("SFX 1 (OneShot)", {200, 50}))
-			m_layerContext.audio.playOneShot("event:/SFX/sfx1");
-		if (ImGui::Button("SFX 2 (OneShot)", {200, 50}))
-			m_layerContext.audio.playOneShot("event:/SFX/sfx2");
-		if (ImGui::Button("SFX 3 (OneShot)", {200, 50}))
-			m_layerContext.audio.playOneShot("event:/SFX/sfx3");
-		if (ImGui::Button("Music 1 (Handle)", {200, 50}))
-			m_musicHandle = m_layerContext.audio.play("event:/Music/music1");
-		if (ImGui::Button("Music 2 (Handle)", {200, 50}))
-			m_musicHandle = m_layerContext.audio.play("event:/Music/music2");
-		if (ImGui::Button("Music 3 (Handle)", {200, 50}))
-			m_musicHandle = m_layerContext.audio.play("event:/Music/music3");
-	}
-	ImGui::End();
-
-	ImGui::Begin("Active Music Track (SoundHandle)");
-	{
-		bool isPlaying = m_musicHandle.isValid();
-		ImGui::Text("Track Status: %s", isPlaying ? "Active" : "Inactive / Stopped");
-
-		if (isPlaying)
-		{
-			if (ImGui::Button("Pause Track", {150, 40}))
-				m_musicHandle.pause();
-			ImGui::SameLine();
-			if (ImGui::Button("Resume Track", {150, 40}))
-				m_musicHandle.resume();
-			if (ImGui::Button("Stop Track", {150, 40}))
-				m_musicHandle.stop();
-
-			static float trackVolume = 1.0f;
-			if (ImGui::SliderFloat("Track Volume", &trackVolume, 0.0f, 1.0f))
-				m_musicHandle.setVolume(trackVolume);
-
-			static float trackPitch = 1.0f;
-			if (ImGui::SliderFloat("Track Pitch", &trackPitch, 0.5f, 2.0f))
-				m_musicHandle.setPitch(trackPitch);
-		}
-		else
-		{
-			ImGui::TextDisabled("Start a music track above to control it via SoundHandle.");
-		}
+		if (ImGui::Button("SFX 1", {200, 50}))
+			m_layerContext.audio.play("event:/SFX/sfx1");
+		if (ImGui::Button("SFX 2", {200, 50}))
+			m_layerContext.audio.play("event:/SFX/sfx2");
+		if (ImGui::Button("SFX 3", {200, 50}))
+			m_layerContext.audio.play("event:/SFX/sfx3");
+		if (ImGui::Button("Music 1", {200, 50}))
+			m_layerContext.audio.play("event:/Music/music1");
+		if (ImGui::Button("Music 2", {200, 50}))
+			m_layerContext.audio.play("event:/Music/music2");
+		if (ImGui::Button("Music 3", {200, 50}))
+			m_layerContext.audio.play("event:/Music/music3");
+		if (ImGui::Button("Load wrong bank", {200, 50}))
+			m_layerContext.audio.loadBank("wrong_bank.bank");
+		if (ImGui::Button("Play not existing event", {200, 50}))
+			m_layerContext.audio.play("bad_event");
 	}
 	ImGui::End();
 
 	ImGui::Begin("SFX bus control");
 	{
-		auto sfxBus = m_layerContext.audio.getBus(orc::Bus::SFX);
 		if (ImGui::Button("Pause", {200, 50}))
-			sfxBus.pause();
+			m_layerContext.audio.getSfxBus().pause();
 		if (ImGui::Button("Resume", {200, 50}))
-			sfxBus.resume();
+			m_layerContext.audio.getSfxBus().resume();
 		if (ImGui::Button("Stop", {200, 50}))
-			sfxBus.stop();
-		float volume = sfxBus.getVolume();
+			m_layerContext.audio.getSfxBus().stop();
+		float volume = m_layerContext.audio.getSfxBus().getVolume();
 		if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f))
-			sfxBus.setVolume(volume);
-		ImGui::Text("Volume = %f", sfxBus.getVolume());
-		ImGui::Text("Is paused = %s", sfxBus.isPaused() ? "True" : "False");
+			m_layerContext.audio.getSfxBus().setVolume(volume);
+		ImGui::Text("Volume = %f", m_layerContext.audio.getSfxBus().getVolume());
+		ImGui::Text("Is paused = %s", m_layerContext.audio.getSfxBus().isPaused() ? "True" : "False");
 	}
 	ImGui::End();
 
 	ImGui::Begin("Music bus control");
 	{
-		auto musicBus = m_layerContext.audio.getBus(orc::Bus::Music);
 		if (ImGui::Button("Pause", {200, 50}))
-			musicBus.pause();
+			m_layerContext.audio.getMusicBus().pause();
 		if (ImGui::Button("Resume", {200, 50}))
-			musicBus.resume();
+			m_layerContext.audio.getMusicBus().resume();
 		if (ImGui::Button("Stop", {200, 50}))
-			musicBus.stop();
-		float volume = musicBus.getVolume();
+			m_layerContext.audio.getMusicBus().stop();
+		float volume = m_layerContext.audio.getMusicBus().getVolume();
 		if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f))
-			musicBus.setVolume(volume);
+			m_layerContext.audio.getMusicBus().setVolume(volume);
 
-		ImGui::Text("Volume = %f", musicBus.getVolume());
-		ImGui::Text("Is paused = %s", musicBus.isPaused() ? "True" : "False");
+		ImGui::Text("Volume = %f", m_layerContext.audio.getMusicBus().getVolume());
+		ImGui::Text("Is paused = %s", m_layerContext.audio.getMusicBus().isPaused() ? "True" : "False");
 	}
 	ImGui::End();
 
 	ImGui::Begin("Master bus control");
 	{
-		auto masterBus = m_layerContext.audio.getBus(orc::Bus::Master);
 		if (ImGui::Button("Pause", {200, 50}))
-			masterBus.pause();
+			m_layerContext.audio.getMasterBus().pause();
 		if (ImGui::Button("Resume", {200, 50}))
-			masterBus.resume();
+			m_layerContext.audio.getMasterBus().resume();
 		if (ImGui::Button("Stop", {200, 50}))
-			masterBus.stop();
-		float volume = masterBus.getVolume();
+			m_layerContext.audio.getMasterBus().stop();
+		float volume = m_layerContext.audio.getMasterBus().getVolume();
 		if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f))
-			masterBus.setVolume(volume);
+			m_layerContext.audio.getMasterBus().setVolume(volume);
 
-		ImGui::Text("Volume = %f", masterBus.getVolume());
-		ImGui::Text("Is paused = %s", masterBus.isPaused() ? "True" : "False");
+		ImGui::Text("Volume = %f", m_layerContext.audio.getMasterBus().getVolume());
+		ImGui::Text("Is paused = %s", m_layerContext.audio.getMasterBus().isPaused() ? "True" : "False");
 	}
 	ImGui::End();
 

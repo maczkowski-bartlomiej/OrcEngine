@@ -47,15 +47,3 @@ _Avoid_: RenderArea, ScreenBounds, WindowRect
 **Framebuffer Dimensions**:
 The physical pixel resolution of the window rendering surface queried via `Window::getFramebufferSize()`, distinct from logical window screen coordinates on high-DPI and Retina displays.
 _Avoid_: WindowPixels, ScreenResolution, RenderTargetSize
-
-**SoundHandle**:
-The lightweight, generation-indexed value type representing an active, controllable sound instance returned by `Audio::play()`, authoritatively managed and reclaimed by the `Audio` module.
-_Avoid_: SoundInstance, SoundPointer, AudioHandle, TrackHandle
-
-**Bus**:
-The audio mixing hierarchy node queried dynamically via `Audio::getBus()`, allowing volume, pause, resume, and stop controls across arbitrary named audio paths.
-_Avoid_: AudioChannel, ChannelGroup, MixerBus, VolumeGroup
-
-**Fail-Fast Invariant**:
-The foundational engine engineering philosophy mandating that entering an invalid state, failing an asset lookup, or encountering corrupt subsystem configurations must immediately assert or crash (`ORC_ASSERT`, `ORC_LOG_FATAL`) so bugs are surfaced and corrected immediately during development rather than silently ignored.
-_Avoid_: Defensive fallback, silent recovery, error suppression
