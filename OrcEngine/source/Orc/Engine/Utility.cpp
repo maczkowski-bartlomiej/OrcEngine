@@ -14,15 +14,19 @@
 
 namespace orc {
 
-bool fmodCall(FMOD_RESULT result, std::source_location sourceLocation)
+void fmodCall(FMOD_RESULT result, const std::string& message, std::source_location sourceLocation)
 {
 	if (result != FMOD_RESULT::FMOD_OK)
 	{
-		Logger::log(Logger::Level::Error, sourceLocation, "FMOD Error: {}", FMOD_ErrorString(result));
-		return false;
+		if (!message.empty())
+		{
+			Logger::log(Logger::Level::Error, sourceLocation, "{}\n\tFMOD Error: {}", message, FMOD_ErrorString(result));
+		}
+		else
+		{
+			Logger::log(Logger::Level::Error, sourceLocation, "FMOD Error: {}", FMOD_ErrorString(result));
+		}
 	}
-
-	return true;
 }
 
 bool ftCall(FT_Error result, std::source_location sourceLocation)

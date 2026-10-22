@@ -14,6 +14,8 @@ orc::Config orc::getEngineConfig()
 	config.videoSettings.vsync = true;
 
 	config.audioSettings.maxChannels = 512;
+	config.audioSettings.bankPaths.push_back("assets/audio/Music.bank");
+	config.audioSettings.bankPaths.push_back("assets/audio/SFX.bank");
 
 	return config;
 }

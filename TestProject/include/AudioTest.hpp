@@ -2,6 +2,8 @@
 
 #include <Orc/Orc.hpp>
 
+#include <map>
+
 class AudioTest : public orc::GameLayer
 {
 public:
@@ -16,4 +18,14 @@ public:
 
 	void onRender() override;
 	void onGuiRender() override;
+
+private:
+	enum class Buses
+	{
+		Master,
+		Music,
+		Sfx
+	};
+
+	std::map<Buses, orc::UniquePtr<orc::Bus>> m_buses;
 };

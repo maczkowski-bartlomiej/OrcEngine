@@ -17,14 +17,11 @@ public:
 	struct AudioSettings
 	{
 		int maxChannels = 512;
-		std::string masterBusName = "bus:/";
-		std::string sfxBusName = "bus:/SFX";
-		std::string musicBusName = "bus:/Music";
-		std::vector<FilePath> banks = {
-			"assets/audio/Master.bank",
-			"assets/audio/Master.strings.bank",
-			"assets/audio/Music.bank",
-			"assets/audio/SFX.bank"};
+
+		FilePath masterBank = "assets/audio/Master.bank";
+		FilePath masterStringBank = "assets/audio/Master.strings.bank";
+
+		std::vector<FilePath> bankPaths;
 	};
 
 	Audio() = delete;
@@ -36,23 +33,13 @@ public:
 	Audio(Audio&&) = delete;
 	Audio& operator=(Audio&&) = delete;
 
-	bool loadBank(const FilePath& filePath);
+	UniquePtr<Bus> getBus(const std::string& busName);
 
 	void play(const std::string& eventPath);
 	void update();
 
-	Bus& getSfxBus();
-	Bus& getMusicBus();
-	Bus& getMasterBus();
-
-	const Bus& getSfxBus() const;
-	const Bus& getMusicBus() const;
-	const Bus& getMasterBus() const;
-
 private:
-	Bus m_sfxBus;
-	Bus m_musicBus;
-	Bus m_masterBus;
+	void loadBank(const FilePath& filePath);
 
 	FMOD::Studio::System* m_system = nullptr;
 	std::vector<FMOD::Studio::Bank*> m_banks;
