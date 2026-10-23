@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Memory.hpp"
 #include "Core/Types.hpp"
 
 namespace orc {
@@ -13,13 +12,15 @@ public:
 
 	Scripting(const Scripting&) = delete;
 	Scripting& operator=(const Scripting&) = delete;
-
-	Scripting(Scripting&&) noexcept;
-	Scripting& operator=(Scripting&&) noexcept;
+	Scripting(Scripting&&) = delete;
+	Scripting& operator=(Scripting&&) = delete;
 
 private:
-	struct Impl;
-	UniquePtr<Impl> m_impl;
+	void loadHostFxr();
+	void initializeRuntime();
+
+	FilePath m_configPath;
+	void* m_hostfxrLib{nullptr};
 };
 
 } // namespace orc

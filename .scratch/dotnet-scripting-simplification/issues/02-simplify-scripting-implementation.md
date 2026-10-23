@@ -1,6 +1,6 @@
 # 02: Simplify Scripting Implementation and Restore Macros
 
-Status: ready-for-agent
+Status: resolved
 Type: task
 Blocked by: 01
 
@@ -20,13 +20,17 @@ Blocked by: 01
 
 **Blocked by:** 01 (needs updated `Scripting.hpp` class definition)
 
-- [ ] `ORC_FATAL` and `ORC_FATAL_CHECK` in `Engine/Debug.hpp` invoke `std::abort()` in both debug and release branches
-- [ ] `Scripting.cpp` starts with `#include "OrcPch.hpp"` and restores the top-of-file platform macro block (`ORC_LOAD_LIB`, `ORC_GET_EXPORT`, `ORC_FREE_LIB`, `ORC_DOTNET_STR`)
-- [ ] Resolved `hostfxr` and `load_assembly_and_get_function_pointer_fn` function pointers are stored in an anonymous namespace in `Scripting.cpp`
-- [ ] Standalone helper functions (`loadLibrary`, `getExport`, `freeLibrary`, `toPalString`) and template helpers (`getRuntimeDelegate`, `getManagedFunction`) are eliminated
-- [ ] Custom macro `ORC_SCRIPTING_FATAL_CHECK` is eliminated; uses `ORC_FATAL_CHECK` directly without early-return boilerplate
-- [ ] `std::error_code` boilerplate around `std::filesystem::canonical` is removed in favor of `std::filesystem::exists` + `std::filesystem::canonical`
-- [ ] Move constructor and move assignment definitions are removed from `Scripting.cpp`
-- [ ] `Scripting::loadHostFxr()` and `Scripting::initializeRuntime()` operate directly on `Scripting` members and invoke `Class1.Hello()` during startup
-- [ ] Destructor frees `m_hostfxrLib` via `ORC_FREE_LIB`
-- [ ] Code compiles without warnings and passes conventions linter
+- [x] `ORC_FATAL` and `ORC_FATAL_CHECK` in `Engine/Debug.hpp` invoke `std::abort()` in both debug and release branches
+- [x] `Scripting.cpp` starts with `#include "OrcPch.hpp"` and restores the top-of-file platform macro block (`ORC_LOAD_LIB`, `ORC_GET_EXPORT`, `ORC_FREE_LIB`, `ORC_DOTNET_STR`)
+- [x] Resolved `hostfxr` and `load_assembly_and_get_function_pointer_fn` function pointers are stored in an anonymous namespace in `Scripting.cpp`
+- [x] Standalone helper functions (`loadLibrary`, `getExport`, `freeLibrary`, `toPalString`) and template helpers (`getRuntimeDelegate`, `getManagedFunction`) are eliminated
+- [x] Custom macro `ORC_SCRIPTING_FATAL_CHECK` is eliminated; uses `ORC_FATAL_CHECK` directly without early-return boilerplate
+- [x] `std::error_code` boilerplate around `std::filesystem::canonical` is removed in favor of `std::filesystem::exists` + `std::filesystem::canonical`
+- [x] Move constructor and move assignment definitions are removed from `Scripting.cpp`
+- [x] `Scripting::loadHostFxr()` and `Scripting::initializeRuntime()` operate directly on `Scripting` members and invoke `Class1.Hello()` during startup
+- [x] Destructor frees `m_hostfxrLib` via `ORC_FREE_LIB`
+- [x] Code compiles without warnings and passes conventions linter
+
+## Answer
+
+Updated ORC_FATAL and ORC_FATAL_CHECK in Debug.hpp to call std::abort(), restored top-of-file platform macros in Scripting.cpp with OrcPch.hpp, stored hostfxr/CoreCLR function pointers in an anonymous namespace, and inlined C-API calls without template wrappers.

@@ -4,6 +4,9 @@
 Simplify and streamline the .NET 10 CoreCLR / hostfxr scripting integration by eliminating PIMPL, deleting both copy and move operations, restoring top-of-file platform macros, storing hostfxr function pointers in an anonymous namespace, inlining direct C-API calls without template abstractions, and updating `ORC_FATAL` / `ORC_FATAL_CHECK` in `Debug.hpp` to call `std::abort()`.
 
 ## Decisions So Far
+- [03-update-agents-md-and-adr-0008](issues/03-update-agents-md-and-adr-0008.md): Synchronized AGENTS.md Section 4.8 and ADR 0008 to describe the flattened Scripting class, deleted copy/move operations, localized platform macros, anonymous-namespace hosting delegates, and canonical ORC_FATAL_CHECK with std::abort().
+- [02-simplify-scripting-implementation](issues/02-simplify-scripting-implementation.md): Updated ORC_FATAL and ORC_FATAL_CHECK in Debug.hpp to call std::abort(), restored top-of-file platform macros in Scripting.cpp with OrcPch.hpp, stored hostfxr/CoreCLR function pointers in an anonymous namespace, and inlined C-API calls without template wrappers.
+- [01-flatten-scripting-header](issues/01-flatten-scripting-header.md): Removed PIMPL struct Impl and UniquePtr<Impl>, stored m_configPath and m_hostfxrLib directly on Scripting, declared loadHostFxr() and initializeRuntime() as private methods, and deleted both copy and move operations.
 - Drop PIMPL: `Scripting` directly holds `FilePath m_configPath` and `void* m_hostfxrLib{nullptr}`.
 - Delete both copy and move operations on `Scripting` (`= delete` for all four), preventing raw `void*` handle duplication or double-freeing without move boilerplate. (Sweeping deleted move operations across all other engine classes is parked in `.scratch/ideas/issues/06-delete-move-operations-across-engine-classes.md`).
 - Store resolved `hostfxr` and CoreCLR function pointers in an anonymous namespace inside `Scripting.cpp`.
@@ -14,6 +17,6 @@ Simplify and streamline the .NET 10 CoreCLR / hostfxr scripting integration by e
 - Update ADR 0008 and `AGENTS.md` to reflect simplified architecture.
 
 ## Tickets
-- [01: Flatten Scripting Header and Remove PIMPL](issues/01-flatten-scripting-header.md) (Status: ready-for-agent)
-- [02: Simplify Scripting Implementation and Restore Macros](issues/02-simplify-scripting-implementation.md) (Status: ready-for-agent, Blocked by: 01)
-- [03: Update AGENTS.md and ADR 0008 for Direct Scripting Architecture](issues/03-update-agents-md-and-adr-0008.md) (Status: ready-for-agent, Blocked by: 02)
+- [01: Flatten Scripting Header and Remove PIMPL](issues/01-flatten-scripting-header.md) (Status: resolved)
+- [02: Simplify Scripting Implementation and Restore Macros](issues/02-simplify-scripting-implementation.md) (Status: resolved, Blocked by: 01)
+- [03: Update AGENTS.md and ADR 0008 for Direct Scripting Architecture](issues/03-update-agents-md-and-adr-0008.md) (Status: resolved, Blocked by: 02)

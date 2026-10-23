@@ -39,9 +39,15 @@ else()
     set(_DOTNET_ROOT "/usr/share/dotnet")
 endif()
 
+if(WIN32)
+    set(_DOTNET_RID "win-x64")
+else()
+    set(_DOTNET_RID "linux-x64")
+endif()
+
 file(GLOB _DOTNET_PACK_NATIVE_DIRS
-    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.*/[0-9]*/runtimes/*/native"
-    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.*/[0-9]*/native"
+    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.${_DOTNET_RID}/[0-9]*/runtimes/${_DOTNET_RID}/native"
+    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.${_DOTNET_RID}/[0-9]*/native"
 )
 list(REVERSE _DOTNET_PACK_NATIVE_DIRS)
 
