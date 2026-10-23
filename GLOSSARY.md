@@ -47,3 +47,7 @@ _Avoid_: RenderArea, ScreenBounds, WindowRect
 **Framebuffer Dimensions**:
 The physical pixel resolution of the window rendering surface queried via `Window::getFramebufferSize()`, distinct from logical window screen coordinates on high-DPI and Retina displays.
 _Avoid_: WindowPixels, ScreenResolution, RenderTargetSize
+
+**Scripting**:
+The engine subsystem responsible for hosting the .NET 10 CoreCLR runtime via `hostfxr`, executing managed assemblies, and binding native-managed entry points with unconditional fail-fast crash semantics.
+_Avoid_: Mono, ScriptEngine, DotNetManager, CSharpRuntime

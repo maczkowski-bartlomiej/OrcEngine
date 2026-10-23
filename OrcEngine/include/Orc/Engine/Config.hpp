@@ -22,6 +22,7 @@ struct Config
 	std::string shadersPath = "assets/shaders.xml";
 	std::string texturesPath = "assets/textures.xml";
 	std::string animationsPath = "assets/animations.xml";
+	std::string scriptingConfigPath = "OrcEngine.Scripting.runtimeconfig.json";
 
 	Audio::AudioSettings audioSettings;
 	Window::VideoSettings videoSettings;

@@ -26,10 +26,52 @@ find_path(STB_INCLUDE_DIRS stb_image.h REQUIRED)
 # System
 find_package(OpenGL REQUIRED)
 
-# Manually installed SDKs (cmake/FindFMOD.cmake, cmake/FindMono.cmake)
+# Manually installed SDKs (cmake/FindFMOD.cmake)
 find_package(FMOD REQUIRED)
-find_package(Mono REQUIRED)
 
+# .NET Hosting (nethost & CoreCLR delegates)
+set(_DOTNET_ROOT "")
+if(DEFINED ENV{DOTNET_ROOT})
+    set(_DOTNET_ROOT "$ENV{DOTNET_ROOT}")
+elseif(WIN32)
+    set(_DOTNET_ROOT "$ENV{ProgramFiles}/dotnet")
+else()
+    set(_DOTNET_ROOT "/usr/share/dotnet")
+endif()
+
+file(GLOB _DOTNET_PACK_NATIVE_DIRS
+    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.*/[0-9]*/runtimes/*/native"
+    "${_DOTNET_ROOT}/packs/Microsoft.NETCore.App.Host.*/[0-9]*/native"
+)
+list(REVERSE _DOTNET_PACK_NATIVE_DIRS)
+
+find_path(DOTNET_HOST_INC
+    NAMES coreclr_delegates.h hostfxr.h nethost.h
+    HINTS ${_DOTNET_PACK_NATIVE_DIRS}
+    DOC "Path to .NET Core hosting headers (coreclr_delegates.h, hostfxr.h, nethost.h)"
+)
+find_library(NETHOST_LIB
+    NAMES nethost
+    HINTS ${_DOTNET_PACK_NATIVE_DIRS}
+    DOC "Path to nethost library"
+)
+
+if(WIN32)
+    find_file(NETHOST_DLL
+        NAMES nethost.dll
+        HINTS ${_DOTNET_PACK_NATIVE_DIRS}
+    )
+endif()
+
+find_program(DOTNET_EXECUTABLE
+    NAMES dotnet
+    HINTS
+        "$ENV{DOTNET_ROOT}"
+        "$ENV{ProgramFiles}/dotnet"
+        "/usr/share/dotnet"
+        "/usr/bin"
+        "/usr/local/bin"
+)
 
 # --- OrcEngine --------------------------------------------------------------
 set(ORC_ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/OrcEngine")
@@ -49,7 +91,7 @@ target_include_directories(OrcEngine
         "${ORC_ENGINE_DIR}/include/Orc"
 )
 
-target_include_directories(OrcEngine SYSTEM PRIVATE "${STB_INCLUDE_DIRS}")
+target_include_directories(OrcEngine SYSTEM PRIVATE "${STB_INCLUDE_DIRS}" "${DOTNET_HOST_INC}")
 
 target_link_libraries(OrcEngine
     PUBLIC
@@ -65,7 +107,7 @@ target_link_libraries(OrcEngine
         Freetype::Freetype
         OpenGL::GL
         imgui::imgui
-        Mono::Mono
+        ${NETHOST_LIB}
 )
 
 # PUBLIC: Core/Platform.hpp (a public header) branches on these macros, so the engine
@@ -101,6 +143,18 @@ if(ORC_BUILD_TEST_PROJECT)
     target_link_libraries(TestProject PRIVATE OrcEngine)
     orc_enable_warnings(TestProject)
 
+    # Automatically compile managed C# scripts into the executable directory
+    if(DOTNET_EXECUTABLE)
+        add_custom_target(OrcEngineScripting ALL
+            COMMAND "${DOTNET_EXECUTABLE}" build "${CMAKE_CURRENT_SOURCE_DIR}/OrcEngine.Scripting/OrcEngine.Scripting.csproj"
+                -c $<CONFIG>
+                -o "$<TARGET_FILE_DIR:TestProject>"
+            COMMENT "Building OrcEngine.Scripting (.NET CoreCLR)..."
+            VERBATIM
+        )
+        add_dependencies(TestProject OrcEngineScripting)
+    endif()
+
     # Look for the deployed FMOD libraries next to the executable (Linux ELF).
     if(UNIX AND NOT APPLE)
         set_target_properties(TestProject PROPERTIES BUILD_RPATH "$ORIGIN")
@@ -115,15 +169,15 @@ if(ORC_BUILD_TEST_PROJECT)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "$<TARGET_FILE:FMOD::Studio>"
             "$<TARGET_FILE_DIR:TestProject>/${FMOD_STUDIO_SONAME}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:Mono::Mono>"
-            "$<TARGET_FILE_DIR:TestProject>/${MONO_SONAME}"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${TEST_PROJECT_DIR}/assets"
             "$<TARGET_FILE_DIR:TestProject>/assets"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${TEST_PROJECT_DIR}/shaders"
             "$<TARGET_FILE_DIR:TestProject>/shaders"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${NETHOST_DLL}"
+            "$<TARGET_FILE_DIR:TestProject>/"
         VERBATIM
     )
 endif()

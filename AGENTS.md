@@ -72,7 +72,7 @@ In addition to the [Mandatory Agent Invariants](#mandatory-agent-invariants) at 
 
 ## 4. Subsystem Architecture & Lifecycle
 
-OrcEngine is organized into six core subsystems (**Engine**, **Graphics & Renderer**, **Audio**, **Input & Events**, **GUI**, and **Resources**) built upon the foundational **Core** primitives module.
+OrcEngine is organized into seven core subsystems (**Engine**, **Graphics & Renderer**, **Audio**, **Input & Events**, **GUI**, **Resources**, and **Scripting**) built upon the foundational **Core** primitives module.
 
 ```
                               ┌────────────────────────────────────────┐
@@ -99,14 +99,15 @@ OrcEngine is organized into six core subsystems (**Engine**, **Graphics & Render
 ### 4.1 Engine Coordination & Initialization Order
 `Engine` is the top-level coordinator. It constructs and initializes subsystems in strict sequential order:
 1. `Logger::init(config.logPath)`: Sets up file and console logging via spdlog.
-2. `GameLayerManager`: Manages layer registration and active layer pointer.
-3. `Window`: Initializes GLFW, creates the OpenGL 4.6 context, loads GLAD function pointers, and configures event callbacks.
-4. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader. Initialized with explicit `setViewport` from window physical framebuffer bounds.
-5. `Gui`: ImGui GLFW and OpenGL 3 backend context initialized with a `Window&` reference.
-6. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
-7. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
-8. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`). `Font::loadFromFile` manages its own local `FT_Library` and `FT_Face` lifecycle while building the glyph bitmap atlas.
-9. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers and application bootstrap via `Engine::getLayerContext()`.
+2. `Scripting`: Initializes the .NET 10 CoreCLR runtime via `hostfxr`, binds hosting delegates, and loads managed assemblies.
+3. `GameLayerManager`: Manages layer registration and active layer pointer.
+4. `Window`: Initializes GLFW, creates the OpenGL 4.6 context, loads GLAD function pointers, and configures event callbacks.
+5. `Renderer`: Unified dynamic quad batcher, vertex/index buffers, and composite shader. Initialized with explicit `setViewport` from window physical framebuffer bounds.
+6. `Gui`: ImGui GLFW and OpenGL 3 backend context initialized with a `Window&` reference.
+7. `Audio`: FMOD Studio system, master/music/sfx buses, and pre-loads configured banks.
+8. `Input`: Event-driven keyboard, mouse button, and cursor position state tracker.
+9. `Resources` caches: Pre-loads XML asset manifests (`fontsPath`, `texturesPath`, `animationsPath`). `Font::loadFromFile` manages its own local `FT_Library` and `FT_Face` lifecycle while building the glyph bitmap atlas.
+10. `LayerContext`: Bundles references to persistent subsystems (`window`, `renderer`, `audio`, `gameLayerManager`, `fontResources`, `textureResources`, `animationResources`, `input`) for constructor injection into game layers and application bootstrap via `Engine::getLayerContext()`.
 
 ### 4.2 Game Layers & Layer Management
 The layer runtime and context injection model is detailed in [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md) and [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
@@ -203,6 +204,15 @@ The foundational domain modularization is detailed in [ADR 0006](docs/adr/0006-m
   - `Types.hpp`: GLM initialization settings (`GLM_FORCE_CTOR_INIT`, `GLM_ENABLE_EXPERIMENTAL`), math aliases (`Vector2/3/4` families, `Matrix`, `Matrix4`), file path alias (`FilePath`), and driver handle types (`RendererID`).
   - `Version.hpp`: Semantic engine version constants (`MAJOR_VERSION`, `MINOR_VERSION`, `PATCH_VERSION`) defined under `orc::version`.
   - `Core.hpp`: Umbrella aggregator header including `Platform.hpp`, `Memory.hpp`, `Types.hpp`, and `Version.hpp`.
+
+### 4.8 Scripting Subsystem (.NET 10 CoreCLR via hostfxr)
+The modern managed scripting architecture is detailed in [ADR 0008](docs/adr/0008-hostfxr-dotnet-coreclr-scripting.md).
+- **Hosting Architecture**: Built on Microsoft's .NET 10 CoreCLR hosting APIs (`hostfxr`). The `hostfxr` dynamic library path is resolved at runtime via `nethost` (`get_hostfxr_path`), avoiding hardcoded SDK paths.
+- **PIMPL Encapsulation**: The public interface (`Orc/Script/Scripting.hpp`) completely encapsulates native dynamic library handles (`void*` / `HMODULE`), hostfxr function pointers, and CoreCLR delegates within an opaque `UniquePtr<Impl>`. Public engine headers are entirely insulated from native operating system headers (`Windows.h`, `dlfcn.h`) and .NET hosting headers (`nethost.h`, `hostfxr.h`, `coreclr_delegates.h`).
+- **Strict Value Semantics**: Enforces the Rule of 5: copy constructor and copy assignment operator are explicitly deleted to prevent native handle double-freeing; move operations are explicitly supported. File paths are passed using the engine's canonical `const FilePath&` alias.
+- **Fail-Fast Crash Policy**: All internal hosting and binding steps enforce an unconditional fail-fast policy (`ORC_SCRIPTING_FATAL_CHECK`). Locating hostfxr, loading the library, resolving exports, initializing runtime configuration, acquiring delegates, and locating assemblies all immediately abort the process with a fatal log (`ORC_LOG_FATAL`), debugger break (`ORC_DEBUGBREAK()`), and `std::abort()` upon failure, eliminating silent failures and downstream null pointer crashes.
+- **Type-Safe Static C++ Helpers**: Replaces preprocessor macros with static C++ helper functions (`loadLibrary`, `getExport`, `freeLibrary`, `toPalString`) and template helper functions (`getRuntimeDelegate<T>`, `getManagedFunction<T>`).
+- **`[UnmanagedCallersOnly]` Entry Points**: Managed C# entry points are attributed with `[UnmanagedCallersOnly]` and resolved via `load_assembly_and_get_function_pointer` using `getManagedFunction<T>()`, enabling high-performance direct native-to-managed function calls.
 
 ---
 

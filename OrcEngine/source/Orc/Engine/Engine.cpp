@@ -26,7 +26,7 @@ Engine::Engine(const Config& config)
 
 	ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
-	m_mono = createUniquePtr<Mono>();
+	m_scripting = createUniquePtr<Scripting>(config.scriptingConfigPath);
 
 	m_gameLayerManager = createUniquePtr<GameLayerManager>();
 
@@ -74,7 +74,7 @@ Engine::~Engine()
 	m_window.reset();
 	m_gameLayerManager.reset();
 
-	m_mono.reset();
+	m_scripting.reset();
 
 	Logger::deinit();
 }
