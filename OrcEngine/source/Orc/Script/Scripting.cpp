@@ -30,7 +30,7 @@
 			ORC_DEBUGBREAK(); \
 			std::abort(); \
 		} \
-	} while (false)
+	} while (false)/t
 
 namespace orc {
 

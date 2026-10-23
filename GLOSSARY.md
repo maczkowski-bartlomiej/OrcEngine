@@ -49,5 +49,5 @@ The physical pixel resolution of the window rendering surface queried via `Windo
 _Avoid_: WindowPixels, ScreenResolution, RenderTargetSize
 
 **Scripting**:
-The engine subsystem responsible for hosting the .NET 10 CoreCLR runtime via `hostfxr`, executing managed assemblies, and binding native-managed entry points with unconditional fail-fast crash semantics.
+The engine subsystem responsible for hosting the .NET 10 CoreCLR runtime via `hostfxr`, loading managed assemblies, and binding native-managed entry points with unconditional fail-fast crash semantics.
 _Avoid_: Mono, ScriptEngine, DotNetManager, CSharpRuntime
