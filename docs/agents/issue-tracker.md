@@ -28,3 +28,11 @@ Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
 - **Frontier**: scan `.scratch/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
 - **Claim**: set `Status: claimed` and save before any work.
 - **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
+
+## CLI (`scripts/ticket.ps1` / `scripts/ticket.sh`)
+
+- **List tickets**: `.\scripts\ticket.ps1 list <feature-slug>` | `./scripts/ticket.sh list <feature-slug>`
+- **Find frontier (next unblocked ticket)**: `.\scripts\ticket.ps1 frontier <feature-slug>` | `./scripts/ticket.sh frontier <feature-slug>`
+- **Claim ticket**: `.\scripts\ticket.ps1 claim <ticket-path>` | `./scripts/ticket.sh claim <ticket-path>`
+- **Resolve ticket** (only after `scripts/verify` passes): `.\scripts\ticket.ps1 resolve <ticket-path> -Answer "<summary>"` | `./scripts/ticket.sh resolve <ticket-path> "<summary>"`
+- **Triage overview**: `.\scripts\ticket.ps1 triage` | `./scripts/ticket.sh triage`
