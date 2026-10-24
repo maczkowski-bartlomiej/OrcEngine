@@ -1,46 +1,50 @@
 #pragma once
 
+#include "Events/Event.hpp"
 #include "Input/Mouse.hpp"
 
 namespace orc {
 
-struct MouseButtonPressedEvent
+struct MouseButtonPressedEvent : public Event
 {
-	Mouse::Button button = Mouse::Button::Invalid;
+	explicit MouseButtonPressedEvent(Mouse::Button button)
+		: Event(Event::Type::MouseButtonPressed), button(button)
+	{
+	}
 
-	MouseButtonPressedEvent() = default;
-	MouseButtonPressedEvent(Mouse::Button button) 
-		: button(button) {}
+	Mouse::Button button = Mouse::Button::Invalid;
 };
 
-struct MouseButtonReleasedEvent
+struct MouseButtonReleasedEvent : public Event
 {
-	Mouse::Button button = Mouse::Button::Invalid;
+	explicit MouseButtonReleasedEvent(Mouse::Button button)
+		: Event(Event::Type::MouseButtonReleased), button(button)
+	{
+	}
 
-	MouseButtonReleasedEvent() = default;
-	MouseButtonReleasedEvent(Mouse::Button button) 
-		: button(button) {}
+	Mouse::Button button = Mouse::Button::Invalid;
 };
 
-struct MouseMovedEvent
+struct MouseMovedEvent : public Event
 {
+	MouseMovedEvent(float x, float y)
+		: Event(Event::Type::MouseMoved), x(x), y(y)
+	{
+	}
+
 	float x = 0.0f;
 	float y = 0.0f;
-
-	MouseMovedEvent() = default;
-	MouseMovedEvent(float x, float y) 
-		: x(x), y(y) {}
 };
 
-struct MouseWheelScrolledEvent
+struct MouseWheelScrolledEvent : public Event
 {
+	MouseWheelScrolledEvent(float xDelta, float yDelta)
+		: Event(Event::Type::MouseWheelScrolled), xDelta(xDelta), yDelta(yDelta)
+	{
+	}
+
 	float xDelta = 0.0f;
 	float yDelta = 0.0f;
-
-	MouseWheelScrolledEvent() = default;
-	MouseWheelScrolledEvent(float xDelta, float yDelta) 
-		: xDelta(xDelta), yDelta(yDelta) {}
 };
 
 }
-

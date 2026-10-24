@@ -1,9 +1,11 @@
 #pragma once
 
-#include "Engine/Engine.hpp"
 #include "Engine/Config.hpp"
+#include "Engine/Engine.hpp"
 
-extern orc::Config orc::getEngineConfig(); //user function callback
-extern void orc::onEngineStart(Engine& engine); //user function callback
+namespace orc {
+Config getEngineConfig();			// user function callback
+void onEngineStart(Engine& engine); // user function callback
+}
 
 int main(int argc, char** argv);

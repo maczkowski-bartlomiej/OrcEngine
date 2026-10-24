@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Clock.hpp"
-#include "Graphics/Rect.hpp"
-
 #include <string>
 #include <unordered_map>
+
+#include "Engine/Clock.hpp"
+#include "Graphics/Rect.hpp"
 
 namespace orc {
 
@@ -25,7 +25,7 @@ struct Animation
 class Animator
 {
 public:
-	Animator(Sprite* sprite);
+	explicit Animator(Sprite* sprite);
 
 	void addAnimation(const std::string& name, Ref<Animation> animation);
 	void playAnimation(const std::string& name, bool looping = false);
@@ -41,7 +41,7 @@ private:
 	Clock m_currentAnimationClock;
 	uint64_t m_currentAnimationFrame = 0;
 	bool m_currentAnimationLooping = false;
-	
+
 	std::unordered_map<std::string, Ref<Animation>> m_animations;
 };
 

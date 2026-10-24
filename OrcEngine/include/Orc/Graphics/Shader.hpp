@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <span>
 #include <string>
 #include <string_view>
+
+#include "Core/Types.hpp"
 
 namespace orc {
 
@@ -15,13 +15,13 @@ public:
 	Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
 	~Shader();
 
-	Shader(Shader&&) = delete;
+	Shader(Shader&& other) noexcept;
+	Shader& operator=(Shader&& other) noexcept;
 	Shader(const Shader&) = delete;
-	Shader operator=(Shader&&) = delete;
-	Shader operator=(const Shader&) = delete;
+	Shader& operator=(const Shader&) = delete;
 
 	bool loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
-	bool loadFromString(std::string_view vertexShaderSource, std::string_view fragmentShaderSource);
+	bool loadFromString(std::string_view vertexSource, std::string_view fragmentSource);
 
 	void bind() const;
 	void unbind() const;
@@ -29,7 +29,7 @@ public:
 	void uploadUniformInt(const std::string& name, int integer) const;
 	void uploadUniformIntArray(const std::string& name, const int* array, uint32_t size) const;
 
-	template<typename T>
+	template <typename T>
 	void uploadUniformIntArray(const std::string& name, std::span<T> array) const
 	{
 		uploadUniformIntArray(name, array.data(), static_cast<uint32_t>(array.size()));
@@ -42,7 +42,7 @@ public:
 
 private:
 	bool readShader(std::string* shader, const FilePath& filePath);
-	bool compile(std::string_view vertexShaderSource, std::string_view fragmentShaderSource);
+	bool compile(std::string_view vertexSource, std::string_view fragmentSource);
 
 	RendererID m_rendererID = 0;
 };

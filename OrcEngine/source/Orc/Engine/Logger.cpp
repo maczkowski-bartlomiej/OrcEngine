@@ -1,23 +1,26 @@
 #include "OrcPch.hpp"
-#include "Engine/Logger.hpp"
 
-#include <spdlog/async.h>
-#include <spdlog/pattern_formatter.h>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include "Engine/Logger.hpp"
 
 #include <array>
 #include <iostream>
 
+#include <spdlog/async.h>
+#include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
+
 namespace orc {
+
+namespace {
 
 class CapitalizedLevelNamesFormatter : public spdlog::custom_flag_formatter
 {
 public:
 	void format(const spdlog::details::log_msg& message, const std::tm&, spdlog::memory_buf_t& destination) override
 	{
-		static constexpr std::array<std::string_view, 7> names{{ "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF" }};
+		static constexpr std::array<std::string_view, 7> names{{"TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "FATAL", "OFF"}};
 		std::string_view name = names[static_cast<size_t>(message.level)];
 
 		destination.append(name.data(), name.data() + name.size());
@@ -29,15 +32,21 @@ public:
 	}
 };
 
+}
+
 bool Logger::init(const std::string& logPath)
 {
-	try {
-		spdlog::init_thread_pool(8192, 1);
-		std::vector<spdlog::sink_ptr> sinks
+	try
+	{
+		if (std::filesystem::path p(logPath); p.has_parent_path())
 		{
+			std::filesystem::create_directories(p.parent_path());
+		}
+
+		spdlog::init_thread_pool(8192, 1);
+		std::vector<spdlog::sink_ptr> sinks{
 			std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)
-		};
+			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)};
 
 		std::string pattern = "[%H:%M:%S %s:%#] [%^%*%$] %v";
 
@@ -64,7 +73,7 @@ bool Logger::init(const std::string& logPath)
 	return false;
 }
 
-void Logger::deinit() 
+void Logger::deinit()
 {
 	spdlog::shutdown();
 }

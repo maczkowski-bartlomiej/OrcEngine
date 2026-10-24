@@ -5,7 +5,7 @@
 class RectanglesTest : public orc::GameLayer
 {
 public:
-	RectanglesTest();
+	explicit RectanglesTest(orc::LayerContext& layerContext);
 	~RectanglesTest();
 
 	void onAttach() override;

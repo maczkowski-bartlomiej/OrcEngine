@@ -1,4 +1,5 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/Text.hpp"
 
 namespace orc {
@@ -10,18 +11,18 @@ Text::Text(const std::string& string)
 
 Text::Text(Ref<Font> font)
 {
-	setFont(font);
+	setFont(std::move(font));
 }
 
 Text::Text(Ref<Font> font, const std::string& string)
 {
-	setFont(font);
+	setFont(std::move(font));
 	setString(string);
 }
 
 void Text::setFont(Ref<Font> font)
 {
-	m_font = font;
+	m_font = std::move(font);
 	m_isGeometryUpdateNeeded = true;
 }
 
@@ -29,8 +30,9 @@ void Text::setColor(const Color& color)
 {
 	m_color = color;
 
-	for (GlyphVertex& vertex : m_vertices)
-		vertex.color = color.normalized();
+	Vector4f normColor = color.normalized();
+	for (Vertex& vertex : m_vertices)
+		vertex.color = normColor;
 }
 
 void Text::setString(const std::string& string)
@@ -57,7 +59,7 @@ std::string_view Text::getString() const
 	return m_string;
 }
 
-const std::vector<GlyphVertex>& Text::getVertices() const
+const std::vector<Vertex>& Text::getVertices() const
 {
 	if (m_isGeometryUpdateNeeded)
 		updateVertices();
@@ -83,14 +85,17 @@ void Text::updateVertices() const
 	if (!m_font)
 		return;
 
-	m_vertices.resize(m_string.size() * 4);
+	m_vertices.clear();
 
 	if (m_string.empty())
 		return;
 
+	m_vertices.reserve(m_string.size() * 4);
+
 	Vector2f position;
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
 	const Matrix& transform = getTransformMatrix();
+	Vector4f normColor = m_color.normalized();
 
 	for (size_t i = 0; i < m_string.size(); i++)
 	{
@@ -108,33 +113,65 @@ void Text::updateVertices() const
 		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
 		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
 
-		float positionyY = position.y;
+		float positionY = position.y;
 		position.y -= character.offset.y;
 
-		m_vertices[i * 4 + 0].color = m_color.normalized();
-		m_vertices[i * 4 + 0].position = transform * Vector3f(position, 1.0f);
-		m_vertices[i * 4 + 0].textureCoord = normalizedBitmapCoordStart;
+		m_vertices.push_back(Vertex{
+			.position = transform * Vector3f(position, 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = normalizedBitmapCoordStart,
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f});
 
-		m_vertices[i * 4 + 1].color = m_color.normalized();
-		m_vertices[i * 4 + 1].position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f);
-		m_vertices[i * 4 + 1].textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y);
+		m_vertices.push_back(Vertex{
+			.position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y),
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f});
 
-		m_vertices[i * 4 + 2].color = m_color.normalized();
-		m_vertices[i * 4 + 2].position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f);
-		m_vertices[i * 4 + 2].textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y);
+		m_vertices.push_back(Vertex{
+			.position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y),
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f});
 
-		m_vertices[i * 4 + 3].color = m_color.normalized();
-		m_vertices[i * 4 + 3].position = transform * Vector3f(position + Vector2f(width, height), 1.0f);
-		m_vertices[i * 4 + 3].textureCoord = normalizedBitmapCoordEnd;
+		m_vertices.push_back(Vertex{
+			.position = transform * Vector3f(position + Vector2f(width, height), 1.0f),
+			.color = normColor,
+			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
+			.textureCoord = normalizedBitmapCoordEnd,
+			.localPosition = Vector2f(0.0f, 0.0f),
+			.textureIndex = 32.0f,
+			.shapeType = 3.0f,
+			.borderThickness = 0.0f,
+			.innerRadius = 0.0f,
+			.radius = 0.0f});
 
-		position.y = positionyY;
+		position.y = positionY;
 		position.x += character.advance;
 
 		m_localRect.right = std::max(m_localRect.right, position.x);
 		m_localRect.bottom = std::max(m_localRect.bottom, height);
 	}
 
-	for (GlyphVertex& vertex : m_vertices)
+	for (Vertex& vertex : m_vertices)
 	{
 		vertex.position.y += m_localRect.bottom - 1;
 	}
@@ -151,8 +188,7 @@ void Text::calculateGlobalRect() const
 		transform * Vector3f(m_localRect.left, m_localRect.top, 1.0f),
 		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.bottom, 1.0f),
 		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top, 1.0f),
-		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)
-	};
+		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)};
 
 	float left = points[0].x;
 	float top = points[0].y;
@@ -173,8 +209,8 @@ void Text::calculateGlobalRect() const
 	}
 
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);
-
 }
+
 void Text::onTransformChangeCallback()
 {
 	m_isGeometryUpdateNeeded = true;

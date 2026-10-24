@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 #include "Graphics/Rect.hpp"
 
 namespace orc {
@@ -8,7 +8,7 @@ namespace orc {
 class Camera
 {
 public:
-	Camera(const FloatRect& viewPort);
+	explicit Camera(const FloatRect& viewPort);
 	Camera(float left, float top, float right, float bottom);
 
 	void setZoom(float zoom);
@@ -37,7 +37,7 @@ private:
 
 	FloatRect m_viewPort;
 	Vector2f m_position;
-	
+
 	float m_zoom = 1.0f;
 	float m_rotation = 0.0f;
 };

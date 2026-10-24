@@ -1,9 +1,11 @@
 #include "OrcPch.hpp"
 
-#include "Engine/Debug.hpp"
 #include "Engine/GameLayerManager.hpp"
+
 #include <string>
-#include "Engine/Core.hpp"
+
+#include "Core/Memory.hpp"
+#include "Engine/Debug.hpp"
 #include "Engine/GameLayer.hpp"
 #include "Engine/Logger.hpp"
 
@@ -25,6 +27,7 @@ void GameLayerManager::setActiveLayer(const std::string& name)
 			m_activeLayer->onDetach();
 
 		m_activeLayer = find->second;
+		m_activeLayer->syncCameraWithWindow();
 		m_activeLayer->onAttach();
 	}
 	else
@@ -38,7 +41,7 @@ void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLaye
 	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
 	ORC_ASSERT(gameLayer, "Game layer is nullptr.");
 
-	if (!m_layers.try_emplace(name, gameLayer).second)
+	if (!m_layers.try_emplace(name, std::move(gameLayer)).second)
 	{
 		ORC_LOG_WARNING("Game layer '{}' is already added.", name);
 	}
@@ -59,6 +62,5 @@ Ref<GameLayer> GameLayerManager::getActiveLayer() const
 {
 	return m_activeLayer;
 }
-
 
 }

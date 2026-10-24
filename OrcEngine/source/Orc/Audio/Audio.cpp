@@ -1,140 +1,92 @@
 #include "OrcPch.hpp"
-#include "Audio/Audio.hpp"
-#include "Audio/Bus.hpp"
-#include "Engine/Core.hpp"
-#include "Engine/Debug.hpp"
-#include "Engine/Logger.hpp"
-#include "Engine/Utility.hpp"
 
-#include <fmod_common.h>
-#include <fmod_studio.hpp>
-#include <fmod_studio_common.h>
+#include "Audio/Audio.hpp"
 
 #include <filesystem>
 #include <string>
 #include <vector>
 
+#include <fmod_common.h>
+#include <fmod_studio.hpp>
+#include <fmod_studio_common.h>
+
+#include "Audio/Bus.hpp"
+#include "Core/Core.hpp"
+#include "Engine/Debug.hpp"
+#include "Engine/Logger.hpp"
+#include "Engine/Utility.hpp"
+
 namespace orc {
 
-	Audio::Audio(const AudioSettings& audioSettings)
+Audio::Audio(const AudioSettings& audioSettings)
+{
+	ORC_LOG_INFO("Initializing audio...");
+
+	fmodCall(FMOD::Studio::System::create(&m_system), "Failed to create FMOD system");
+	fmodCall(m_system->initialize(audioSettings.maxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr), "Failed to initialize FMOD system");
+
+	loadBank(audioSettings.masterBank);
+	loadBank(audioSettings.masterStringBank);
+
+	for (const FilePath& path : audioSettings.bankPaths)
 	{
-		ORC_LOG_INFO("Initializing audio.");
+		loadBank(path);
+	}
+}
 
-		if(!fmodCall(FMOD::Studio::System::create(&m_system)))
-		{
-			ORC_LOG_FATAL("Failed to create FMOD system.");
-		}
+UniquePtr<Bus> Audio::getBus(const std::string& busName)
+{
+	FMOD::Studio::Bus* bus = nullptr;
+	fmodCall(m_system->getBus(busName.c_str(), &bus), fmt::format("Failed to get bus '{}'.", busName));
+	ORC_ASSERT(bus, "FMOD returned empty bus '{}'.", busName);
 
-		if (!fmodCall(m_system->initialize(audioSettings.maxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0)))
-		{
-			ORC_LOG_FATAL("Failed to initialize FMOD system.");
-		}
+	return createUniquePtr<Bus>(bus);
+}
 
-		for (const auto& audioBank : audioSettings.banks)
-		{
-			loadBank(audioBank);
-		}
+void Audio::loadBank(const FilePath& filePath)
+{
+	ORC_ASSERT(std::filesystem::exists(filePath), "Attempted to load an audio bank from a non-existent file '{}'.", filePath.string());
 
-		m_masterBus.load(m_system, audioSettings.masterBusName);
-		m_musicBus.load(m_system, audioSettings.musicBusName);
-		m_sfxBus.load(m_system, audioSettings.sfxBusName);
+	FMOD::Studio::Bank* bank = nullptr;
+	fmodCall(m_system->loadBankFile(filePath.string().c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &bank), fmt::format("Failed to load audio bank '{}'.", filePath.string()));
+	fmodCall(bank->loadSampleData(), fmt::format("Failed to load sample data for audio bank '{}'.", filePath.string()));
+
+	m_banks.push_back(bank);
+}
+
+Audio::~Audio()
+{
+	ORC_LOG_INFO("Deinitializing audio.");
+
+	for (auto* bank : m_banks)
+	{
+		if (!bank)
+			continue;
+
+		fmodCall(bank->unloadSampleData(), "Failed to unload data from audio bank.");
+		fmodCall(bank->unload(), "Failed to unload audio bank.");
 	}
 
-	bool Audio::loadBank(const FilePath& filePath)
-	{
-		ORC_ASSERT(std::filesystem::exists(filePath), "Attempted to load an audio bank from a non-existent file '{}'.", filePath.string());
-		ORC_ASSERT(m_system, "Attempted to load an audio bank with an uninitialized audio system.");
+	fmodCall(m_system->release(), "Failed to deinitialize audio.");
+}
 
-		FMOD::Studio::Bank* bank = nullptr;
-		if(!fmodCall(m_system->loadBankFile(filePath.string().c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &bank)))
-		{
-			ORC_LOG_ERROR("Failed to load audio bank '{}'.", filePath.string());
-			return false;
-		}
+void Audio::play(const std::string& eventPath)
+{
+	FMOD::Studio::EventDescription* eventDescription = nullptr;
+	fmodCall(m_system->getEvent(eventPath.c_str(), &eventDescription), fmt::format("Failed to find audio event '{}'.", eventPath));
+	ORC_ASSERT(eventDescription, "FMOD returned empty event '{}'.", eventPath);
 
-		if (!fmodCall(bank->loadSampleData()))
-		{
-			ORC_LOG_ERROR("Failed to load sample data for audio bank '{}'.", filePath.string());
-			return false;
-		}
+	FMOD::Studio::EventInstance* eventInstance = nullptr;
+	fmodCall(eventDescription->createInstance(&eventInstance), fmt::format("Failed to create event instance for '{}'.", eventPath));
+	ORC_ASSERT(eventInstance, "FMOD returned empty event instance for '{}'.", eventPath);
 
-		m_banks.push_back(bank);
-		return true;
-	}
+	fmodCall(eventInstance->start(), fmt::format("Failed to start event instance for '{}'.", eventPath));
+	fmodCall(eventInstance->release(), fmt::format("Failed to release event instance for '{}'.", eventPath));
+}
 
-	Audio::~Audio()
-	{
-		ORC_LOG_INFO("Deinitializing audio.");
+void Audio::update()
+{
+	fmodCall(m_system->update(), "Audio system update failed.");
+}
 
-		ORC_ASSERT(m_system, "Uninitialized audio system.");
-
-		for (auto* bank : m_banks)
-		{
-			if (!bank)
-				continue;
-
-			(void)fmodCall(bank->unloadSampleData());
-			(void)fmodCall(bank->unload());
-		}
-		m_banks.clear();
-
-		if (!fmodCall(m_system->release()))
-		{
-			ORC_LOG_ERROR("Failed to deinitialize audio.");
-		}
-	}
-
-	void Audio::play(const std::string& eventPath)
-	{
-		ORC_ASSERT(m_system, "Uninitialized audio system.");
-
-		FMOD::Studio::EventDescription* eventDescription = nullptr;
-		if (!fmodCall(m_system->getEvent(eventPath.c_str(), &eventDescription)))
-		{
-			ORC_LOG_ERROR("Failed to find audio event '{}'.", eventPath);
-		}
-		ORC_ASSERT(eventDescription, "FMOD returned empty event '{}'.", eventPath);
-
-		FMOD::Studio::EventInstance* eventInstance = nullptr;
-        if (!fmodCall(eventDescription->createInstance(&eventInstance)))
-		{
-			ORC_LOG_ERROR("Failed to create event instance for '{}'.", eventPath);
-		}
-		ORC_ASSERT(eventInstance, "FMOD returned empty event instance for '{}'.", eventPath);
-
-		if (!fmodCall(eventInstance->start()))
-		{
-			ORC_LOG_ERROR("Failed to start event instance for '{}'.", eventPath);
-		}
-
-		if (!fmodCall(eventInstance->release()))
-		{
-			ORC_LOG_ERROR("Failed to release event instance for '{}'.", eventPath);
-		}
-	}
-
-	void Audio::update()
-	{
-		ORC_ASSERT(m_system, "Uninitialized audio system.");
-
-		if (!fmodCall(m_system->update()))
-		{
-			ORC_LOG_ERROR("Audio system update failed.");
-		}
-	}
-
-	Bus& Audio::getSfxBus()
-	{
-		return m_sfxBus;
-	}
-
-	Bus& Audio::getMusicBus()
-	{
-		return m_musicBus;
-	}
-
-	Bus& Audio::getMasterBus()
-	{
-		return m_masterBus;
-	}
 }

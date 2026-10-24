@@ -1,7 +1,8 @@
 #include "OrcPch.hpp"
 
-#include "Graphics/Sprite.hpp"
 #include "Graphics/Animator.hpp"
+
+#include "Graphics/Sprite.hpp"
 
 namespace orc {
 
@@ -12,7 +13,7 @@ Animator::Animator(Sprite* sprite)
 
 void Animator::addAnimation(const std::string& name, Ref<Animation> animation)
 {
-	m_animations[name] = animation;
+	m_animations[name] = std::move(animation);
 }
 
 void Animator::playAnimation(const std::string& name, bool looping)

@@ -1,95 +1,91 @@
 # AGENTS.md
 
-## Project overview
+> [!IMPORTANT]
+> ### Mandatory Agent Invariants
+> Every agent session and subagent working in this repository **must** strictly abide by the following invariants:
+> 1. **Read Core Guidance First**: On session startup, read [`AGENTS.md`](AGENTS.md) and [`GLOSSARY.md`](GLOSSARY.md) before executing any task. Read [`CODING_STANDARDS.md`](CODING_STANDARDS.md) before writing or reviewing code.
+> 2. **Consult & Propose First**: Never make unilateral architectural, library, or design assumptions. When multiple approaches exist or requirements are ambiguous, present options with trade-offs and **ask the user** before writing code. Work incrementally, keep changes tightly scoped, and aggressively delete dead or obsolete code ("no legacy cruft").
+> 3. **Script-First Toolchain & Unified Verification Gate**: Always build via `.\scripts\build.ps1` (Windows) or `./scripts/build.sh` (Linux). Before completing an implementation turn, resolving a ticket, or committing work, run `.\scripts\verify.ps1` or `./scripts/verify.sh` (conventions lint, build with zero warnings/errors, and 5-second `TestProject` smoke test). All stages must pass 100%.
+> 4. **Synchronize Documentation as Ticket Condition**: Any change affecting ubiquitous language, subsystem architecture, or design trade-offs **must** update [`GLOSSARY.md`](GLOSSARY.md), record or update an ADR in `docs/adr/`, and keep [`AGENTS.md`](AGENTS.md) / [`CODING_STANDARDS.md`](CODING_STANDARDS.md) in sync before a ticket is resolved.
 
-OrcEngine is a C++20 game engine built as a static library. `TestProject` is the demo and the main integration harness for engine changes.
+---
 
-- Public engine headers: `OrcEngine/include/Orc/`
-- Engine implementations: `OrcEngine/source/Orc/`
-- Demo headers and sources: `TestProject/include/` and `TestProject/source/`
-- Demo runtime assets: `TestProject/assets/` and `TestProject/shaders/`
-- Build configuration: `CMakeLists.txt`, `CMakePresets.json`, `cmake/`, and `vcpkg.json`
+## 1. Project Overview, Layout & Direction
 
-Keep reusable functionality in `OrcEngine`; use `TestProject` for examples, experiments, and integration coverage.
+OrcEngine is a modular 2D game engine built in C++20 using OpenGL 4.6 (Core Profile), GLFW, GLAD, FreeType, FMOD Studio, spdlog, GLM, and .NET 10 CoreCLR (`hostfxr`).
 
-## Build prerequisites
+### Repository Layout
+- **Public Engine Headers**: `OrcEngine/include/Orc/` (umbrella header: `OrcEngine/include/Orc/Orc.hpp`)
+- **Engine Source**: `OrcEngine/source/Orc/` (precompiled header: `OrcPch.hpp`)
+- **Managed C# Scripting**: `OrcEngine.Scripting/` (`OrcEngine.Scripting.csproj`, compiled into the executable directory)
+- **Demo & Integration Harness**: `TestProject/include/`, `TestProject/source/`, `TestProject/assets/`, `TestProject/shaders/`
+- **Standards & Domain Docs**: [`GLOSSARY.md`](GLOSSARY.md) (ubiquitous language), [`CODING_STANDARDS.md`](CODING_STANDARDS.md) (C++20/C# rules), `docs/adr/` (architecture decisions), `docs/agents/` (agent workflow protocols)
+- **Local Issue Tracker**: `.scratch/` (managed via `scripts/ticket.ps1` / `scripts/ticket.sh`)
+- **Build & Automation**: `scripts/`, `CMakeLists.txt`, `CMakePresets.json`, `cmake/`, `vcpkg.json`
 
-The supported presets require CMake 3.25 or newer, Ninja, a C++20 compiler, the Linux system packages listed in `README.md`, and two paths:
+### Project Trajectory
+`Refactor architecture` $\rightarrow$ `Refactor codebase (especially rendering)` $\rightarrow$ `Add C# scripting` $\rightarrow$ `Build and release a game in a separate repository, letting real game requirements drive engine growth`. Keep reusable engine features in `OrcEngine` and validation/demos in `TestProject`.
 
-- `VCPKG_ROOT` (environment variable) points to a vcpkg checkout. Open-source dependencies come from `vcpkg.json`.
-- `FMOD_ROOT` (environment variable or CMake cache variable) points to a manually installed FMOD SDK with the layout documented in `README.md`.
+---
 
-Do not commit machine-specific paths, generated build trees, `vcpkg_installed/`, or `CMakeUserPresets.json`.
+## 2. Subsystem Architecture & Lifecycle
 
-## Build and run
+### Initialization Order (`Engine::Engine`)
+`Engine` constructs and initializes subsystems in strict order:
+1. `Logger::init` (spdlog console + file logging)
+2. `Scripting` (.NET 10 CoreCLR runtime via `hostfxr`, assembly loading, and `[UnmanagedCallersOnly]` delegate binding)
+3. `GameLayerManager` (layer registry and active layer pointer)
+4. `Window` (GLFW window, OpenGL 4.6 context, GLAD loader, event callbacks)
+5. `Renderer` (dynamic quad batcher, vertex/index buffers, composite shader, initial `setViewport`)
+6. `Gui` (ImGui GLFW + OpenGL 3 backend)
+7. `Audio` (FMOD Studio system, `bus:/`, `bus:/Music`, `bus:/SFX`, and bank pre-loading)
+8. `Input` (event-driven keyboard, mouse button, and cursor state snapshot)
+9. `Resources` (`FontResources`, `TextureResources`, `AnimationResources` from XML manifests)
+10. `LayerContext` (bundles subsystem references for constructor injection into `GameLayer` instances)
 
-Run commands from the repository root.
+### Frame Loop (`Engine::run`)
+1. `Clock::restart()` $\rightarrow$ delta time (`elapsed`)
+2. `Renderer::clear()`
+3. `GameLayerManager::getActiveLayer()`
+4. `activeLayer->onUpdate(elapsed)`
+5. `activeLayer->onRender()` (bounded by `renderer.beginScene(m_camera)` ... `renderer.endScene()`)
+6. `Gui::begin()` $\rightarrow$ `activeLayer->onGuiRender()` $\rightarrow$ `Gui::end()`
+7. `Audio::update()`
+8. `Window::display()` (`glfwPollEvents()` & `glfwSwapBuffers()`)
 
-```bash
-cmake --preset linux-debug
-cmake --build --preset linux-debug
-```
+### Subsystem Context Pointers (Read Before Modifying a Subsystem)
+Always check existing ADRs before proposing architectural changes, and flag any contradiction explicitly:
+- **Core Primitives (`Orc/Core/`)**: Layer 0 platform macros, `Ref<T>`/`UniquePtr<T>`, math/path aliases, and version constants $\rightarrow$ [ADR 0006](docs/adr/0006-modularize-core-primitives.md).
+- **2D Rendering & Quad Batcher (`Orc/Graphics/`)**: Unified `orc::Vertex`, non-templated `Texturable`, 32-slot texture batching, lines as oriented quads, and natural submission order $\rightarrow$ [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md), [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md).
+- **Font Lifecycle (`Orc/Graphics/Font.hpp`)**: Local `FT_Library`/`FT_Face` RAII scoping during glyph atlas generation $\rightarrow$ [ADR 0003](docs/adr/0003-localize-freetype-lifecycle.md).
+- **Game Layers & `LayerContext` (`Orc/Engine/`)**: Constructor-injected `LayerContext&` and singleton-free layer lifecycle $\rightarrow$ [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
+- **Events & Input (`Orc/Window/`, `Orc/Engine/Input.hpp`)**: Polymorphic `Event` hierarchy, `getEvent<T>(event)` downcasting, and event-driven `Input` state $\rightarrow$ [ADR 0005](docs/adr/0005-revert-to-polymorphic-event-hierarchy.md).
+- **Viewport & Camera Sync (`Orc/Graphics/`, `Orc/Window/`)**: Authoritative `Renderer::setViewport` from `Window::getFramebufferSize()` and automatic camera viewport synchronization on resize/layer switch $\rightarrow$ [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
+- **C# Scripting (`Orc/Script/`, `OrcEngine.Scripting/`)**: .NET 10 CoreCLR hosting via `nethost`/`hostfxr`, direct class layout without PIMPL, and unconditional `ORC_FATAL_CHECK` fail-fast semantics $\rightarrow$ [ADR 0008](docs/adr/0008-hostfxr-dotnet-coreclr-scripting.md).
 
-For an optimized build:
+---
 
-```bash
-cmake --preset linux-release
-cmake --build --preset linux-release
-```
+## 3. Coding Standards & Conventions
 
-Run the demo from its build directory so relative asset paths resolve:
+Read [`CODING_STANDARDS.md`](CODING_STANDARDS.md) when writing, refactoring, or reviewing C++ or C# code. Key invariants:
+- **Formatting**: Tabs for indentation, Allman braces (new line), `#pragma once` in all headers, `#include "OrcPch.hpp"` first in engine `.cpp` files, and new public headers added to `OrcEngine/include/Orc/Orc.hpp`.
+- **Naming**: `orc` lowercase namespace, `PascalCase` types/enums/files, `camelCase` methods/locals, `m_camelCase` member variables, `UPPER_SNAKE_CASE` constants/macros.
+- **Signatures & Safety**: `explicit` single-arg constructors, `std::string_view` for read-only strings, `const FilePath&` for paths, `Ref<T>` by value + `std::move` for sinks and `const Ref<T>&` for observers, logical `const` correctness, anonymous namespaces for `.cpp`-local helpers, and zero compiler warnings.
 
-```bash
-cd build/linux-debug
-./TestProject
-```
+---
 
-To compile only the engine, configure with `-DORC_BUILD_TEST_PROJECT=OFF` in a separate build directory or local user preset. Keep local preset files untracked.
+## 4. Build, Verification & Issue Tracking
 
-## Validation
+| Task | Windows (PowerShell) | Linux (Bash) |
+| :--- | :--- | :--- |
+| **Unified Verify Gate** | `.\scripts\verify.ps1` | `./scripts/verify.sh` |
+| **Build (Debug)** | `.\scripts\build.ps1` | `./scripts/build.sh` |
+| **Build (Release)** | `.\scripts\build.ps1 -Preset windows-release` | `./scripts/build.sh --preset linux-release` |
+| **Lint Conventions** | `.\scripts\lint-conventions.ps1 -ChangedOnly` | `./scripts/lint-conventions.sh --changed-only` |
+| **Run Demo Smoke Test** | `.\scripts\run-demo.ps1 -TimeoutSeconds 5 -FailOnErrorLog` | `./scripts/run-demo.sh --timeout 5 --fail-on-error-log` |
+| **Check Environment** | `.\scripts\check-env.ps1` | `./scripts/check-env.sh` |
+| **Ticket CLI** | `.\scripts\ticket.ps1 <list\|frontier\|claim\|resolve\|triage>` | `./scripts/ticket.sh <list\|frontier\|claim\|resolve\|triage>` |
 
-There is currently no automated test target. For code changes:
-
-1. Configure and build `linux-debug`.
-2. Run `TestProject` when the environment supports graphics and audio.
-3. Exercise the affected demo screen and watch the console or `logs/TestProject.log` for errors.
-4. Also build `linux-release` for changes involving configuration-specific code, optimization-sensitive behavior, or packaging.
-
-If FMOD, display, or audio access prevents runtime validation, report that limitation and still perform the strongest available compile check.
-
-## C++ conventions
-
-Follow the style of the surrounding file; the repository has no enforced formatter.
-
-- Use C++20 and keep compiler extensions disabled.
-- Put engine code in the `orc` namespace.
-- Use PascalCase for types and camelCase for functions, local variables, and data members.
-- Use `.hpp` for headers, `.cpp` for implementations, and `.inl` for template or inline implementation files.
-- Start headers with `#pragma once`.
-- Prefer existing engine ownership aliases and helpers, such as `orc::Ref` and `orc::createRef`, over introducing a parallel ownership pattern.
-- Use the existing `ORC_LOG_*` macros for engine and demo logging.
-- Preserve the tab-based indentation and brace layout used by nearby code.
-- Keep public includes reachable through `OrcEngine/include/Orc/Orc.hpp` when they are intended to be part of the umbrella API.
-
-Avoid broad cleanup or formatting changes in files touched for a focused fix.
-
-## Dependencies and build files
-
-Add open-source packages to `vcpkg.json` and declare their CMake targets in `CMakeLists.txt`. Keep FMOD discovery in `cmake/FindFMOD.cmake` because FMOD is not managed through vcpkg.
-
-The source lists use `GLOB_RECURSE` with `CONFIGURE_DEPENDS`, so new files under the existing engine and demo source trees are picked up automatically. Update CMake explicitly when introducing a new source root, generated source, dependency, compile definition, or resource-copy step.
-
-Dependencies exposed in public engine headers belong in `OrcEngine`'s `PUBLIC` link interface. Implementation-only dependencies should remain `PRIVATE`.
-
-## Assets and generated files
-
-`TestProject/assets/` and `TestProject/shaders/` are copied next to the demo executable after each build, together with the FMOD runtime libraries. Keep asset manifest paths relative and verify renamed or added files in a clean build directory. The renderer loads its shaders from `shaders/` relative to the working directory; update all references required by the runtime loader when moving them.
-
-Do not edit or commit generated build output. Treat checked-in DLLs and other binary SDK artifacts as intentional legacy files; replace them only when the task explicitly requires a binary update and document their source/version.
-
-## Change discipline
-
-- Keep engine API changes backward-compatible where practical and update `TestProject` usages in the same change.
-- Check event, renderer, window, and audio lifetime assumptions before retaining references across frames or layer transitions.
-- Add a focused demo path for new visible engine behavior when no automated test can cover it.
-- Update `README.md` when prerequisites, build commands, runtime steps, or advertised capabilities change.
+- **Dependencies & CMake**: Open-source packages live in `vcpkg.json`; FMOD discovery lives in `cmake/FindFMOD.cmake`; .NET hosting discovery lives in `CMakeLists.txt`. Keep implementation-only libraries `PRIVATE` on `OrcEngine`. Do not commit `build/`, `vcpkg_installed/`, or `CMakeUserPresets.json`.
+- **Issue Tracking & Wayfinding**: When working with `.scratch/` specs, maps, or tickets, read [`docs/agents/issue-tracker.md`](docs/agents/issue-tracker.md) and [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md).
+- **Domain Modeling**: When introducing or updating domain concepts or ADRs, read [`docs/agents/domain.md`](docs/agents/domain.md).

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 
 namespace orc {
-	
+
 class Transformable
 {
 public:
@@ -26,7 +26,7 @@ public:
 
 	void setScale(float value);
 	void setScale(float x, float y);
-	void setScale(const Vector2f& size);	
+	void setScale(const Vector2f& size);
 
 	void setPosition(float x, float y);
 	void setPosition(const Vector2f& position);

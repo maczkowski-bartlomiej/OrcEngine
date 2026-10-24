@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core.hpp"
+#include "Core/Types.hpp"
 #include "Graphics/IndexBuffer.hpp"
 #include "Graphics/VertexBuffer.hpp"
 
@@ -10,7 +10,7 @@ class VertexArray
 {
 public:
 	VertexArray();
- 	~VertexArray();
+	~VertexArray();
 
 	VertexArray(VertexArray&&) = delete;
 	VertexArray(const VertexArray&) = delete;
@@ -30,5 +30,4 @@ private:
 	Ref<IndexBuffer> m_indexBuffer;
 	std::vector<Ref<VertexBuffer>> m_vertexBuffers;
 };
-
-};
+}

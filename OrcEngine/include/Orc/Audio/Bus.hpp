@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include <fmod_studio.hpp>
 
 namespace orc {
@@ -9,7 +7,7 @@ namespace orc {
 class Bus
 {
 public:
-	void load(FMOD::Studio::System* system, const std::string& busName);
+	explicit Bus(FMOD::Studio::Bus* bus);
 
 	void stop();
 	void pause();

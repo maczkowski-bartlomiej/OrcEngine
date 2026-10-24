@@ -1,40 +1,41 @@
 #include "OrcPch.hpp"
+
 #include "Graphics/VertexArray.hpp"
-#include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>
 
+#include "Graphics/BufferLayout.hpp"
+
 namespace orc {
 
-VertexArray::VertexArray() 
+VertexArray::VertexArray()
 {
 	glCreateVertexArrays(1, &m_rendererID);
 }
 
-VertexArray::~VertexArray() 
+VertexArray::~VertexArray()
 {
 	glDeleteVertexArrays(1, &m_rendererID);
 }
 
-void VertexArray::setIndexBuffer(Ref<IndexBuffer> indexBuffer) 
+void VertexArray::setIndexBuffer(Ref<IndexBuffer> indexBuffer)
 {
 	glVertexArrayElementBuffer(m_rendererID, indexBuffer->getRendererID());
-	m_indexBuffer = indexBuffer;
+	m_indexBuffer = std::move(indexBuffer);
 }
 
-void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer) 
+void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 {
-	ORC_ASSERT(vertexBuffer->getLayout().getElements().size(), "Vertex Buffer has no layout");
+	ORC_ASSERT(!vertexBuffer->getLayout().getElements().empty(), "Vertex Buffer has no layout");
 
 	const BufferLayout& bufferLayout = vertexBuffer->getLayout();
 	const std::vector<BufferLayout::Element>& bufferElements = bufferLayout.getElements();
 	glVertexArrayVertexBuffer(
-		m_rendererID,									// VAO
-		static_cast<uint32_t>(m_vertexBuffers.size()),  // current VBO number linked to VAO
-		vertexBuffer->getRendererID(),					// VBO
-		0,												// offset of the first element in the VBO
-		bufferLayout.getStride()
-		);
+		m_rendererID,								   // VAO
+		static_cast<uint32_t>(m_vertexBuffers.size()), // current VBO number linked to VAO
+		vertexBuffer->getRendererID(),				   // VBO
+		0,											   // offset of the first element in the VBO
+		static_cast<GLsizei>(bufferLayout.getStride()));
 
 	for (uint32_t i = 0; i < bufferElements.size(); i++)
 	{
@@ -47,23 +48,20 @@ void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 			static_cast<GLint>(element.getComponentCount()),
 			BufferLayout::shaderDataTypeToOpenGLType(element.type),
 			element.normalized ? GL_TRUE : GL_FALSE,
-			element.offset
-		);
+			element.offset);
 
 		glVertexArrayAttribBinding(m_rendererID, i, static_cast<uint32_t>(m_vertexBuffers.size()));
 	}
 
-	glVertexArrayVertexBuffer(m_rendererID, 0, vertexBuffer->getRendererID(), 0, bufferLayout.getStride());
-
-	m_vertexBuffers.push_back(vertexBuffer);
+	m_vertexBuffers.push_back(std::move(vertexBuffer));
 }
 
-const Ref<IndexBuffer>& VertexArray::getIndexBuffer() const 
+const Ref<IndexBuffer>& VertexArray::getIndexBuffer() const
 {
 	return m_indexBuffer;
 }
 
-const std::vector<Ref<VertexBuffer>>& VertexArray::getVertexBuffers() const 
+const std::vector<Ref<VertexBuffer>>& VertexArray::getVertexBuffers() const
 {
 	return m_vertexBuffers;
 }

@@ -1,19 +1,17 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
-#include "Graphics/Rect.hpp"
+#include "Core/Core.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Vertex.hpp"
+#include "Graphics/Rect.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
 
-class Rectangle : public Texturable<RectangleVertex, 4>
+class Rectangle : public Texturable
 {
 public:
-	Rectangle() = default;
-	Rectangle(const Vector2f& size, const Color& color = Color());
+	Rectangle();
+	explicit Rectangle(const Vector2f& size, const Color& color = Color());
 	Rectangle(const Vector2f& position, const Vector2f& size, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);
@@ -29,7 +27,7 @@ public:
 	float getBorderThickness() const;
 
 	FloatRect getLocalRect() const override;
-	
+
 private:
 	void updateVerticesPositions() const override;
 

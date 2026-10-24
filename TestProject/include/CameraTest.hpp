@@ -5,7 +5,7 @@
 class CameraTest : public orc::GameLayer
 {
 public:
-	CameraTest();
+	explicit CameraTest(orc::LayerContext& layerContext);
 	~CameraTest();
 
 	void onAttach() override;

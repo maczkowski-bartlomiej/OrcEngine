@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Events/Event.hpp"
-
-#include <string>
 #include <cstdint>
 #include <functional>
+#include <string>
+
+#include "Core/Types.hpp"
+#include "Events/Event.hpp"
 
 struct GLFWwindow;
 
@@ -27,11 +28,11 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	Window(const VideoSettings& videoSettings);
+	explicit Window(const VideoSettings& videoSettings);
 	~Window();
 
 	void display();
-	
+
 	void setTitle(const std::string& title);
 	void setEventCallback(EventCallback eventCallback);
 
@@ -42,13 +43,20 @@ public:
 	uint32_t getHeight() const;
 	Vector2u getSize() const;
 
+	uint32_t getFramebufferWidth() const;
+	uint32_t getFramebufferHeight() const;
+	Vector2u getFramebufferSize() const;
+
 	void* getNativeWindow() const;
 
 private:
 	bool initGLAD();
 	void setCallbacks();
+	void updateFramebufferDimensions();
 
 	VideoSettings m_videoSettings;
+	uint32_t m_framebufferWidth = 0;
+	uint32_t m_framebufferHeight = 0;
 	GLFWwindow* m_glfwWindow = nullptr;
 };
 

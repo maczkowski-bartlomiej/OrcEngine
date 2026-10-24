@@ -5,7 +5,7 @@ build/
 vcpkg_installed/
 CMakeUserPresets.json
 imgui.ini
-dev-docs/
+agents-docs/
 
 .idea/
 

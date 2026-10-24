@@ -1,22 +1,21 @@
 #include "OrcPch.hpp"
-#include "Graphics/Shapes/Circle.hpp"
 
-#include <cmath>
+#include "Graphics/Shapes/Circle.hpp"
 
 namespace orc {
 
 Circle::Circle()
 {
 	constexpr std::array<Vector2f, 4> localPositions = {
-		Vector2f(-1.0f,  1.0f),
-		Vector2f(1.0f,  1.0f),
+		Vector2f(-1.0f, 1.0f),
+		Vector2f(1.0f, 1.0f),
 		Vector2f(-1.0f, -1.0f),
-		Vector2f(1.0f, -1.0f)
-	};
+		Vector2f(1.0f, -1.0f)};
 
 	for (size_t i = 0; i < m_vertices.size(); ++i)
 	{
 		m_vertices[i].localPosition = localPositions[i];
+		m_vertices[i].shapeType = 2.0f;
 	}
 }
 
@@ -38,17 +37,17 @@ Circle::Circle(const Vector2f& position, float radius, const Color& color)
 void Circle::setFillColor(const Color& fillColor)
 {
 	m_fillColor = fillColor;
-
+	Vector4f normColor = m_fillColor.normalized();
 	for (auto& vertex : m_vertices)
-		vertex.fillColor = m_fillColor.normalized();
+		vertex.color = normColor;
 }
 
 void Circle::setBorderColor(const Color& borderColor)
 {
 	m_borderColor = borderColor;
-
+	Vector4f normColor = m_borderColor.normalized();
 	for (auto& vertex : m_vertices)
-		vertex.borderColor = m_borderColor.normalized();
+		vertex.secondaryColor = normColor;
 }
 
 void Circle::setRadius(float radius)
@@ -108,10 +107,10 @@ FloatRect Circle::getLocalRect() const
 void Circle::updateVerticesPositions() const
 {
 	const Matrix& transformMatrix = getTransformMatrix();
-	m_vertices[0].globalPosition = transformMatrix * Vector3f(0.0f, 0.0f, 1.0f);
-	m_vertices[1].globalPosition = transformMatrix * Vector3f(m_radius * 2.0f, 0.0f, 1.0f);
-	m_vertices[2].globalPosition = transformMatrix * Vector3f(0.0f, m_radius * 2.0f, 1.0f);
-	m_vertices[3].globalPosition = transformMatrix * Vector3f(m_radius * 2.0f, m_radius * 2.0f, 1.0f);
+	m_vertices[0].position = transformMatrix * Vector3f(0.0f, 0.0f, 1.0f);
+	m_vertices[1].position = transformMatrix * Vector3f(m_radius * 2.0f, 0.0f, 1.0f);
+	m_vertices[2].position = transformMatrix * Vector3f(0.0f, m_radius * 2.0f, 1.0f);
+	m_vertices[3].position = transformMatrix * Vector3f(m_radius * 2.0f, m_radius * 2.0f, 1.0f);
 }
 
 }

@@ -1,20 +1,21 @@
 #pragma once
 
-#include "Engine/Core.hpp"
+#include <array>
+#include <vector>
 
-#include "Graphics/Text.hpp"
+#include "Core/Core.hpp"
 #include "Graphics/Camera.hpp"
-#include "Graphics/Sprite.hpp"
+#include "Graphics/Color.hpp"
+#include "Graphics/IndexBuffer.hpp"
 #include "Graphics/Shader.hpp"
+#include "Graphics/Shapes/Circle.hpp"
+#include "Graphics/Shapes/Rectangle.hpp"
+#include "Graphics/Sprite.hpp"
+#include "Graphics/Text.hpp"
+#include "Graphics/Texture.hpp"
 #include "Graphics/Vertex.hpp"
 #include "Graphics/VertexArray.hpp"
 #include "Graphics/VertexBuffer.hpp"
-
-#include "Graphics/Shapes/Circle.hpp"
-#include "Graphics/Shapes/Rectangle.hpp"
-
-#include <array>
-#include <unordered_map>
 
 namespace orc {
 
@@ -22,95 +23,52 @@ class Renderer
 {
 public:
 	Renderer();
+	~Renderer() = default;
 
 	void clear();
 	void setClearColor(const Color& color);
+	void setViewport(uint32_t width, uint32_t height);
+	void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
-	void begin(const Camera& camera);
-	void end();
+	void beginScene(const Camera& camera);
+	void endScene();
+	void flush();
 
-	void draw(const Text& text);
+	// High-level shape overloads
 	void draw(const Sprite& sprite);
-	void draw(const Circle& circle);
 	void draw(const Rectangle& rectangle);
-	void draw(Ref<VertexArray> vertexArray, Ref<Shader> shader, const Matrix& transform);
+	void draw(const Circle& circle);
+	void draw(const Text& text);
 
-	void drawLine(const Vector2f& start, const Vector2f& end, const Color& color);
+	// Lines rendered directly as oriented quads (zero state/pipeline switches)
+	void drawLine(const Vector2f& start, const Vector2f& end, const Color& color, float thickness = 1.0f);
+	void drawLine(const Vector3f& start, const Vector3f& end, const Color& color, float thickness = 1.0f);
+
+	// Unbatched custom geometry pass (flushes active 2D batch before drawing)
+	void draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const Matrix& transform);
 
 private:
-	void initLinesVertices();
-	void initGlyphsVertices();
-	void initCircleVertices();
-	void initSpritesVertices();
-	void initRectanglesVertices();
+	void startBatch();
+	float getTextureSlot(const Ref<Texture>& texture);
+	void submitQuad(const std::array<Vertex, 4>& vertices, const Ref<Texture>& texture = nullptr);
 
-	void batchStart();
-	void batchFlush();
+	static constexpr uint32_t MAX_QUADS = 2000;
+	static constexpr uint32_t MAX_QUAD_VERTICES = MAX_QUADS * 4;
+	static constexpr uint32_t MAX_QUAD_INDICES = MAX_QUADS * 6;
 
-	void batchStartLines();
-	void batchStartGlyphs();
-	void batchStartCircles();
-	void batchStartSprites();
-	void batchStartRectangles();
+	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32;
+	static constexpr float EMPTY_TEXTURE_SLOT = 32.0f;
 
-	void batchFlushLines();
-	void batchFlushGlyphs();
-	void batchFlushCircles();
-	void batchFlushSprites();
-	void batchFlushRectangles();
+	Ref<Shader> m_quadShader;
+	Ref<VertexArray> m_quadVertexArray;
+	Ref<VertexBuffer> m_quadVertexBuffer;
+	std::array<Vertex, MAX_QUAD_VERTICES> m_quadVertices;
+	uint32_t m_quadVerticesCount = 0;
 
-	static constexpr uint32_t MAX_LINES_COUNT = 500;
-	static constexpr uint32_t MAX_LINES_VERTICES = MAX_LINES_COUNT * 2;
+	std::vector<Ref<Texture>> m_textures;
 
-	static constexpr uint32_t MAX_CIRCLES_COUNT = 500;
-	static constexpr uint32_t MAX_CIRCLES_INDICES = MAX_CIRCLES_COUNT * 6;
-	static constexpr uint32_t MAX_CIRCLES_VERTICES = MAX_CIRCLES_COUNT * 4;
-
-	static constexpr uint32_t MAX_SPRITES_COUNT = 500;
-	static constexpr uint32_t MAX_SPRITES_INDICES = MAX_SPRITES_COUNT * 6;
-	static constexpr uint32_t MAX_SPRITES_VERTICES = MAX_SPRITES_COUNT * 4;
-
-	static constexpr uint32_t MAX_RECTANGLES_COUNT = 500;
-	static constexpr uint32_t MAX_RECTANGLES_INDICES = MAX_RECTANGLES_COUNT * 6;
-	static constexpr uint32_t MAX_RECTANGLES_VERTICES = MAX_RECTANGLES_COUNT * 4;
-
-	static constexpr uint32_t MAX_GLYPHS_COUNT = 500;
-	static constexpr uint32_t MAX_GLYPHS_INDICES = MAX_GLYPHS_COUNT * 6;
-	static constexpr uint32_t MAX_GLYPHS_VERTICES = MAX_GLYPHS_COUNT * 4;
-
-	static constexpr uint32_t MAX_TEXTURE_SLOTS = 32; //glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texture_units);
-	static constexpr uint32_t EMPTY_TEXTURE_INDEX = 32;
-
-	struct Lines
-	{
-		Ref<Shader> shader;
-		Ref<VertexArray> vertexArray;
-		Ref<VertexBuffer> vertexBuffer;
-		std::array<LineVertex, MAX_LINES_VERTICES> vertices;
-
-		uint32_t verticesCount = 0;
-	};
-
-	template<typename VertexType, uint32_t MAX_VERTICES>
-	struct Shape
-	{
-		Ref<Shader> shader;
-		Ref<VertexArray> vertexArray;
-		Ref<VertexBuffer> vertexBuffer;
-		std::array<VertexType, MAX_VERTICES> vertices;
-		std::vector<Ref<Texture>> textures;
-
-		uint32_t verticesCount = 0;
-	};
-
-	UniquePtr<Lines> m_lines;
-	UniquePtr<Shape<CircleVertex, MAX_CIRCLES_VERTICES>> m_circles;
-	UniquePtr<Shape<SpriteVertex, MAX_SPRITES_VERTICES>> m_sprites;
-	UniquePtr<Shape<RectangleVertex, MAX_RECTANGLES_VERTICES>> m_rectangles;
-	UniquePtr<Shape<GlyphVertex, MAX_GLYPHS_VERTICES>> m_glyphs;
-
-	uint32_t zIndex = 1;
 	Matrix4 m_viewProjectionMatrix;
+	bool m_isSceneActive = false;
 };
 
 }

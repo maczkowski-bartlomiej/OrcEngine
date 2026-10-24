@@ -4,14 +4,19 @@
 
 namespace orc {
 
+class Window;
+
 class Gui
 {
 public:
-	Gui();
+	explicit Gui(Window& window);
 	~Gui();
 
 	void begin();
 	void end();
+
+private:
+	Window& m_window;
 };
 
 }

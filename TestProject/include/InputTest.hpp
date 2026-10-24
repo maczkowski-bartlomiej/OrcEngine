@@ -5,7 +5,7 @@
 class InputTest : public orc::GameLayer
 {
 public:
-	InputTest();
+	explicit InputTest(orc::LayerContext& layerContext);
 	~InputTest();
 
 	void onAttach() override;

@@ -5,7 +5,7 @@
 class AnimationTest : public orc::GameLayer
 {
 public:
-	AnimationTest();
+	explicit AnimationTest(orc::LayerContext& layerContext);
 	~AnimationTest();
 
 	void onAttach() override;
