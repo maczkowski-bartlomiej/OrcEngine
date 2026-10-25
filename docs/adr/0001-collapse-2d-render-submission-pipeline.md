@@ -1,3 +1,0 @@
-# Collapse the 2D Render Submission Pipeline
-
-OrcEngine previously fragmented 2D rendering across 4 separate shape batch buffers in `Renderer` and used an inverted z-index depth buffer hack (`1.0f / zIndex`) that broke transparency blending across mixed primitive types. We decided to consolidate all 2D primitive drawing (sprites, rectangles, circles, font glyphs, and lines rendered as quads) directly into `Renderer`'s unified dynamic quad batcher with explicit `beginScene(Camera)` and `endScene()` scoping. This preserves natural submission order, eliminates premature batch flushes between primitive types, removes frame lifecycle leakage from `Engine::run()`, and avoids redundant renderer class abstractions and singleton couplings.
