@@ -8,36 +8,36 @@ namespace orc {
 class Clock
 {
 public:
-	using clock = std::chrono::steady_clock;
-	using time_point = clock::time_point;
+	using ClockType = std::chrono::steady_clock;
+	using TimePoint = ClockType::time_point;
 
 	float elapsed() const noexcept
 	{
-		const auto currentTime = clock::now();
+		const auto currentTime = ClockType::now();
 		return std::chrono::duration<float>(currentTime - m_time).count();
 	}
 
 	uint64_t elapsedMs() const noexcept
 	{
-		const auto currentTime = clock::now();
+		const auto currentTime = ClockType::now();
 		return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_time).count());
 	}
 
 	void reset() noexcept
 	{
-		m_time = clock::now();
+		m_time = ClockType::now();
 	}
 
 	float restart() noexcept
 	{
-		const auto currentTime = clock::now();
+		const auto currentTime = ClockType::now();
 		const float elapsedSeconds = std::chrono::duration<float>(currentTime - m_time).count();
 		m_time = currentTime;
 		return elapsedSeconds;
 	}
 
 private:
-	time_point m_time = clock::now();
+	TimePoint m_time = ClockType::now();
 };
 
 }

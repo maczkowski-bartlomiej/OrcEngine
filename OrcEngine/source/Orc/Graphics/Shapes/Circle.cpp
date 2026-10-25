@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Shapes/Circle.hpp"
 
 namespace orc {
@@ -39,7 +37,9 @@ void Circle::setFillColor(const Color& fillColor)
 	m_fillColor = fillColor;
 	Vector4f normColor = m_fillColor.normalized();
 	for (auto& vertex : m_vertices)
+	{
 		vertex.color = normColor;
+	}
 }
 
 void Circle::setBorderColor(const Color& borderColor)
@@ -47,7 +47,9 @@ void Circle::setBorderColor(const Color& borderColor)
 	m_borderColor = borderColor;
 	Vector4f normColor = m_borderColor.normalized();
 	for (auto& vertex : m_vertices)
+	{
 		vertex.secondaryColor = normColor;
+	}
 }
 
 void Circle::setRadius(float radius)
@@ -55,7 +57,9 @@ void Circle::setRadius(float radius)
 	m_radius = std::abs(radius);
 
 	for (auto& vertex : m_vertices)
+	{
 		vertex.radius = m_radius;
+	}
 }
 
 void Circle::setInnerRadius(float innerRadius)
@@ -63,7 +67,9 @@ void Circle::setInnerRadius(float innerRadius)
 	m_innerRadius = innerRadius;
 
 	for (auto& vertex : m_vertices)
+	{
 		vertex.innerRadius = m_innerRadius;
+	}
 }
 
 void Circle::setBorderThickness(float borderThickness)
@@ -71,7 +77,9 @@ void Circle::setBorderThickness(float borderThickness)
 	m_borderThickness = borderThickness;
 
 	for (auto& vertex : m_vertices)
+	{
 		vertex.borderThickness = m_borderThickness;
+	}
 }
 
 Color Circle::getFillColor() const

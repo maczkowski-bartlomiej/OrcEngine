@@ -6,7 +6,7 @@ class InputTest : public orc::GameLayer
 {
 public:
 	explicit InputTest(orc::LayerContext& layerContext);
-	~InputTest();
+	~InputTest() override;
 
 	void onAttach() override;
 	void onDetach() override;
@@ -19,5 +19,5 @@ public:
 
 private:
 	orc::Sprite m_player;
-	static constexpr float M_SPEED = 50.0f;
+	static constexpr float SPEED = 50.0f;
 };

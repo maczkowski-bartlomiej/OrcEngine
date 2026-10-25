@@ -22,7 +22,7 @@ public:
 
 	struct Element
 	{
-		Element(ShaderDataType type, const std::string& name, bool normalized = false);
+		Element(ShaderDataType type, std::string_view name, bool normalized = false);
 
 		uint32_t getComponentCount() const;
 
@@ -35,7 +35,7 @@ public:
 	};
 
 	BufferLayout();
-	BufferLayout(const std::initializer_list<Element>& elements);
+	explicit BufferLayout(std::initializer_list<Element> elements);
 
 	uint32_t getStride() const;
 	const std::vector<Element>& getElements() const;

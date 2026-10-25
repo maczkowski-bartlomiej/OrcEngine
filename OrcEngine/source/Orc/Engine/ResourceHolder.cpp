@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Engine/ResourceHolder.hpp"
 
 #include <sstream>
@@ -15,17 +13,11 @@ Resources<ResourceType>::Resources(const FilePath& xmlPath)
 }
 
 template <typename ResourceType>
-Ref<ResourceType> Resources<ResourceType>::getResource(std::string_view name) const
+const Ref<ResourceType>& Resources<ResourceType>::getResource(std::string_view name) const
 {
-	if (auto find = m_resources.find(name); find != m_resources.end())
-	{
-		return find->second;
-	}
-	else
-	{
-		ORC_LOG_ERROR("Requested non-existing resource '{}'.", name);
-		return nullptr;
-	}
+	const auto find = m_resources.find(name);
+	ORC_FATAL_CHECK(find != m_resources.end(), "Requested non-existing resource '{}'.", name);
+	return find->second;
 }
 
 template <typename ResourceType>
@@ -35,7 +27,7 @@ void Resources<ResourceType>::clear()
 }
 
 template <>
-bool Resources<Font>::loadResources(const FilePath& xmlPath)
+void Resources<Font>::loadResources(const FilePath& xmlPath)
 {
 	ORC_LOG_INFO("Loading fonts.");
 
@@ -43,7 +35,9 @@ bool Resources<Font>::loadResources(const FilePath& xmlPath)
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
 
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+	{
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+	}
 
 	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to load XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
@@ -59,18 +53,13 @@ bool Resources<Font>::loadResources(const FilePath& xmlPath)
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<Font> font = createRef<Font>();
-		if (font->loadFromFile(path))
-			m_resources[name] = font;
-
-		else
-			ORC_LOG_ERROR("Failed to load resource '{}'.\n\tPath: '{}'", name, path);
+		font->loadFromFile(path);
+		m_resources[name] = font;
 	}
-
-	return true; // Temporary without error checking
 }
 
 template <>
-bool Resources<Shader>::loadResources(const FilePath& xmlPath)
+void Resources<Shader>::loadResources(const FilePath& xmlPath)
 {
 	ORC_LOG_INFO("Loading shaders.");
 
@@ -78,7 +67,9 @@ bool Resources<Shader>::loadResources(const FilePath& xmlPath)
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
 
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+	{
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+	}
 
 	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to load XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
@@ -98,17 +89,13 @@ bool Resources<Shader>::loadResources(const FilePath& xmlPath)
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<Shader> shader = createRef<Shader>();
-		if (shader->loadFromFile(path, path2))
-			m_resources[name] = shader;
-		else
-			ORC_LOG_ERROR("Failed to load resource '{}'...\n\tPath: '{}'\n\tPath 2: '{}'", name, path, path2);
+		shader->loadFromFile(path, path2);
+		m_resources[name] = shader;
 	}
-
-	return true; // Temporary without error checking
 }
 
 template <>
-bool Resources<Texture>::loadResources(const FilePath& xmlPath)
+void Resources<Texture>::loadResources(const FilePath& xmlPath)
 {
 	ORC_LOG_INFO("Loading textures.");
 
@@ -116,7 +103,9 @@ bool Resources<Texture>::loadResources(const FilePath& xmlPath)
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
 
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+	{
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+	}
 
 	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to load XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
@@ -132,17 +121,13 @@ bool Resources<Texture>::loadResources(const FilePath& xmlPath)
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
 		Ref<Texture> texture = createRef<Texture>();
-		if (texture->loadFromFile(path))
-			m_resources[name] = texture;
-		else
-			ORC_LOG_ERROR("Failed to load resource '{}'...\n\tPath: '{}'", name, path);
+		texture->loadFromFile(path);
+		m_resources[name] = texture;
 	}
-
-	return true; // Temporary without error checking
 }
 
 template <>
-bool Resources<Animation>::loadResources(const FilePath& xmlPath)
+void Resources<Animation>::loadResources(const FilePath& xmlPath)
 {
 	ORC_LOG_INFO("Loading animations.");
 
@@ -150,7 +135,9 @@ bool Resources<Animation>::loadResources(const FilePath& xmlPath)
 	tinyxml2::XMLError errorResult = resourceFile.LoadFile(xmlPath.string().c_str());
 
 	if (errorResult == tinyxml2::XMLError::XML_ERROR_EMPTY_DOCUMENT)
+	{
 		errorResult = tinyxml2::XMLError::XML_SUCCESS;
+	}
 
 	ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to load XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
@@ -179,11 +166,7 @@ bool Resources<Animation>::loadResources(const FilePath& xmlPath)
 				dimensionString.push_back(substr);
 			}
 
-			if (dimensionString.size() != 4)
-			{
-				ORC_LOG_ERROR("Invalid dimension for animation '{}'", name);
-				break;
-			}
+			ORC_FATAL_CHECK(dimensionString.size() == 4, "Invalid dimension for animation '{}'", name);
 
 			FloatRect rect;
 			rect.left = std::stof(dimensionString[0]);
@@ -198,18 +181,10 @@ bool Resources<Animation>::loadResources(const FilePath& xmlPath)
 		errorResult = element->QueryUnsignedAttribute("durationMs", &durationMs);
 		ORC_FATAL_CHECK(errorResult == tinyxml2::XMLError::XML_SUCCESS, "Failed to read XML file...\n\tPath: {}\n\tReason: {}", xmlPath.string(), tinyxml2::XMLDocument::ErrorIDToName(errorResult));
 
-		if (frames.size())
-		{
-			Ref<Animation> animation = createRef<Animation>(frames, durationMs);
-			m_resources[name] = animation;
-		}
-		else
-		{
-			ORC_LOG_ERROR("Failed to load resource '{}'.", name);
-		}
+		ORC_FATAL_CHECK(!frames.empty(), "Failed to load resource '{}'.", name);
+		Ref<Animation> animation = createRef<Animation>(frames, durationMs);
+		m_resources[name] = animation;
 	}
-
-	return true; // Temporary without error checking
 }
 
 template class Resources<Font>;

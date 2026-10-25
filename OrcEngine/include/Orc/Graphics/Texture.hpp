@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 
 #include "Core/Core.hpp"
 
@@ -11,11 +12,11 @@ class Texture
 public:
 	enum class TextureMode
 	{
-		RED,
-		GREEN,
-		BLUE,
-		RGB,
-		RGBA
+		Red,
+		Green,
+		Blue,
+		Rgb,
+		Rgba
 	};
 
 	Texture();
@@ -27,8 +28,8 @@ public:
 	Texture(const Texture&) = delete;
 	Texture& operator=(const Texture&) = delete;
 
-	bool loadFromFile(const FilePath& filePath);
-	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, TextureMode textureMode);
+	void loadFromFile(const FilePath& filePath);
+	void loadFromMemory(std::span<const unsigned char> data, uint32_t width, uint32_t height, TextureMode textureMode);
 
 	void bind(uint32_t slot = 0) const;
 

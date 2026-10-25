@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Engine/Engine.hpp"
 
 #include <functional>

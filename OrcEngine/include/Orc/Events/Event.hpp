@@ -39,7 +39,7 @@ private:
 template <typename EventType>
 const EventType& getEvent(const Event& event)
 {
-	ORC_ASSERT(dynamic_cast<const EventType*>(&event) != nullptr, "Invalid event downcast!");
+	ORC_FATAL_CHECK(dynamic_cast<const EventType*>(&event) != nullptr, "Invalid event downcast!");
 	return static_cast<const EventType&>(event);
 }
 

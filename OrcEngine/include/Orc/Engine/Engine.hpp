@@ -21,6 +21,11 @@ public:
 	explicit Engine(const Config& config);
 	~Engine();
 
+	Engine(const Engine&) = delete;
+	Engine& operator=(const Engine&) = delete;
+	Engine(Engine&&) = delete;
+	Engine& operator=(Engine&&) = delete;
+
 	void run();
 
 	LayerContext& getLayerContext();
@@ -44,8 +49,5 @@ private:
 	TextureResources m_textureResources;
 	AnimationResources m_animationResources;
 };
-
-Config getEngineConfig();
-void onEngineStart(Engine& engine);
 
 }

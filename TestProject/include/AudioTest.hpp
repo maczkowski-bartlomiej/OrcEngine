@@ -8,7 +8,7 @@ class AudioTest : public orc::GameLayer
 {
 public:
 	explicit AudioTest(orc::LayerContext& layerContext);
-	~AudioTest();
+	~AudioTest() override;
 
 	void onAttach() override;
 	void onDetach() override;

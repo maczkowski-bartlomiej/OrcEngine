@@ -25,6 +25,11 @@ public:
 	Renderer();
 	~Renderer() = default;
 
+	Renderer(const Renderer&) = delete;
+	Renderer& operator=(const Renderer&) = delete;
+	Renderer(Renderer&&) = delete;
+	Renderer& operator=(Renderer&&) = delete;
+
 	void clear();
 	void setClearColor(const Color& color);
 	void setViewport(uint32_t width, uint32_t height);

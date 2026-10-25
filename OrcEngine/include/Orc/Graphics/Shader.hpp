@@ -20,20 +20,14 @@ public:
 	Shader(const Shader&) = delete;
 	Shader& operator=(const Shader&) = delete;
 
-	bool loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
-	bool loadFromString(std::string_view vertexSource, std::string_view fragmentSource);
+	void loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath);
+	void loadFromString(std::string_view vertexSource, std::string_view fragmentSource);
 
 	void bind() const;
 	void unbind() const;
 
 	void uploadUniformInt(const std::string& name, int integer) const;
-	void uploadUniformIntArray(const std::string& name, const int* array, uint32_t size) const;
-
-	template <typename T>
-	void uploadUniformIntArray(const std::string& name, std::span<T> array) const
-	{
-		uploadUniformIntArray(name, array.data(), static_cast<uint32_t>(array.size()));
-	}
+	void uploadUniformIntArray(const std::string& name, std::span<const int> values) const;
 
 	void uploadUniformFloat3(const std::string& name, const Vector3f& float3) const;
 	void uploadUniformFloat4(const std::string& name, const Vector4f& float4) const;
@@ -41,8 +35,8 @@ public:
 	void uploadUniformMatrix3(const std::string& name, const Matrix& matrix) const;
 
 private:
-	bool readShader(std::string* shader, const FilePath& filePath);
-	bool compile(std::string_view vertexSource, std::string_view fragmentSource);
+	void readShader(std::string* shader, const FilePath& filePath);
+	void compile(std::string_view vertexSource, std::string_view fragmentSource);
 
 	RendererID m_rendererID = 0;
 };

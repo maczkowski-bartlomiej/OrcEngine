@@ -16,6 +16,11 @@ public:
 	explicit Sprite(Ref<Texture> texture);
 	Sprite(Ref<Texture> texture, const Vector2f& position);
 
+	Sprite(const Sprite& other);
+	Sprite& operator=(const Sprite& other);
+	Sprite(Sprite&& other) noexcept;
+	Sprite& operator=(Sprite&& other) noexcept;
+
 	void setColor(const Color& color);
 
 	Color getColor() const;

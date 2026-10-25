@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Audio/Audio.hpp"
+#include "Core/Types.hpp"
 #include "Graphics/Window.hpp"
 
 namespace orc {
@@ -16,13 +17,13 @@ struct Config
 
 	std::string gameName = "OrcEngine Game";
 
-	std::string logPath = "log.txt";
+	FilePath logPath = "log.txt";
 
-	std::string fontsPath = "assets/fonts.xml";
-	std::string shadersPath = "assets/shaders.xml";
-	std::string texturesPath = "assets/textures.xml";
-	std::string animationsPath = "assets/animations.xml";
-	std::string scriptingConfigPath = "OrcEngine.Scripting.runtimeconfig.json";
+	FilePath fontsPath = "assets/fonts.xml";
+	FilePath shadersPath = "assets/shaders.xml";
+	FilePath texturesPath = "assets/textures.xml";
+	FilePath animationsPath = "assets/animations.xml";
+	FilePath scriptingConfigPath = "OrcEngine.Scripting.runtimeconfig.json";
 
 	Audio::AudioSettings audioSettings;
 	Window::VideoSettings videoSettings;

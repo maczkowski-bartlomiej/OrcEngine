@@ -24,11 +24,11 @@ public:
 	Font() = default;
 	explicit Font(const FilePath& filePath, uint32_t size = 48);
 
-	bool loadFromFile(const FilePath& filePath, uint32_t size = 48);
+	void loadFromFile(const FilePath& filePath, uint32_t size = 48);
 
 	uint32_t getSize() const;
-	Ref<Texture> getBitmap() const;
-	Character getCharacter(uint32_t character) const;
+	const Ref<Texture>& getBitmap() const;
+	const Character& getCharacter(uint32_t character) const;
 
 private:
 	void calculateBitmap(FT_Face face);
@@ -38,7 +38,7 @@ private:
 	Ref<Texture> m_bitmap;
 	std::unordered_map<uint32_t, Character> m_characters;
 
-	const uint32_t M_CHARACTER_COUNT = 127; // Load only ascii characters.
+	static constexpr uint32_t CHARACTER_COUNT = 127; // Load only ascii characters.
 };
 
 }

@@ -6,6 +6,7 @@
     - Headers (.hpp, .inl) start with '#pragma once'.
     - Engine code in OrcEngine/ is wrapped in 'namespace orc'.
     - Preserves tab-based indentation (flags space-based indentation).
+    - Trailing whitespace (flags whitespace at end of lines).
     - File extensions (.hpp, .cpp, .inl).
     - Optional -ChangedOnly to lint only modified/staged git files.
     - Optional -Fix to automatically prepend missing '#pragma once'.
@@ -100,7 +101,7 @@ foreach ($filePath in $filesToCheck) {
     }
 
     # 2. Check namespace orc in OrcEngine/ files
-    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp" -and $relPath -notlike "*EntryPoint.cpp" -and $relPath -notlike "*StbImage.cpp" -and $relPath -notlike "*Debug.hpp" -and $relPath -notlike "*Orc.hpp" -and $relPath -notlike "*Platform.hpp" -and $relPath -notlike "*Core.hpp") {
+    if ($relPath -like "OrcEngine/*" -and $relPath -notlike "*OrcPch.hpp" -and $relPath -notlike "*EntryPoint.cpp" -and $relPath -notlike "*StbImage.cpp" -and $relPath -notlike "*Debug.hpp" -and $relPath -notlike "*Orc.hpp" -and $relPath -notlike "*Platform.hpp" -and $relPath -notlike "*Core.hpp" -and $relPath -notlike "*AudioUtility.hpp" -and $relPath -notlike "*FontUtility.hpp") {
         if ($content -notmatch "\bnamespace\s+orc\b") {
             $fileIssues += [PSCustomObject]@{
                 Level = "ERROR"
@@ -138,6 +139,7 @@ foreach ($filePath in $filesToCheck) {
                 $cur
             }
             Set-Content -Path $filePath -Value $fixedContent
+            $lines = Get-Content -Path $filePath
             $fileIssues += [PSCustomObject]@{
                 Level = "FIXED"
                 Message = "Converted space-based indentation to tabs and trimmed trailing whitespace"
@@ -148,6 +150,39 @@ foreach ($filePath in $filesToCheck) {
                 Level = "WARN"
                 Message = "Space-based indentation detected on $spaceIndentCount line(s). OrcEngine standard is tab indentation."
                 Line = $firstSpaceLine
+            }
+            $totalWarnings++
+        }
+    }
+
+    # 4. Check trailing whitespace
+    $trailingWhitespaceCount = 0
+    $firstTrailingLine = 0
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match "\s+$") {
+            $trailingWhitespaceCount++
+            if ($firstTrailingLine -eq 0) {
+                $firstTrailingLine = $i + 1
+            }
+        }
+    }
+
+    if ($trailingWhitespaceCount -gt 0) {
+        if ($Fix) {
+            $fixedContent = foreach ($line in $lines) {
+                $line -replace "\s+$", ""
+            }
+            Set-Content -Path $filePath -Value $fixedContent
+            $fileIssues += [PSCustomObject]@{
+                Level = "FIXED"
+                Message = "Stripped trailing whitespace on $trailingWhitespaceCount line(s)"
+                Line = $firstTrailingLine
+            }
+        } else {
+            $fileIssues += [PSCustomObject]@{
+                Level = "WARN"
+                Message = "Trailing whitespace detected on $trailingWhitespaceCount line(s)."
+                Line = $firstTrailingLine
             }
             $totalWarnings++
         }

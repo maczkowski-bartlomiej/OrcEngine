@@ -3,26 +3,28 @@
 #include <string>
 #include <string_view>
 
-#include <fmod_common.h>
-#include <freetype/freetype.h>
-#include <freetype/fterrors.h>
-#include <freetype/ftimage.h>
-#include <freetype/fttypes.h>
-
 namespace orc {
 
-struct string_view_hash
+struct StringViewHash
 {
-	using hash_type = std::hash<std::string_view>;
+	using HashType = std::hash<std::string_view>;
 	using is_transparent = void;
 
-	std::size_t operator()(const char* str) const { return hash_type{}(str); }
-	std::size_t operator()(std::string_view str) const { return hash_type{}(str); }
-	std::size_t operator()(std::string const& str) const { return hash_type{}(str); }
-};
+	std::size_t operator()(const char* str) const
+	{
+		return HashType{}(str);
+	}
 
-void fmodCall(FMOD_RESULT result, const std::string& message = std::string(), std::source_location sourceLocation = std::source_location::current());
-bool ftCall(FT_Error result, std::source_location sourceLocation = std::source_location::current());
+	std::size_t operator()(std::string_view str) const
+	{
+		return HashType{}(str);
+	}
+
+	std::size_t operator()(const std::string& str) const
+	{
+		return HashType{}(str);
+	}
+};
 
 std::string getErrnoMessage(int error);
 

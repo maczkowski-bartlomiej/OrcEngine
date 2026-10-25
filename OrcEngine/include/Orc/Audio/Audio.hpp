@@ -4,10 +4,13 @@
 #include <string_view>
 #include <vector>
 
-#include <fmod_studio.hpp>
-
 #include "Audio/Bus.hpp"
 #include "Core/Core.hpp"
+
+namespace FMOD::Studio {
+class System;
+class Bank;
+}
 
 namespace orc {
 

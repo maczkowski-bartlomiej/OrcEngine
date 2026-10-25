@@ -5,7 +5,9 @@ namespace orc {
 Rectangle::Rectangle()
 {
 	for (auto& vertex : m_vertices)
+	{
 		vertex.shapeType = 1.0f;
+	}
 }
 
 Rectangle::Rectangle(const Vector2f& size, const Color& color)
@@ -28,7 +30,9 @@ void Rectangle::setFillColor(const Color& fillColor)
 	m_fillColor = fillColor;
 	Vector4f normColor = m_fillColor.normalized();
 	for (auto& vertex : m_vertices)
+	{
 		vertex.color = normColor;
+	}
 }
 
 void Rectangle::setBorderColor(const Color& borderColor)
@@ -36,7 +40,9 @@ void Rectangle::setBorderColor(const Color& borderColor)
 	m_borderColor = borderColor;
 	Vector4f normColor = m_borderColor.normalized();
 	for (auto& vertex : m_vertices)
+	{
 		vertex.secondaryColor = normColor;
+	}
 }
 
 void Rectangle::setSize(const Vector2f& size)
@@ -49,7 +55,9 @@ void Rectangle::setBorderThickness(float borderThickness)
 	m_borderThickness = borderThickness;
 
 	for (auto& vertex : m_vertices)
+	{
 		vertex.borderThickness = m_borderThickness;
+	}
 }
 
 Color Rectangle::getFillColor() const

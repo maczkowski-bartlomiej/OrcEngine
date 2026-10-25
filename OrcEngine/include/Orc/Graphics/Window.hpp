@@ -31,9 +31,14 @@ public:
 	explicit Window(const VideoSettings& videoSettings);
 	~Window();
 
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
+	Window(Window&&) = delete;
+	Window& operator=(Window&&) = delete;
+
 	void display();
 
-	void setTitle(const std::string& title);
+	void setTitle(std::string_view title);
 	void setEventCallback(EventCallback eventCallback);
 
 	bool getVsync() const;
@@ -50,7 +55,7 @@ public:
 	void* getNativeWindow() const;
 
 private:
-	bool initGLAD();
+	void initGLAD();
 	void setCallbacks();
 	void updateFramebufferDimensions();
 

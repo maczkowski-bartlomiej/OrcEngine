@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.25)
 
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+	if(DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+		set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE FILEPATH "vcpkg toolchain")
+	elseif(EXISTS "$ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+		set(CMAKE_TOOLCHAIN_FILE "$ENV{HOME}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE FILEPATH "vcpkg toolchain")
+	endif()
+endif()
+
 project(OrcEngine LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -31,12 +39,16 @@ find_package(FMOD REQUIRED)
 
 # .NET Hosting (nethost & CoreCLR delegates)
 set(_DOTNET_ROOT "")
-if(DEFINED ENV{DOTNET_ROOT})
+if(DEFINED ENV{DOTNET_ROOT} AND EXISTS "$ENV{DOTNET_ROOT}")
     set(_DOTNET_ROOT "$ENV{DOTNET_ROOT}")
 elseif(WIN32)
     set(_DOTNET_ROOT "$ENV{ProgramFiles}/dotnet")
-else()
+elseif(EXISTS "/usr/share/dotnet")
     set(_DOTNET_ROOT "/usr/share/dotnet")
+elseif(EXISTS "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet")
+    set(_DOTNET_ROOT "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet")
+elseif(EXISTS "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet")
+    set(_DOTNET_ROOT "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet")
 endif()
 
 if(WIN32)
@@ -72,9 +84,12 @@ endif()
 find_program(DOTNET_EXECUTABLE
     NAMES dotnet
     HINTS
+        "${_DOTNET_ROOT}"
         "$ENV{DOTNET_ROOT}"
         "$ENV{ProgramFiles}/dotnet"
         "/usr/share/dotnet"
+        "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet"
+        "$ENV{HOME}/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet"
         "/usr/bin"
         "/usr/local/bin"
 )
@@ -95,6 +110,8 @@ target_include_directories(OrcEngine
     PUBLIC
         "${ORC_ENGINE_DIR}/include"
         "${ORC_ENGINE_DIR}/include/Orc"
+    PRIVATE
+        "${ORC_ENGINE_DIR}/source/Orc"
 )
 
 target_include_directories(OrcEngine SYSTEM PRIVATE "${STB_INCLUDE_DIRS}" "${DOTNET_HOST_INC}")

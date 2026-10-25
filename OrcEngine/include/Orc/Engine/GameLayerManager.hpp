@@ -6,22 +6,23 @@
 
 #include "Core/Memory.hpp"
 #include "Engine/GameLayer.hpp"
+#include "Engine/Utility.hpp"
 
 namespace orc {
 
 class GameLayerManager
 {
 public:
-	void setActiveLayer(const std::string& name);
-	void addLayer(const std::string& name, Ref<GameLayer> gameLayer);
+	void setActiveLayer(std::string_view name);
+	void addLayer(std::string_view name, Ref<GameLayer> gameLayer);
 
 	void clear();
 
-	Ref<GameLayer> getActiveLayer() const;
+	const Ref<GameLayer>& getActiveLayer() const;
 
 private:
 	Ref<GameLayer> m_activeLayer;
-	std::unordered_map<std::string, Ref<GameLayer>> m_layers;
+	std::unordered_map<std::string, Ref<GameLayer>, StringViewHash, std::equal_to<>> m_layers;
 };
 
 }

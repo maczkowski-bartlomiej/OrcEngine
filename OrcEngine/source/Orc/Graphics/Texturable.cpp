@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
@@ -34,7 +32,7 @@ void Texturable::setTextureRect(const FloatRect& textureRect)
 	updateVerticesTexCoords();
 }
 
-Ref<Texture> Texturable::getTexture() const
+const Ref<Texture>& Texturable::getTexture() const
 {
 	return m_texture;
 }
@@ -87,14 +85,22 @@ void Texturable::calculateGlobalRect() const
 	for (int i = 1; i < 4; ++i)
 	{
 		if (points[i].x < left)
+		{
 			left = points[i].x;
+		}
 		else if (points[i].x > right)
+		{
 			right = points[i].x;
+		}
 
 		if (points[i].y < top)
+		{
 			top = points[i].y;
+		}
 		else if (points[i].y > bottom)
+		{
 			bottom = points[i].y;
+		}
 	}
 
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);
@@ -108,8 +114,8 @@ void Texturable::updateVerticesTexCoords() const
 		FloatRect clipSpacedTextureRect(
 			m_textureRect.left / textureSize.x,
 			m_textureRect.top / textureSize.y,
-			m_textureRect.right / textureSize.x,
-			m_textureRect.bottom / textureSize.y);
+			(m_textureRect.left + m_textureRect.right) / textureSize.x,
+			(m_textureRect.top + m_textureRect.bottom) / textureSize.y);
 
 		m_vertices[0].textureCoord = Vector2f(clipSpacedTextureRect.left, clipSpacedTextureRect.top);
 		m_vertices[1].textureCoord = Vector2f(clipSpacedTextureRect.right, clipSpacedTextureRect.top);

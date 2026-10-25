@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/VertexBuffer.hpp"
 
 #include <utility>
@@ -8,10 +6,15 @@
 
 namespace orc {
 
-VertexBuffer::VertexBuffer(const void* vertices, uint32_t size)
+VertexBuffer::VertexBuffer(uint32_t size)
+{
+	init(nullptr, size, true);
+}
+
+void VertexBuffer::init(const void* data, uint32_t size, bool dynamic)
 {
 	glCreateBuffers(1, &m_rendererID);
-	glNamedBufferData(m_rendererID, size, vertices, GL_STATIC_DRAW);
+	glNamedBufferData(m_rendererID, size, data, dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
@@ -42,7 +45,7 @@ VertexBuffer::~VertexBuffer()
 	}
 }
 
-void VertexBuffer::setData(const void* data, uint32_t size)
+void VertexBuffer::setDataInternal(const void* data, uint32_t size)
 {
 	glNamedBufferSubData(m_rendererID, 0, size, data);
 }

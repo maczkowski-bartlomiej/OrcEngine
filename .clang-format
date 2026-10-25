@@ -8,7 +8,7 @@
 # - Switch case labels indented
 # - C++20 standard
 # - Regrouped and sorted include directives by category
-# - OrcPch.hpp included before all other headers
+# - OrcPch.hpp force-included by CMake (target_precompile_headers)
 
 BasedOnStyle: LLVM
 Language: Cpp

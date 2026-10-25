@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/VertexArray.hpp"
 
 #include <glad/glad.h>
@@ -26,7 +24,7 @@ void VertexArray::setIndexBuffer(Ref<IndexBuffer> indexBuffer)
 
 void VertexArray::addVertexBuffer(Ref<VertexBuffer> vertexBuffer)
 {
-	ORC_ASSERT(!vertexBuffer->getLayout().getElements().empty(), "Vertex Buffer has no layout");
+	ORC_FATAL_CHECK(!vertexBuffer->getLayout().getElements().empty(), "Vertex Buffer has no layout");
 
 	const BufferLayout& bufferLayout = vertexBuffer->getLayout();
 	const std::vector<BufferLayout::Element>& bufferElements = bufferLayout.getElements();

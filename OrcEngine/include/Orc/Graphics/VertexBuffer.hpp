@@ -11,12 +11,12 @@ namespace orc {
 class VertexBuffer
 {
 public:
-	VertexBuffer(const void* vertices, uint32_t size);
+	explicit VertexBuffer(uint32_t size);
 
 	template <typename T>
 	explicit VertexBuffer(std::span<T> vertices)
-		: VertexBuffer(vertices.data(), static_cast<uint32_t>(vertices.size_bytes()))
 	{
+		init(vertices.data(), static_cast<uint32_t>(vertices.size_bytes()), false);
 	}
 
 	~VertexBuffer();
@@ -26,12 +26,10 @@ public:
 	VertexBuffer(const VertexBuffer&) = delete;
 	VertexBuffer& operator=(const VertexBuffer&) = delete;
 
-	void setData(const void* data, uint32_t size);
-
 	template <typename T>
 	void setData(std::span<T> data)
 	{
-		setData(data.data(), static_cast<uint32_t>(data.size_bytes()));
+		setDataInternal(data.data(), static_cast<uint32_t>(data.size_bytes()));
 	}
 
 	void setLayout(const BufferLayout& bufferLayout);
@@ -40,6 +38,9 @@ public:
 	const BufferLayout& getLayout() const;
 
 private:
+	void init(const void* data, uint32_t size, bool dynamic);
+	void setDataInternal(const void* data, uint32_t size);
+
 	RendererID m_rendererID = 0;
 	BufferLayout m_bufferLayout;
 };

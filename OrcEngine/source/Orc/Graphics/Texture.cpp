@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Texture.hpp"
 
 #include <utility>
@@ -49,7 +47,7 @@ Texture::~Texture()
 	}
 }
 
-bool Texture::loadFromFile(const FilePath& filePath)
+void Texture::loadFromFile(const FilePath& filePath)
 {
 	if (m_rendererID)
 	{
@@ -58,12 +56,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 
 	int channels = 0, desiredChannels = 0, width = 0, height = 0;
 	unsigned char* pixels = stbi_load(filePath.string().c_str(), &width, &height, &channels, desiredChannels);
-
-	if (!pixels)
-	{
-		ORC_LOG_ERROR("Failed to load texture at path '{}'\n\tReason: {}", filePath.string(), stbi_failure_reason());
-		return false;
-	}
+	ORC_FATAL_CHECK(pixels != nullptr, "Failed to load texture at path '{}'\n\tReason: {}", filePath.string(), stbi_failure_reason());
 
 	GLenum dataFormat = 0, internalFormat = 0;
 	if (channels == 4)
@@ -77,12 +70,7 @@ bool Texture::loadFromFile(const FilePath& filePath)
 		internalFormat = GL_RGB8;
 	}
 
-	if (!dataFormat && !internalFormat)
-	{
-		ORC_LOG_ERROR("Failed to load texture at path '{}'\n\tReason: Texture format not supported", filePath.string());
-		stbi_image_free(pixels);
-		return false;
-	}
+	ORC_FATAL_CHECK(dataFormat != 0 && internalFormat != 0, "Failed to load texture at path '{}'\n\tReason: Texture format not supported", filePath.string());
 
 	m_size = Vector2f(width, height);
 
@@ -98,17 +86,11 @@ bool Texture::loadFromFile(const FilePath& filePath)
 	glTextureSubImage2D(m_rendererID, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, pixels);
 
 	stbi_image_free(pixels);
-
-	return true;
 }
 
-bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, TextureMode textureMode)
+void Texture::loadFromMemory(std::span<const unsigned char> data, uint32_t width, uint32_t height, TextureMode textureMode)
 {
-	if (!data)
-	{
-		ORC_LOG_ERROR("Failed to load texture from memory\n\tReason: Data is null");
-		return false;
-	}
+	ORC_FATAL_CHECK(!data.empty(), "Failed to load texture from memory\n\tReason: Data is empty");
 
 	if (m_rendererID)
 	{
@@ -118,19 +100,19 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	GLenum openGLTextureMode = 0;
 	switch (textureMode)
 	{
-		case TextureMode::RED:
+		case TextureMode::Red:
 			openGLTextureMode = GL_RED;
 			break;
-		case TextureMode::GREEN:
+		case TextureMode::Green:
 			openGLTextureMode = GL_GREEN;
 			break;
-		case TextureMode::BLUE:
+		case TextureMode::Blue:
 			openGLTextureMode = GL_BLUE;
 			break;
-		case TextureMode::RGB:
+		case TextureMode::Rgb:
 			openGLTextureMode = GL_RGB;
 			break;
-		case TextureMode::RGBA:
+		case TextureMode::Rgba:
 			openGLTextureMode = GL_RGBA;
 			break;
 		default:
@@ -149,9 +131,7 @@ bool Texture::loadFromMemory(const void* data, uint32_t width, uint32_t height, 
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameteri(m_rendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTextureSubImage2D(m_rendererID, 0, 0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height), openGLTextureMode, GL_UNSIGNED_BYTE, data);
-
-	return true;
+	glTextureSubImage2D(m_rendererID, 0, 0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height), openGLTextureMode, GL_UNSIGNED_BYTE, data.data());
 }
 
 void Texture::bind(uint32_t slot) const

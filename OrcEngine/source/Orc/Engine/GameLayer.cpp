@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Engine/GameLayer.hpp"
 
 #include "Events/WindowEvents.hpp"

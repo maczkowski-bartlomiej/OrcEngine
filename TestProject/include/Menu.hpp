@@ -6,7 +6,7 @@ class Menu : public orc::GameLayer
 {
 public:
 	explicit Menu(orc::LayerContext& layerContext);
-	~Menu();
+	~Menu() override;
 
 	void onAttach() override;
 	void onDetach() override;

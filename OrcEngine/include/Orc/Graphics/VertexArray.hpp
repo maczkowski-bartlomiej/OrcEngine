@@ -14,8 +14,8 @@ public:
 
 	VertexArray(VertexArray&&) = delete;
 	VertexArray(const VertexArray&) = delete;
-	VertexArray operator=(VertexArray&&) = delete;
-	VertexArray operator=(const VertexArray&) = delete;
+	VertexArray& operator=(VertexArray&&) = delete;
+	VertexArray& operator=(const VertexArray&) = delete;
 
 	void setIndexBuffer(Ref<IndexBuffer> indexBuffer);
 	void addVertexBuffer(Ref<VertexBuffer> vertexBuffer);

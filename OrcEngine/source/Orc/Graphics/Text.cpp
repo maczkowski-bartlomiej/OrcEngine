@@ -1,10 +1,8 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Text.hpp"
 
 namespace orc {
 
-Text::Text(const std::string& string)
+Text::Text(std::string_view string)
 {
 	setString(string);
 }
@@ -14,7 +12,7 @@ Text::Text(Ref<Font> font)
 	setFont(std::move(font));
 }
 
-Text::Text(Ref<Font> font, const std::string& string)
+Text::Text(Ref<Font> font, std::string_view string)
 {
 	setFont(std::move(font));
 	setString(string);
@@ -32,19 +30,23 @@ void Text::setColor(const Color& color)
 
 	Vector4f normColor = color.normalized();
 	for (Vertex& vertex : m_vertices)
+	{
 		vertex.color = normColor;
+	}
 }
 
-void Text::setString(const std::string& string)
+void Text::setString(std::string_view string)
 {
 	if (string == m_string)
+	{
 		return;
+	}
 
 	m_string = string;
 	m_isGeometryUpdateNeeded = true;
 }
 
-Ref<Font> Text::getFont() const
+const Ref<Font>& Text::getFont() const
 {
 	return m_font;
 }
@@ -62,20 +64,29 @@ std::string_view Text::getString() const
 const std::vector<Vertex>& Text::getVertices() const
 {
 	if (m_isGeometryUpdateNeeded)
+	{
 		updateVertices();
+	}
 
 	return m_vertices;
 }
 
 FloatRect Text::getLocalRect() const
 {
+	if (m_isGeometryUpdateNeeded)
+	{
+		updateVertices();
+	}
+
 	return m_localRect;
 }
 
 FloatRect Text::getGlobalRect() const
 {
 	if (m_isGeometryUpdateNeeded)
+	{
 		updateVertices();
+	}
 
 	return m_globalRect;
 }
@@ -83,12 +94,19 @@ FloatRect Text::getGlobalRect() const
 void Text::updateVertices() const
 {
 	if (!m_font)
+	{
 		return;
+	}
 
 	m_vertices.clear();
+	m_localRect = FloatRect(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (m_string.empty())
+	{
+		m_globalRect = FloatRect(0.0f, 0.0f, 0.0f, 0.0f);
+		m_isGeometryUpdateNeeded = false;
 		return;
+	}
 
 	m_vertices.reserve(m_string.size() * 4);
 
@@ -96,28 +114,44 @@ void Text::updateVertices() const
 	Vector2f bitmapSize = m_font->getBitmap()->getSize();
 	const Matrix& transform = getTransformMatrix();
 	Vector4f normColor = m_color.normalized();
+	const float lineHeight = static_cast<float>(m_font->getSize());
+
+	float maxAscender = 0.0f;
+	for (char c : m_string)
+	{
+		if (c == '\n')
+		{
+			break;
+		}
+		const Character& ch = m_font->getCharacter(static_cast<uint32_t>(static_cast<unsigned char>(c)));
+		maxAscender = std::max(maxAscender, ch.offset.y);
+	}
+	if (maxAscender == 0.0f)
+	{
+		maxAscender = lineHeight;
+	}
 
 	for (size_t i = 0; i < m_string.size(); i++)
 	{
 		if (m_string[i] == '\n')
 		{
+			m_localRect.right = std::max(m_localRect.right, position.x);
 			position.x = 0.0f;
-			position.y += m_font->getSize();
+			position.y += lineHeight;
 			continue;
 		}
 
-		Character character = m_font->getCharacter(static_cast<uint32_t>(m_string[i]));
+		const Character& character = m_font->getCharacter(static_cast<uint32_t>(static_cast<unsigned char>(m_string[i])));
 		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
 		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
 		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
 
-		float positionY = position.y;
-		position.y -= character.offset.y;
+		Vector2f glyphPos(position.x, position.y + maxAscender - character.offset.y);
 
 		m_vertices.push_back(Vertex{
-			.position = transform * Vector3f(position, 1.0f),
+			.position = transform * Vector3f(glyphPos, 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
 			.textureCoord = normalizedBitmapCoordStart,
@@ -129,7 +163,7 @@ void Text::updateVertices() const
 			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
-			.position = transform * Vector3f(position + Vector2f(width, 0.0f), 1.0f),
+			.position = transform * Vector3f(glyphPos + Vector2f(width, 0.0f), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
 			.textureCoord = Vector2f(normalizedBitmapCoordEnd.x, normalizedBitmapCoordStart.y),
@@ -141,7 +175,7 @@ void Text::updateVertices() const
 			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
-			.position = transform * Vector3f(position + Vector2f(0.0f, height), 1.0f),
+			.position = transform * Vector3f(glyphPos + Vector2f(0.0f, height), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
 			.textureCoord = Vector2f(normalizedBitmapCoordStart.x, normalizedBitmapCoordEnd.y),
@@ -153,7 +187,7 @@ void Text::updateVertices() const
 			.radius = 0.0f});
 
 		m_vertices.push_back(Vertex{
-			.position = transform * Vector3f(position + Vector2f(width, height), 1.0f),
+			.position = transform * Vector3f(glyphPos + Vector2f(width, height), 1.0f),
 			.color = normColor,
 			.secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
 			.textureCoord = normalizedBitmapCoordEnd,
@@ -164,16 +198,10 @@ void Text::updateVertices() const
 			.innerRadius = 0.0f,
 			.radius = 0.0f});
 
-		position.y = positionY;
 		position.x += character.advance;
 
 		m_localRect.right = std::max(m_localRect.right, position.x);
-		m_localRect.bottom = std::max(m_localRect.bottom, height);
-	}
-
-	for (Vertex& vertex : m_vertices)
-	{
-		vertex.position.y += m_localRect.bottom - 1;
+		m_localRect.bottom = std::max(m_localRect.bottom, position.y + lineHeight);
 	}
 
 	calculateGlobalRect();
@@ -198,14 +226,22 @@ void Text::calculateGlobalRect() const
 	for (int i = 1; i < 4; ++i)
 	{
 		if (points[i].x < left)
+		{
 			left = points[i].x;
+		}
 		else if (points[i].x > right)
+		{
 			right = points[i].x;
+		}
 
 		if (points[i].y < top)
+		{
 			top = points[i].y;
+		}
 		else if (points[i].y > bottom)
+		{
 			bottom = points[i].y;
+		}
 	}
 
 	m_globalRect = FloatRect(left, top, right - left, bottom - top);

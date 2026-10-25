@@ -68,6 +68,21 @@ fi
 if [ -z "$FMOD_ROOT" ]; then
     printf "\033[90mNote: FMOD_ROOT is not set. CMake will use multi-tier SDK discovery.\033[0m\n"
 fi
+if [ -z "$DOTNET_ROOT" ]; then
+    if [ -d "/usr/share/dotnet" ]; then
+        export DOTNET_ROOT="/usr/share/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+        printf "\033[32mAuto-detected DOTNET_ROOT at: %s\033[0m\n" "$DOTNET_ROOT"
+    elif [ -d "$HOME/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet" ]; then
+        export DOTNET_ROOT="$HOME/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+        printf "\033[32mAuto-detected DOTNET_ROOT at: %s\033[0m\n" "$DOTNET_ROOT"
+    elif [ -d "$HOME/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet" ]; then
+        export DOTNET_ROOT="$HOME/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+        printf "\033[32mAuto-detected DOTNET_ROOT at: %s\033[0m\n" "$DOTNET_ROOT"
+    fi
+fi
 
 BUILD_DIR="$REPO_ROOT/build/$PRESET"
 

@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Gui.hpp"
 
 #include <imgui_impl_glfw.h>
@@ -17,10 +15,7 @@ Gui::Gui(Window& window)
 
 	IMGUI_CHECKVERSION();
 	ImGuiContext* context = ImGui::CreateContext();
-	if (!context)
-	{
-		ORC_LOG_FATAL("Failed to initialize GUI.");
-	}
+	ORC_FATAL_CHECK(context != nullptr, "Failed to initialize GUI.");
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -32,17 +27,8 @@ Gui::Gui(Window& window)
 	*/
 
 	ImGui::StyleColorsDark();
-	if (!ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_window.getNativeWindow()), true))
-	{
-		ORC_LOG_FATAL("Failed to initialize ImGUI for GLFW.");
-		return;
-	}
-
-	if (!ImGui_ImplOpenGL3_Init("#version 460"))
-	{
-		ORC_LOG_FATAL("Failed to initialize ImGUI for OpenGL.");
-		return;
-	}
+	ORC_FATAL_CHECK(ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_window.getNativeWindow()), true), "Failed to initialize ImGUI for GLFW.");
+	ORC_FATAL_CHECK(ImGui_ImplOpenGL3_Init("#version 460"), "Failed to initialize ImGUI for OpenGL.");
 }
 
 Gui::~Gui()

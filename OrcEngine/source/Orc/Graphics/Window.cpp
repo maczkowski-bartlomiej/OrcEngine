@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Window.hpp"
 
 #include <utility>
@@ -14,14 +12,18 @@
 #include "Input/Keyboard.hpp"
 #include "Input/Mouse.hpp"
 
+namespace orc {
+
+namespace {
+
 constexpr int OPENGL_MAJOR_VERSION = 4;
 constexpr int OPENGL_MINOR_VERSION = 6;
 
-namespace orc {
-
-static void glfwErrorCallback(int code, const char* description) noexcept
+void glfwErrorCallback(int code, const char* description) noexcept
 {
-	ORC_LOG_ERROR("GLFW error occurred...\n\tCode: {}\n\tDescription: {}", code, description);
+	ORC_FATAL("GLFW error occurred...\n\tCode: {}\n\tDescription: {}", code, description);
+}
+
 }
 
 Window::Window(const VideoSettings& videoSettings)
@@ -46,7 +48,7 @@ void Window::display()
 	glfwSwapBuffers(m_glfwWindow);
 }
 
-void Window::setTitle(const std::string& title)
+void Window::setTitle(std::string_view title)
 {
 	m_videoSettings.title = title;
 	glfwSetWindowTitle(m_glfwWindow, m_videoSettings.title.c_str());
@@ -120,14 +122,9 @@ void Window::updateFramebufferDimensions()
 	m_framebufferHeight = static_cast<uint32_t>(fbHeight);
 }
 
-bool Window::initGLAD()
+void Window::initGLAD()
 {
-	int errorResult = glfwInit();
-	if (!errorResult)
-	{
-		ORC_LOG_FATAL("Failed to initialize GLFW.");
-		return false;
-	}
+	ORC_FATAL_CHECK(glfwInit(), "Failed to initialize GLFW.");
 
 	glfwSetErrorCallback(&glfwErrorCallback);
 
@@ -135,25 +132,19 @@ bool Window::initGLAD()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 
 	m_glfwWindow = glfwCreateWindow(static_cast<int>(m_videoSettings.width), static_cast<int>(m_videoSettings.height), m_videoSettings.title.c_str(), nullptr, nullptr);
+	ORC_FATAL_CHECK(m_glfwWindow != nullptr, "Failed to create GLFW window.");
 
 	glfwMakeContextCurrent(m_glfwWindow);
 	updateFramebufferDimensions();
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);
 
-	errorResult = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-	if (!errorResult)
-	{
-		ORC_LOG_FATAL("Failed to initialize GLAD.");
-		return false;
-	}
+	ORC_FATAL_CHECK(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Failed to initialize GLAD.");
 
 	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, reinterpret_cast<const char*>(glGetString(GL_VENDOR)), reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);
-
-	return true;
 }
 
 void Window::setCallbacks()

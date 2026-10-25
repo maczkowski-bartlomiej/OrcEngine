@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/IndexBuffer.hpp"
 
 #include <utility>
@@ -8,11 +6,11 @@
 
 namespace orc {
 
-IndexBuffer::IndexBuffer(const uint32_t* indices, uint32_t count)
-	: m_count(count)
+IndexBuffer::IndexBuffer(std::span<const uint32_t> indices)
+	: m_count(static_cast<uint32_t>(indices.size()))
 {
 	glCreateBuffers(1, &m_rendererID);
-	glNamedBufferData(m_rendererID, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+	glNamedBufferData(m_rendererID, indices.size_bytes(), indices.data(), GL_STATIC_DRAW);
 }
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept

@@ -1,11 +1,9 @@
-#include "OrcPch.hpp"
-
 #include "Engine/Logger.hpp"
 
 #include <array>
+#include <cstdlib>
 #include <iostream>
 
-#include <spdlog/async.h>
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -34,19 +32,18 @@ public:
 
 }
 
-bool Logger::init(const std::string& logPath)
+void Logger::init(const FilePath& logPath)
 {
 	try
 	{
-		if (std::filesystem::path p(logPath); p.has_parent_path())
+		if (logPath.has_parent_path())
 		{
-			std::filesystem::create_directories(p.parent_path());
+			std::filesystem::create_directories(logPath.parent_path());
 		}
 
-		spdlog::init_thread_pool(8192, 1);
 		std::vector<spdlog::sink_ptr> sinks{
 			std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath, true)};
+			std::make_shared<spdlog::sinks::basic_file_sink_mt>(logPath.string(), true)};
 
 		std::string pattern = "[%H:%M:%S %s:%#] [%^%*%$] %v";
 
@@ -56,26 +53,33 @@ bool Logger::init(const std::string& logPath)
 		sinks[0]->set_formatter(formatter->clone());
 		sinks[1]->set_formatter(formatter->clone());
 
-		m_logger = std::make_shared<spdlog::async_logger>("ENGINE", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+		m_logger = std::make_shared<spdlog::logger>("ENGINE", sinks.begin(), sinks.end());
 		m_logger->set_level(spdlog::level::info);
 		m_logger->flush_on(spdlog::level::level_enum::err);
 
 		m_logger->set_error_handler([](const std::string& msg) { m_logger->error("Tried to pass invalid arguments to Logger: {}", msg); });
-
-		return true;
 	}
 	catch (const spdlog::spdlog_ex& exception)
 	{
 		std::cerr << "[FATAL] Failed to initialize Logger...\n\tReason: " << exception.what() << std::endl;
 		ORC_DEBUGBREAK();
+		std::abort();
 	}
-
-	return false;
 }
 
 void Logger::deinit()
 {
+	flush();
+	m_logger.reset();
 	spdlog::shutdown();
+}
+
+void Logger::flush()
+{
+	if (m_logger)
+	{
+		m_logger->flush();
+	}
 }
 
 }

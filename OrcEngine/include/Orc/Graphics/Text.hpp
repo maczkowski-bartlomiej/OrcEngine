@@ -16,15 +16,15 @@ class Text : public Transformable
 {
 public:
 	Text() = default;
-	explicit Text(const std::string& string);
+	explicit Text(std::string_view string);
 	explicit Text(Ref<Font> font);
-	Text(Ref<Font> font, const std::string& string);
+	Text(Ref<Font> font, std::string_view string);
 
 	void setFont(Ref<Font> font);
 	void setColor(const Color& color);
-	void setString(const std::string& string);
+	void setString(std::string_view string);
 
-	Ref<Font> getFont() const;
+	const Ref<Font>& getFont() const;
 	const Color& getColor() const;
 	std::string_view getString() const;
 	const std::vector<Vertex>& getVertices() const;

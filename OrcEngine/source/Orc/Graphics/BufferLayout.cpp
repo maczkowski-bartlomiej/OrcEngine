@@ -1,11 +1,10 @@
-#include "OrcPch.hpp"
 #include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>
 
 namespace orc {
 
-BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized)
+BufferLayout::Element::Element(ShaderDataType type, std::string_view name, bool normalized)
 	: normalized(normalized), name(name), size(getShaderDataTypeSize(type)), offset(0), type(type)
 {
 }
@@ -38,7 +37,7 @@ BufferLayout::BufferLayout()
 {
 }
 
-BufferLayout::BufferLayout(const std::initializer_list<Element>& elements)
+BufferLayout::BufferLayout(std::initializer_list<Element> elements)
 	: m_stride(0), m_elements(elements)
 {
 	uint32_t offset = 0;

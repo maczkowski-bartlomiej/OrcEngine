@@ -11,13 +11,7 @@ class IndexBuffer
 {
 public:
 	IndexBuffer() = default;
-	IndexBuffer(const uint32_t* indices, uint32_t count);
-
-	template <typename T>
-	explicit IndexBuffer(std::span<T> indices)
-		: IndexBuffer(indices.data(), static_cast<uint32_t>(indices.size()))
-	{
-	}
+	explicit IndexBuffer(std::span<const uint32_t> indices);
 
 	~IndexBuffer();
 

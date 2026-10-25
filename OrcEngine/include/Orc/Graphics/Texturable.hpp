@@ -20,7 +20,7 @@ public:
 	void setTexture(Ref<Texture> texture);
 	void setTextureRect(const FloatRect& textureRect);
 
-	Ref<Texture> getTexture() const;
+	const Ref<Texture>& getTexture() const;
 	FloatRect getTextureRect() const;
 
 	FloatRect getGlobalRect() const;

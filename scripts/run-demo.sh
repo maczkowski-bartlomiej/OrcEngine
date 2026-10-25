@@ -42,6 +42,19 @@ if [ ! -f "$EXE" ]; then
     exit 1
 fi
 
+if [ -z "$DOTNET_ROOT" ]; then
+    if [ -d "/usr/share/dotnet" ]; then
+        export DOTNET_ROOT="/usr/share/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+    elif [ -d "$HOME/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet" ]; then
+        export DOTNET_ROOT="$HOME/.local/share/JetBrains/Toolbox/apps/rider/lib/ReSharperHost/linux-x64/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+    elif [ -d "$HOME/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet" ]; then
+        export DOTNET_ROOT="$HOME/.local/share/JetBrains/Toolbox/apps/clion/plugins/clion-radler/DotFiles/linux-x64/dotnet"
+        export PATH="$DOTNET_ROOT:$PATH"
+    fi
+fi
+
 LOG_FILE="$BUILD_DIR/logs/TestProject.log"
 [ -f "$LOG_FILE" ] || LOG_FILE="$REPO_ROOT/logs/TestProject.log"
 

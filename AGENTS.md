@@ -16,7 +16,7 @@ OrcEngine is a modular 2D game engine built in C++20 using OpenGL 4.6 (Core Prof
 
 ### Repository Layout
 - **Public Engine Headers**: `OrcEngine/include/Orc/` (umbrella header: `OrcEngine/include/Orc/Orc.hpp`)
-- **Engine Source**: `OrcEngine/source/Orc/` (precompiled header: `OrcPch.hpp`)
+- **Engine Source**: `OrcEngine/source/Orc/` (precompiled header: `OrcEngine/include/Orc/OrcPch.hpp`)
 - **Managed C# Scripting**: `OrcEngine.Scripting/` (`OrcEngine.Scripting.csproj`, compiled into the executable directory)
 - **Demo & Integration Harness**: `TestProject/include/`, `TestProject/source/`, `TestProject/assets/`, `TestProject/shaders/`
 - **Standards & Domain Docs**: [`GLOSSARY.md`](GLOSSARY.md) (ubiquitous language), [`CODING_STANDARDS.md`](CODING_STANDARDS.md) (C++20/C# rules), `docs/adr/` (architecture decisions), `docs/agents/` (agent workflow protocols)
@@ -57,20 +57,21 @@ OrcEngine is a modular 2D game engine built in C++20 using OpenGL 4.6 (Core Prof
 Always check existing ADRs before proposing architectural changes, and flag any contradiction explicitly:
 - **Core Primitives (`Orc/Core/`)**: Layer 0 platform macros, `Ref<T>`/`UniquePtr<T>`, math/path aliases, and version constants $\rightarrow$ [ADR 0006](docs/adr/0006-modularize-core-primitives.md).
 - **2D Rendering & Quad Batcher (`Orc/Graphics/`)**: Unified `orc::Vertex`, non-templated `Texturable`, 32-slot texture batching, lines as oriented quads, and natural submission order $\rightarrow$ [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md), [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md).
-- **Font Lifecycle (`Orc/Graphics/Font.hpp`)**: Local `FT_Library`/`FT_Face` RAII scoping during glyph atlas generation $\rightarrow$ [ADR 0003](docs/adr/0003-localize-freetype-lifecycle.md).
+- **Font Lifecycle & Platform SDKs (`Orc/Graphics/Font.hpp`)**: ISO C++20 `__VA_OPT__` macros and multi-tier SDK discovery $\rightarrow$ [ADR 0003](docs/adr/0003-cross-platform-preprocessor-and-multi-tier-sdk-discovery.md).
 - **Game Layers & `LayerContext` (`Orc/Engine/`)**: Constructor-injected `LayerContext&` and singleton-free layer lifecycle $\rightarrow$ [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
-- **Events & Input (`Orc/Window/`, `Orc/Engine/Input.hpp`)**: Polymorphic `Event` hierarchy, `getEvent<T>(event)` downcasting, and event-driven `Input` state $\rightarrow$ [ADR 0005](docs/adr/0005-revert-to-polymorphic-event-hierarchy.md).
-- **Viewport & Camera Sync (`Orc/Graphics/`, `Orc/Window/`)**: Authoritative `Renderer::setViewport` from `Window::getFramebufferSize()` and automatic camera viewport synchronization on resize/layer switch $\rightarrow$ [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
+- **Events & Input (`Orc/Events/`, `Orc/Input/Input.hpp`)**: Polymorphic `Event` hierarchy, `getEvent<T>(event)` downcasting, and event-driven `Input` state $\rightarrow$ [ADR 0005](docs/adr/0005-revert-to-polymorphic-event-hierarchy.md).
+- **Viewport & Camera Sync (`Orc/Graphics/`, `Orc/Graphics/Window.hpp`)**: Authoritative `Renderer::setViewport` from `Window::getFramebufferSize()` and automatic camera viewport synchronization on resize/layer switch $\rightarrow$ [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
 - **C# Scripting (`Orc/Script/`, `OrcEngine.Scripting/`)**: .NET 10 CoreCLR hosting via `nethost`/`hostfxr`, direct class layout without PIMPL, and unconditional `ORC_FATAL_CHECK` fail-fast semantics $\rightarrow$ [ADR 0008](docs/adr/0008-hostfxr-dotnet-coreclr-scripting.md).
+- **Universal Fail-Fast Error Handling (`Orc/Engine/Debug.hpp`, `Orc/Audio/AudioUtility.hpp`, `Orc/Graphics/FontUtility.hpp`)**: Unconditional `ORC_FATAL_CHECK` / `ORC_FATAL` (`std::abort()` in Debug and Release), `ORC_FMOD_CALL` / `ORC_FT_CALL` macro wrappers, and zero `bool`/`nullptr` error returns or defensive half-initialized state guards $\rightarrow$ [ADR 0009](docs/adr/0009-universal-fail-fast-error-handling.md).
 
 ---
 
 ## 3. Coding Standards & Conventions
 
 Read [`CODING_STANDARDS.md`](CODING_STANDARDS.md) when writing, refactoring, or reviewing C++ or C# code. Key invariants:
-- **Formatting**: Tabs for indentation, Allman braces (new line), `#pragma once` in all headers, `#include "OrcPch.hpp"` first in engine `.cpp` files, and new public headers added to `OrcEngine/include/Orc/Orc.hpp`.
+- **Formatting**: Tabs for indentation, Allman braces (new line), `#pragma once` in all headers, automatic CMake `target_precompile_headers` injection of `OrcPch.hpp` without manual includes in engine `.cpp` files, and new public headers added to `OrcEngine/include/Orc/Orc.hpp`.
 - **Naming**: `orc` lowercase namespace, `PascalCase` types/enums/files, `camelCase` methods/locals, `m_camelCase` member variables, `UPPER_SNAKE_CASE` constants/macros.
-- **Signatures & Safety**: `explicit` single-arg constructors, `std::string_view` for read-only strings, `const FilePath&` for paths, `Ref<T>` by value + `std::move` for sinks and `const Ref<T>&` for observers, logical `const` correctness, anonymous namespaces for `.cpp`-local helpers, and zero compiler warnings.
+- **Signatures & Safety**: `explicit` single-arg constructors, `std::string_view` for read-only strings, `const FilePath&` for paths, `Ref<T>` by value + `std::move` for sinks and `const Ref<T>&` for observers, logical `const` correctness, anonymous namespaces for `.cpp`-local helpers, unconditional fail-fast checks (`ORC_FATAL_CHECK`, `ORC_FATAL`, `ORC_FMOD_CALL`, `ORC_FT_CALL`), and zero compiler warnings.
 
 ---
 

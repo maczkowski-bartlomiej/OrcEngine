@@ -6,7 +6,7 @@ class SpritesTest : public orc::GameLayer
 {
 public:
 	explicit SpritesTest(orc::LayerContext& layerContext);
-	~SpritesTest();
+	~SpritesTest() override;
 
 	void onAttach() override;
 	void onDetach() override;

@@ -6,7 +6,7 @@ class ScriptTest : public orc::GameLayer
 {
 public:
 	explicit ScriptTest(orc::LayerContext& layerContext);
-	~ScriptTest();
+	~ScriptTest() override;
 
 	void onAttach() override;
 	void onDetach() override;

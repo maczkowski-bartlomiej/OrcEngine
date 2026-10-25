@@ -4,10 +4,10 @@
 
 namespace orc {
 
-Camera::Camera(const FloatRect& viewPort)
+Camera::Camera(const FloatRect& viewport)
 	: m_viewMatrix(1.0f)
 {
-	setViewportSize(viewPort);
+	setViewportSize(viewport);
 }
 
 Camera::Camera(float left, float top, float right, float bottom)
@@ -40,14 +40,14 @@ void Camera::setPosition(const Vector2f& position)
 	recalculateViewMatrix();
 }
 
-void Camera::setViewportSize(const FloatRect& viewPort)
+void Camera::setViewportSize(const FloatRect& viewport)
 {
-	setViewportSize(viewPort.left, viewPort.top, viewPort.right, viewPort.bottom);
+	setViewportSize(viewport.left, viewport.top, viewport.right, viewport.bottom);
 }
 
 void Camera::setViewportSize(float left, float top, float right, float bottom)
 {
-	m_viewPort = FloatRect(left, top, right, bottom);
+	m_viewport = FloatRect(left, top, right, bottom);
 	m_projectionMatrix = glm::ortho(left, right, bottom, top, 1.0f, -1.0f);
 	recalculateViewMatrix();
 }
@@ -94,7 +94,7 @@ const Matrix4& Camera::getViewProjectionMatrix() const
 
 void Camera::recalculateViewMatrix()
 {
-	Vector3f center((m_viewPort.right - m_viewPort.left) / 2.0f, (m_viewPort.bottom - m_viewPort.top) / 2.0f, 0.0f);
+	Vector3f center((m_viewport.right - m_viewport.left) / 2.0f, (m_viewport.bottom - m_viewport.top) / 2.0f, 0.0f);
 	m_viewMatrix =
 		glm::translate(Matrix4(1.0f), center) *
 		glm::scale(Matrix4(1.0f), Vector3f(m_zoom, m_zoom, 1.0f)) *

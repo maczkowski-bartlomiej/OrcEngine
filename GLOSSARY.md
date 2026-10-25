@@ -51,3 +51,7 @@ _Avoid_: WindowPixels, ScreenResolution, RenderTargetSize
 **Scripting**:
 The engine subsystem responsible for hosting the .NET 10 CoreCLR runtime via `hostfxr`, loading managed assemblies, and binding native-managed entry points with unconditional fail-fast crash semantics.
 _Avoid_: Mono, ScriptEngine, DotNetManager, CSharpRuntime
+
+**Fail-Fast Crash Contract**:
+The engine-wide invariant that reaching any invalid state immediately logs a fatal error and terminates the process in both Debug and Release configurations, guaranteeing that all live engine objects and resources are valid without defensive state checks or boolean error returns.
+_Avoid_: Soft assert, recoverable error return, defensive null guard, silent fallback

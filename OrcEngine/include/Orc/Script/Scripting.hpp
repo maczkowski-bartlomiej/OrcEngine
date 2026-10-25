@@ -20,7 +20,11 @@ private:
 	void initializeRuntime();
 
 	FilePath m_configPath;
-	void* m_hostfxrLib{nullptr};
+	void* m_hostfxrLib = nullptr;
+	void* m_hostfxrInitializeForRuntimeConfig = nullptr;
+	void* m_hostfxrGetRuntimeDelegate = nullptr;
+	void* m_hostfxrClose = nullptr;
+	void* m_loadAssemblyAndGetFunctionPointer = nullptr;
 };
 
-} // namespace orc
+}

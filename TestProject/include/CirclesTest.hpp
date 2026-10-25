@@ -6,7 +6,7 @@ class CirclesTest : public orc::GameLayer
 {
 public:
 	explicit CirclesTest(orc::LayerContext& layerContext);
-	~CirclesTest();
+	~CirclesTest() override;
 
 	void onAttach() override;
 	void onDetach() override;

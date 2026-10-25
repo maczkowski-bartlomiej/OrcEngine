@@ -12,6 +12,11 @@ public:
 	explicit Gui(Window& window);
 	~Gui();
 
+	Gui(const Gui&) = delete;
+	Gui& operator=(const Gui&) = delete;
+	Gui(Gui&&) = delete;
+	Gui& operator=(Gui&&) = delete;
+
 	void begin();
 	void end();
 

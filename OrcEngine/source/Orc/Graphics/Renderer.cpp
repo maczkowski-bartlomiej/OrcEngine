@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Renderer.hpp"
 
 #include <cmath>
@@ -25,9 +23,9 @@ Renderer::Renderer()
 
 	std::array<int32_t, MAX_TEXTURE_SLOTS> samplers;
 	std::iota(samplers.begin(), samplers.end(), 0);
-	m_quadShader->uploadUniformIntArray("u_textures", samplers.data(), MAX_TEXTURE_SLOTS);
+	m_quadShader->uploadUniformIntArray("u_textures", samplers);
 
-	m_quadVertexBuffer = createRef<VertexBuffer>(nullptr, static_cast<int32_t>(sizeof(Vertex) * MAX_QUAD_VERTICES));
+	m_quadVertexBuffer = createRef<VertexBuffer>(static_cast<uint32_t>(sizeof(Vertex) * MAX_QUAD_VERTICES));
 	m_quadVertexBuffer->setLayout(BufferLayout{
 		{BufferLayout::ShaderDataType::Float3, "a_position"},
 		{BufferLayout::ShaderDataType::Float4, "a_color"},
@@ -54,7 +52,7 @@ Renderer::Renderer()
 		offset += 4;
 	}
 
-	Ref<IndexBuffer> quadIndexBuffer = createRef<IndexBuffer>(quadIndices.data(), MAX_QUAD_INDICES);
+	Ref<IndexBuffer> quadIndexBuffer = createRef<IndexBuffer>(std::span<const uint32_t>{quadIndices});
 
 	m_quadVertexArray = createRef<VertexArray>();
 	m_quadVertexArray->addVertexBuffer(m_quadVertexBuffer);
@@ -111,12 +109,16 @@ void Renderer::startBatch()
 void Renderer::flush()
 {
 	if (m_quadVerticesCount == 0)
+	{
 		return;
+	}
 
-	ORC_ASSERT(m_isSceneActive, "Cannot flush renderer outside of active Scene Scope!");
+	ORC_FATAL_CHECK(m_isSceneActive, "Cannot flush renderer outside of active Scene Scope!");
 
 	for (uint32_t s = 0; s < m_textures.size(); ++s)
+	{
 		m_textures[s]->bind(s);
+	}
 
 	m_quadShader->bind();
 	m_quadShader->uploadUniformMatrix4("u_viewProjectionMatrix", m_viewProjectionMatrix);
@@ -131,12 +133,16 @@ void Renderer::flush()
 float Renderer::getTextureSlot(const Ref<Texture>& texture)
 {
 	if (!texture)
+	{
 		return EMPTY_TEXTURE_SLOT;
+	}
 
 	for (size_t i = 0; i < m_textures.size(); ++i)
 	{
 		if (m_textures[i]->getRendererID() == texture->getRendererID())
+		{
 			return static_cast<float>(i);
+		}
 	}
 
 	if (m_textures.size() >= MAX_TEXTURE_SLOTS)
@@ -151,10 +157,12 @@ float Renderer::getTextureSlot(const Ref<Texture>& texture)
 
 void Renderer::submitQuad(const std::array<Vertex, 4>& vertices, const Ref<Texture>& texture)
 {
-	ORC_ASSERT(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
+	ORC_FATAL_CHECK(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
 
 	if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
+	{
 		flush();
+	}
 
 	float textureSlot = getTextureSlot(texture);
 
@@ -168,8 +176,7 @@ void Renderer::submitQuad(const std::array<Vertex, 4>& vertices, const Ref<Textu
 
 void Renderer::draw(const Sprite& sprite)
 {
-	if (!sprite.getTexture())
-		return;
+	ORC_FATAL_CHECK(sprite.getTexture() != nullptr, "Cannot draw Sprite without a valid Texture!");
 
 	submitQuad(sprite.getVertices(), sprite.getTexture());
 }
@@ -186,19 +193,19 @@ void Renderer::draw(const Circle& circle)
 
 void Renderer::draw(const Text& text)
 {
-	ORC_ASSERT(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
+	ORC_FATAL_CHECK(m_isSceneActive, "Cannot submit geometry outside of active Scene Scope!");
+	ORC_FATAL_CHECK(text.getFont() != nullptr && text.getFont()->getBitmap() != nullptr, "Cannot draw Text without a valid Font!");
 
-	if (!text.getFont() || !text.getFont()->getBitmap())
-		return;
-
-	Ref<Texture> fontBitmap = text.getFont()->getBitmap();
+	const Ref<Texture>& fontBitmap = text.getFont()->getBitmap();
 	const auto& glyphVertices = text.getVertices();
 	size_t count = glyphVertices.size();
 
 	for (size_t i = 0; i < count; i += 4)
 	{
 		if (m_quadVerticesCount + 4 >= MAX_QUAD_VERTICES)
+		{
 			flush();
+		}
 
 		float texSlot = getTextureSlot(fontBitmap);
 		size_t verticesToCopy = std::min<size_t>(4, count - i);
@@ -217,7 +224,9 @@ void Renderer::drawLine(const Vector3f& start, const Vector3f& end, const Color&
 	Vector2f dir = Vector2f(end.x - start.x, end.y - start.y);
 	float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
 	if (len < 0.0001f)
+	{
 		return;
+	}
 
 	// Compute perpendicular normal for thickness
 	Vector2f normal = Vector2f(-dir.y / len, dir.x / len) * (thickness * 0.5f);
@@ -240,7 +249,7 @@ void Renderer::drawLine(const Vector2f& start, const Vector2f& end, const Color&
 
 void Renderer::draw(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const Matrix& transform)
 {
-	ORC_ASSERT(m_isSceneActive, "Cannot draw geometry outside of active Scene Scope!");
+	ORC_FATAL_CHECK(m_isSceneActive, "Cannot draw geometry outside of active Scene Scope!");
 
 	// Direct internal flush of any active batch before executing unbatched mesh draw
 	flush();

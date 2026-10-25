@@ -15,8 +15,10 @@ public:
 	// clang-format on
 };
 
-namespace glfw {
-Mouse::Button glfwButtonToOrcButton(int glfwButton);
 }
+
+namespace orc::glfw {
+
+Mouse::Button glfwButtonToOrcButton(int glfwButton);
 
 }

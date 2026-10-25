@@ -1,5 +1,3 @@
-#include "OrcPch.hpp"
-
 #include "Engine/GameLayerManager.hpp"
 
 #include <string>
@@ -11,40 +9,34 @@
 
 namespace orc {
 
-void GameLayerManager::setActiveLayer(const std::string& name)
+void GameLayerManager::setActiveLayer(std::string_view name)
 {
-	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
+	ORC_FATAL_CHECK(!name.empty(), "Game layer name string is empty.");
 
-	if (const auto find = m_layers.find(name); find != m_layers.end())
+	const auto find = m_layers.find(name);
+	ORC_FATAL_CHECK(find != m_layers.end(), "Requested switch to non-existing game layer '{}'.", name);
+
+	if (find->second == m_activeLayer)
 	{
-		if (find->second == m_activeLayer)
-		{
-			ORC_LOG_WARNING("Requested switch to already active game layer '{}.'", name);
-			return;
-		}
-
-		if (m_activeLayer)
-			m_activeLayer->onDetach();
-
-		m_activeLayer = find->second;
-		m_activeLayer->syncCameraWithWindow();
-		m_activeLayer->onAttach();
+		ORC_LOG_WARNING("Requested switch to already active game layer '{}'.", name);
+		return;
 	}
-	else
+
+	if (m_activeLayer)
 	{
-		ORC_LOG_ERROR("Requested switch to non-existing game layer '{}.'", name);
+		m_activeLayer->onDetach();
 	}
+
+	m_activeLayer = find->second;
+	m_activeLayer->syncCameraWithWindow();
+	m_activeLayer->onAttach();
 }
 
-void GameLayerManager::addLayer(const std::string& name, Ref<GameLayer> gameLayer)
+void GameLayerManager::addLayer(std::string_view name, Ref<GameLayer> gameLayer)
 {
-	ORC_ASSERT(!name.empty(), "Game layer name string is empty.");
-	ORC_ASSERT(gameLayer, "Game layer is nullptr.");
-
-	if (!m_layers.try_emplace(name, std::move(gameLayer)).second)
-	{
-		ORC_LOG_WARNING("Game layer '{}' is already added.", name);
-	}
+	ORC_FATAL_CHECK(!name.empty(), "Game layer name string is empty.");
+	ORC_FATAL_CHECK(gameLayer != nullptr, "Game layer is nullptr.");
+	ORC_FATAL_CHECK(m_layers.try_emplace(std::string(name), std::move(gameLayer)).second, "Game layer '{}' is already added.", name);
 }
 
 void GameLayerManager::clear()
@@ -58,7 +50,7 @@ void GameLayerManager::clear()
 	m_layers.clear();
 }
 
-Ref<GameLayer> GameLayerManager::getActiveLayer() const
+const Ref<GameLayer>& GameLayerManager::getActiveLayer() const
 {
 	return m_activeLayer;
 }
