@@ -1,6 +1,7 @@
 #include "Script/Scripting.hpp"
 
 #include <filesystem>
+#include <string_view>
 
 #include <coreclr_delegates.h>
 #include <hostfxr.h>
@@ -26,10 +27,16 @@
 #define ORC_DOTNET_STR(s) s
 #endif
 
+namespace {
+
+constexpr std::string_view RUNTIME_CONFIG_PATH = "OrcEngine.Scripting.runtimeconfig.json";
+constexpr std::string_view SCRIPTING_DLL_NAME = "OrcEngine.Scripting.dll";
+
+}
+
 namespace orc {
 
-Scripting::Scripting(const FilePath& configPath)
-	: m_configPath(configPath)
+Scripting::Scripting()
 {
 	ORC_LOG_INFO("Initializing Scripting.");
 	loadHostFxr();
@@ -65,9 +72,9 @@ void Scripting::loadHostFxr()
 
 void Scripting::initializeRuntime()
 {
-	ORC_FATAL_CHECK(std::filesystem::exists(m_configPath), "Runtime configuration file not found at: {}", m_configPath.string());
+	ORC_FATAL_CHECK(std::filesystem::exists(RUNTIME_CONFIG_PATH), "Runtime configuration file not found at: {}", RUNTIME_CONFIG_PATH);
 
-	const auto canonicalConfigPath = std::filesystem::canonical(m_configPath);
+	const auto canonicalConfigPath = std::filesystem::canonical(RUNTIME_CONFIG_PATH);
 
 	hostfxr_handle context = nullptr;
 	auto initFn = reinterpret_cast<hostfxr_initialize_for_runtime_config_fn>(m_hostfxrInitializeForRuntimeConfig);
@@ -83,7 +90,7 @@ void Scripting::initializeRuntime()
 	auto closeFn = reinterpret_cast<hostfxr_close_fn>(m_hostfxrClose);
 	closeFn(context);
 
-	const auto assemblyPath = canonicalConfigPath.parent_path() / "OrcEngine.Scripting.dll";
+	const auto assemblyPath = canonicalConfigPath.parent_path() / SCRIPTING_DLL_NAME;
 	ORC_FATAL_CHECK(std::filesystem::exists(assemblyPath), "Managed assembly DLL does not exist: {}", assemblyPath.string());
 
 	const auto canonicalAssemblyPath = std::filesystem::canonical(assemblyPath);

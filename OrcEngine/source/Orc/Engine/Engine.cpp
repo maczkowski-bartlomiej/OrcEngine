@@ -24,7 +24,7 @@ Engine::Engine(const Config& config)
 
 	ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
 
-	m_scripting = createUniquePtr<Scripting>(config.scriptingConfigPath);
+	m_scripting = createUniquePtr<Scripting>();
 
 	m_gameLayerManager = createUniquePtr<GameLayerManager>();
 

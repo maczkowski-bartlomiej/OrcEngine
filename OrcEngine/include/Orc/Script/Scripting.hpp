@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Core/Types.hpp"
-
 namespace orc {
 
 class Scripting
 {
 public:
-	explicit Scripting(const FilePath& configPath = "OrcEngine.Scripting.runtimeconfig.json");
+	Scripting();
 	~Scripting();
 
 	Scripting(const Scripting&) = delete;
@@ -19,7 +17,6 @@ private:
 	void loadHostFxr();
 	void initializeRuntime();
 
-	FilePath m_configPath;
 	void* m_hostfxrLib = nullptr;
 	void* m_hostfxrInitializeForRuntimeConfig = nullptr;
 	void* m_hostfxrGetRuntimeDelegate = nullptr;

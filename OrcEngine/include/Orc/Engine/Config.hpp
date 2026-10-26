@@ -23,7 +23,6 @@ struct Config
 	FilePath shadersPath = "assets/shaders.xml";
 	FilePath texturesPath = "assets/textures.xml";
 	FilePath animationsPath = "assets/animations.xml";
-	FilePath scriptingConfigPath = "OrcEngine.Scripting.runtimeconfig.json";
 
 	Audio::AudioSettings audioSettings;
 	Window::VideoSettings videoSettings;
