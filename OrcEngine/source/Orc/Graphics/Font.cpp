@@ -22,18 +22,28 @@ Font::Font(const FilePath& filePath, uint32_t size)
 void Font::loadFromFile(const FilePath& filePath, uint32_t size)
 {
 	FT_Library ftLibrary = nullptr;
-	ORC_FT_CALL(FT_Init_FreeType(&ftLibrary), "Failed to initialize FreeType Library.");
+	ORC_FT_CALL(
+		FT_Init_FreeType(&ftLibrary),
+		"Failed to initialize FreeType Library.");
 
 	FT_Face face = nullptr;
-	ORC_FT_CALL(FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face), "Failed to load font from '{}'.", filePath.string());
-	ORC_FT_CALL(FT_Set_Pixel_Sizes(face, 0, size), "Failed to set font pixel size of {}.", size);
+	ORC_FT_CALL(
+		FT_New_Face(ftLibrary, filePath.string().c_str(), 0, &face),
+		"Failed to load font from '{}'.", filePath.string());
+	ORC_FT_CALL(
+		FT_Set_Pixel_Sizes(face, 0, size),
+		"Failed to set font pixel size of {}.", size);
 
 	m_size = size;
 
 	calculateBitmap(face);
 
-	ORC_FT_CALL(FT_Done_Face(face), "Failed to deinitialize font.");
-	ORC_FT_CALL(FT_Done_FreeType(ftLibrary), "Failed to deinitialize FreeType Library.");
+	ORC_FT_CALL(
+		FT_Done_Face(face),
+		"Failed to deinitialize font.");
+	ORC_FT_CALL(
+		FT_Done_FreeType(ftLibrary),
+		"Failed to deinitialize FreeType Library.");
 }
 
 void Font::calculateBitmap(FT_Face face)
@@ -54,7 +64,9 @@ void Font::calculateBitmap(FT_Face face)
 	uint32_t currentX = 0, currentY = 0;
 	for (uint32_t i = 0; i < CHARACTER_COUNT; i++)
 	{
-		ORC_FT_CALL(FT_Load_Char(face, i, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT), "Failed to load character code {} from font.", i);
+		ORC_FT_CALL(
+			FT_Load_Char(face, i, FT_LOAD_RENDER | FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT),
+			"Failed to load character code {} from font.", i);
 
 		FT_Bitmap* bitmap = &face->glyph->bitmap;
 

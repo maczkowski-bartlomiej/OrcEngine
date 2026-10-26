@@ -84,7 +84,12 @@ Use domain terms strictly as defined in [`GLOSSARY.md`](GLOSSARY.md) and avoid l
 ## 6. Formatting & File Layout
 
 - **Indentation**: Tabs (enforced by `scripts/lint-conventions`).
-- **Line Wrapping**: Keep statements, function calls, casts, and logging/fatal-check macro invocations (`ORC_LOG_*`, `ORC_FATAL`, `ORC_FATAL_CHECK`, `ORC_FMOD_CALL`, `ORC_FT_CALL`) on a single line (`ColumnLimit: 0` in `.clang-format`). Do not artificially wrap arguments across multiple lines.
+- **Line Wrapping**: Keep statements, function calls, casts, and logging/fatal-check macro invocations (`ORC_LOG_*`, `ORC_FATAL`, `ORC_FATAL_CHECK`) on a single line (`ColumnLimit: 0` in `.clang-format`). Do not artificially wrap arguments across multiple lines. For SDK call wrappers (`ORC_FMOD_CALL`, `ORC_FT_CALL`), wrap arguments across two lines: the first line for the SDK call and the second line for the error message (including any variadic format arguments):
+  ```cpp
+  ORC_FMOD_CALL(
+  	FMOD::Studio::System::create(&m_system),
+  	"Failed to create FMOD system.");
+  ```
 - **Braces**: Allman style (opening brace on a new line) is mandatory for classes, structs, enums, functions, and all control statements (`if`, `else`, `for`, `while`, and `do`, including single-statement bodies). `namespace` declarations and lambdas place opening braces on the same line (`namespace orc {`, `[]() {`). `switch` `case` labels do not use block braces unless required for variable scoping.
 - **Header Guards**: `#pragma once` at the top of every `.hpp` and `.inl` file.
 - **Precompiled Header**: `OrcPch.hpp` is automatically force-included by CMake (`target_precompile_headers`) across all engine translation units; do not manually `#include "OrcPch.hpp"` in `.cpp` files.
