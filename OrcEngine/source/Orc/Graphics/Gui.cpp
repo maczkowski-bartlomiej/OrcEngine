@@ -29,6 +29,8 @@ Gui::Gui(Window& window)
 	ImGui::StyleColorsDark();
 	ORC_FATAL_CHECK(ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_window.getNativeWindow()), true), "Failed to initialize ImGUI for GLFW.");
 	ORC_FATAL_CHECK(ImGui_ImplOpenGL3_Init("#version 460"), "Failed to initialize ImGUI for OpenGL.");
+
+	ORC_LOG_INFO("GUI:\n\tDear ImGui Version: {}\n\tBackend Platform: {}\n\tBackend Renderer: {}\n\tKeyboard Navigation: {}", IMGUI_VERSION, io.BackendPlatformName ? io.BackendPlatformName : "imgui_impl_glfw", io.BackendRendererName ? io.BackendRendererName : "imgui_impl_opengl3", (io.ConfigFlags & ImGuiConfigFlags_NavEnableKeyboard) ? "Enabled" : "Disabled");
 }
 
 Gui::~Gui()

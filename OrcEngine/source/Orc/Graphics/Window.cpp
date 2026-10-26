@@ -30,7 +30,8 @@ Window::Window(const VideoSettings& videoSettings)
 {
 	m_videoSettings = videoSettings;
 
-	ORC_LOG_INFO("Initializing window...\nWindow info:\n\tResolution: {}x{}\n\tTitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
+	ORC_LOG_INFO("Initializing window.");
+	ORC_LOG_INFO("Window:\n\tTitle: {}\n\tResolution: {}x{}\n\tVSync: {}", m_videoSettings.title, m_videoSettings.width, m_videoSettings.height, m_videoSettings.vsync ? "Enabled" : "Disabled");
 
 	initGLAD();
 }
@@ -124,6 +125,7 @@ void Window::updateFramebufferDimensions()
 
 void Window::initGLAD()
 {
+	ORC_LOG_INFO("Initializing GLFW.");
 	ORC_FATAL_CHECK(glfwInit(), "Failed to initialize GLFW.");
 
 	glfwSetErrorCallback(&glfwErrorCallback);
@@ -139,9 +141,10 @@ void Window::initGLAD()
 
 	glfwSetWindowUserPointer(m_glfwWindow, this);
 
+	ORC_LOG_INFO("Initializing GLAD.");
 	ORC_FATAL_CHECK(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Failed to initialize GLAD.");
 
-	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, reinterpret_cast<const char*>(glGetString(GL_VENDOR)), reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+	ORC_LOG_INFO("Graphics:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, reinterpret_cast<const char*>(glGetString(GL_VENDOR)), reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);

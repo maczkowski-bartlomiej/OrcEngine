@@ -3,8 +3,6 @@
 RectanglesTest::RectanglesTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("RectanglesTest init.");
-
 	orc::Ref<orc::Texture> gradientTexture = m_layerContext.textureResources.getResource("gradient_texture");
 	orc::Ref<orc::Texture> smallTexture = m_layerContext.textureResources.getResource("small_texture");
 	orc::Ref<orc::Font> font = m_layerContext.fontResources.getResource("arial_font");
@@ -118,19 +116,16 @@ RectanglesTest::RectanglesTest(orc::LayerContext& layerContext)
 
 RectanglesTest::~RectanglesTest()
 {
-	ORC_LOG_INFO("RectanglesTest layer deinit.");
 }
 
 void RectanglesTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to RectanglesTest.");
-	ORC_LOG_INFO("<- Menu | SpritesTest ->");
 	m_layerContext.window.setTitle("RectanglesTest");
 }
 
 void RectanglesTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from RectanglesTest.");
 }
 
 void RectanglesTest::onUpdate(float deltaTime)

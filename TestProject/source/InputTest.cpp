@@ -3,7 +3,6 @@
 InputTest::InputTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("InputTest init.");
 	orc::Ref<orc::Texture> soldierTexture = m_layerContext.textureResources.getResource("soldier_texture");
 	m_player.setTexture(soldierTexture);
 	m_player.setOrigin(m_player.getGlobalRect().getSize() / 2.0f);
@@ -12,19 +11,16 @@ InputTest::InputTest(orc::LayerContext& layerContext)
 
 InputTest::~InputTest()
 {
-	ORC_LOG_INFO("InputTest deinit.");
 }
 
 void InputTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to InputTest.");
-	ORC_LOG_INFO("<- CirclesTest | Menu ->");
 	m_layerContext.window.setTitle("InputTest");
 }
 
 void InputTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from InputTest.");
 }
 
 void InputTest::onUpdate(float deltaTime)

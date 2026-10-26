@@ -3,24 +3,20 @@
 AnimationTest::AnimationTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("AnimationTest init.");
 }
 
 AnimationTest::~AnimationTest()
 {
-	ORC_LOG_INFO("AnimationTest deinit.");
 }
 
 void AnimationTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to AnimationTest");
-	ORC_LOG_INFO("<- SpritesTest | AudioTest ->");
 	m_layerContext.window.setTitle("AnimationTest");
 }
 
 void AnimationTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from AnimationTest.");
 }
 
 void AnimationTest::onUpdate(float deltaTime)

@@ -1,6 +1,9 @@
 #include "Engine/Engine.hpp"
 
+#include <filesystem>
 #include <functional>
+#include <string_view>
+#include <thread>
 
 #include <Audio/Audio.hpp>
 #include <Engine/Config.hpp>
@@ -23,6 +26,20 @@ Engine::Engine(const Config& config)
 	Logger::init(config.logPath);
 
 	ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
+
+#if defined(ORC_DEBUG)
+	constexpr std::string_view BUILD_CONFIG = "Debug";
+#else
+	constexpr std::string_view BUILD_CONFIG = "Release";
+#endif
+
+#if defined(ORC_PLATFORM_WINDOWS)
+	constexpr std::string_view PLATFORM_NAME = "Windows (x64)";
+#else
+	constexpr std::string_view PLATFORM_NAME = "Linux (x64)";
+#endif
+
+	ORC_LOG_INFO("Platform:\n\tOS: {}\n\tBuild Configuration: {}\n\tHardware Threads: {}\n\tWorking Directory: {}", PLATFORM_NAME, BUILD_CONFIG, std::thread::hardware_concurrency(), std::filesystem::current_path().string());
 
 	m_scripting = createUniquePtr<Scripting>();
 
@@ -57,6 +74,8 @@ Engine::Engine(const Config& config)
 
 Engine::~Engine()
 {
+	ORC_LOG_INFO("Shutting down Orc Engine.");
+
 	m_gameLayerManager->clear();
 
 	m_layerContext.reset();

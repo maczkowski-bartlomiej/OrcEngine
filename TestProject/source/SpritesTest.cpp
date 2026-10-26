@@ -3,8 +3,6 @@
 SpritesTest::SpritesTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("SpritesTest init.");
-
 	orc::Ref<orc::Texture> gradientTexture = m_layerContext.textureResources.getResource("gradient_texture");
 	orc::Ref<orc::Texture> smallTexture = m_layerContext.textureResources.getResource("small_texture");
 	orc::Ref<orc::Texture> zombieTexture = m_layerContext.textureResources.getResource("zombie_texture");
@@ -64,19 +62,16 @@ SpritesTest::SpritesTest(orc::LayerContext& layerContext)
 
 SpritesTest::~SpritesTest()
 {
-	ORC_LOG_INFO("SpritesTest deinit.");
 }
 
 void SpritesTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to SpritesTest.");
-	ORC_LOG_INFO("<- RectanglesTest | AnimationTest ->");
 	m_layerContext.window.setTitle("SpritesTest");
 }
 
 void SpritesTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from SpritesTest.");
 }
 
 void SpritesTest::onUpdate(float deltaTime)

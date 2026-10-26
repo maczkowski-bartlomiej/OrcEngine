@@ -62,6 +62,7 @@ void Scripting::loadHostFxr()
 
 	m_hostfxrLib = ORC_LOAD_LIB(hostfxrPath);
 	ORC_FATAL_CHECK(m_hostfxrLib != nullptr, "Failed to load hostfxr shared library from: {}", FilePath(hostfxrPath).string());
+	m_hostfxrPath = hostfxrPath;
 
 	m_hostfxrInitializeForRuntimeConfig = reinterpret_cast<void*>(ORC_GET_EXPORT(m_hostfxrLib, "hostfxr_initialize_for_runtime_config"));
 	m_hostfxrGetRuntimeDelegate = reinterpret_cast<void*>(ORC_GET_EXPORT(m_hostfxrLib, "hostfxr_get_runtime_delegate"));
@@ -94,7 +95,6 @@ void Scripting::initializeRuntime()
 	ORC_FATAL_CHECK(std::filesystem::exists(assemblyPath), "Managed assembly DLL does not exist: {}", assemblyPath.string());
 
 	const auto canonicalAssemblyPath = std::filesystem::canonical(assemblyPath);
-	ORC_LOG_INFO("Loading managed assembly: {}", canonicalAssemblyPath.string());
 
 	void* functionPtr = nullptr;
 	auto loadAssemblyFn = reinterpret_cast<load_assembly_and_get_function_pointer_fn>(m_loadAssemblyAndGetFunctionPointer);
@@ -104,8 +104,9 @@ void Scripting::initializeRuntime()
 
 	using HelloFn = void (*)();
 	const auto helloFn = reinterpret_cast<HelloFn>(functionPtr);
-	ORC_LOG_INFO("Invoking managed entry point Class1.Hello()...");
 	helloFn();
+
+	ORC_LOG_INFO("Scripting:\n\tRuntime: .NET 10 CoreCLR (hostfxr)\n\tHostFXR Library: {}\n\tRuntime Config: {}\n\tAssembly: {}", m_hostfxrPath.string(), canonicalConfigPath.string(), canonicalAssemblyPath.string());
 }
 
-} // namespace orc
+}

@@ -16,6 +16,37 @@
 
 namespace orc {
 
+namespace {
+
+constexpr std::string_view speakerModeToString(FMOD_SPEAKERMODE mode) noexcept
+{
+	switch (mode)
+	{
+		case FMOD_SPEAKERMODE_DEFAULT:
+			return "Default";
+		case FMOD_SPEAKERMODE_RAW:
+			return "Raw";
+		case FMOD_SPEAKERMODE_MONO:
+			return "Mono";
+		case FMOD_SPEAKERMODE_STEREO:
+			return "Stereo";
+		case FMOD_SPEAKERMODE_QUAD:
+			return "Quad";
+		case FMOD_SPEAKERMODE_SURROUND:
+			return "Surround";
+		case FMOD_SPEAKERMODE_5POINT1:
+			return "5.1 Surround";
+		case FMOD_SPEAKERMODE_7POINT1:
+			return "7.1 Surround";
+		case FMOD_SPEAKERMODE_7POINT1POINT4:
+			return "7.1.4 Surround";
+		default:
+			return "Unknown";
+	}
+}
+
+}
+
 Audio::Audio(const AudioSettings& audioSettings)
 {
 	ORC_LOG_INFO("Initializing audio.");
@@ -27,6 +58,28 @@ Audio::Audio(const AudioSettings& audioSettings)
 		m_system->initialize(audioSettings.maxChannels, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, nullptr),
 		"Failed to initialize FMOD system.");
 
+	FMOD::System* coreSystem = nullptr;
+	ORC_FMOD_CALL(
+		m_system->getCoreSystem(&coreSystem),
+		"Failed to get FMOD core system.");
+
+	unsigned int version = 0;
+	ORC_FMOD_CALL(
+		coreSystem->getVersion(&version),
+		"Failed to get FMOD version.");
+
+	int driverId = 0;
+	ORC_FMOD_CALL(
+		coreSystem->getDriver(&driverId),
+		"Failed to get active FMOD driver.");
+
+	char driverName[256] = {};
+	int systemRate = 0;
+	FMOD_SPEAKERMODE speakerMode = FMOD_SPEAKERMODE_DEFAULT;
+	ORC_FMOD_CALL(
+		coreSystem->getDriverInfo(driverId, driverName, sizeof(driverName), nullptr, &systemRate, &speakerMode, nullptr),
+		"Failed to get FMOD driver info.");
+
 	loadBank(audioSettings.masterBank);
 	loadBank(audioSettings.masterStringBank);
 
@@ -34,6 +87,8 @@ Audio::Audio(const AudioSettings& audioSettings)
 	{
 		loadBank(path);
 	}
+
+	ORC_LOG_INFO("Audio:\n\tFMOD Studio Version: {}.{:02x}.{:02x}\n\tOutput Device: {}\n\tSample Rate: {} Hz\n\tSpeaker Mode: {}\n\tMax Channels: {}\n\tLoaded Banks: {}", (version >> 16) & 0xffff, (version >> 8) & 0xff, version & 0xff, driverName, systemRate, speakerModeToString(speakerMode), audioSettings.maxChannels, m_banks.size());
 }
 
 UniquePtr<Bus> Audio::getBus(const std::string& busName)

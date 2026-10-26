@@ -3,8 +3,6 @@
 CameraTest::CameraTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("CameraTest init.");
-
 	orc::Ref<orc::Texture> zombieTexture = m_layerContext.textureResources.getResource("zombie_texture");
 	m_sprite1 = orc::Sprite(zombieTexture, orc::Vector2f(400.0f, 300.0f));
 	m_sprite1.setOrigin(m_sprite1.getGlobalRect().getSize() / 2.0f);
@@ -15,19 +13,16 @@ CameraTest::CameraTest(orc::LayerContext& layerContext)
 
 CameraTest::~CameraTest()
 {
-	ORC_LOG_INFO("CameraTest deinit.");
 }
 
 void CameraTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to CameraTest.");
-	ORC_LOG_INFO("<- AudioTest | CirclesTest ->");
 	m_layerContext.window.setTitle("CameraTest");
 }
 
 void CameraTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from CameraTest.");
 }
 
 void CameraTest::onUpdate(float deltaTime)

@@ -12,7 +12,7 @@ namespace orc {
 
 Renderer::Renderer()
 {
-	ORC_LOG_INFO("Initializing unified renderer.");
+	ORC_LOG_INFO("Initializing renderer.");
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -59,6 +59,18 @@ Renderer::Renderer()
 	m_quadVertexArray->setIndexBuffer(quadIndexBuffer);
 
 	startBatch();
+
+	GLint maxTextureUnits = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+	GLint maxTextureSize = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+	ORC_LOG_INFO("Renderer:\n\tGLSL Version: {}\n\tBatch Capacity: {} quads ({} vertices, {} indices)\n\tBatch Texture Slots: {}\n\tHardware Texture Units: {}\n\tMax Texture Size: {}x{}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)), MAX_QUADS, MAX_QUAD_VERTICES, MAX_QUAD_INDICES, MAX_TEXTURE_SLOTS, maxTextureUnits, maxTextureSize, maxTextureSize);
+}
+
+Renderer::~Renderer()
+{
+	ORC_LOG_INFO("Deinitializing renderer.");
 }
 
 void Renderer::clear()

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Types.hpp"
+
 namespace orc {
 
 class Scripting
@@ -22,6 +24,7 @@ private:
 	void* m_hostfxrGetRuntimeDelegate = nullptr;
 	void* m_hostfxrClose = nullptr;
 	void* m_loadAssemblyAndGetFunctionPointer = nullptr;
+	FilePath m_hostfxrPath;
 };
 
 }

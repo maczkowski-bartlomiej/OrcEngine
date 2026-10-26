@@ -56,6 +56,8 @@ void Resources<Font>::loadResources(const FilePath& xmlPath)
 		font->loadFromFile(path);
 		m_resources[name] = font;
 	}
+
+	ORC_LOG_INFO("Resources:\n\tType: Fonts\n\tManifest: {}\n\tLoaded: {}", xmlPath.string(), m_resources.size());
 }
 
 template <>
@@ -92,6 +94,8 @@ void Resources<Shader>::loadResources(const FilePath& xmlPath)
 		shader->loadFromFile(path, path2);
 		m_resources[name] = shader;
 	}
+
+	ORC_LOG_INFO("Resources:\n\tType: Shaders\n\tManifest: {}\n\tLoaded: {}", xmlPath.string(), m_resources.size());
 }
 
 template <>
@@ -124,6 +128,8 @@ void Resources<Texture>::loadResources(const FilePath& xmlPath)
 		texture->loadFromFile(path);
 		m_resources[name] = texture;
 	}
+
+	ORC_LOG_INFO("Resources:\n\tType: Textures\n\tManifest: {}\n\tLoaded: {}", xmlPath.string(), m_resources.size());
 }
 
 template <>
@@ -185,6 +191,8 @@ void Resources<Animation>::loadResources(const FilePath& xmlPath)
 		Ref<Animation> animation = createRef<Animation>(frames, durationMs);
 		m_resources[name] = animation;
 	}
+
+	ORC_LOG_INFO("Resources:\n\tType: Animations\n\tManifest: {}\n\tLoaded: {}", xmlPath.string(), m_resources.size());
 }
 
 template class Resources<Font>;

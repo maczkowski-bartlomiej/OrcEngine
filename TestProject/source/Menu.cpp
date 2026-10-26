@@ -11,8 +11,6 @@
 Menu::Menu(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("Menu init.");
-
 	m_layerContext.gameLayerManager.addLayer("AnimationTest", orc::createRef<AnimationTest>(m_layerContext));
 	m_layerContext.gameLayerManager.addLayer("AudioTest", orc::createRef<AudioTest>(m_layerContext));
 	m_layerContext.gameLayerManager.addLayer("CameraTest", orc::createRef<CameraTest>(m_layerContext));
@@ -24,19 +22,16 @@ Menu::Menu(orc::LayerContext& layerContext)
 
 Menu::~Menu()
 {
-	ORC_LOG_INFO("Menu deinit.");
 }
 
 void Menu::onAttach()
 {
 	ORC_LOG_INFO("Switching to Menu.");
-	ORC_LOG_INFO("<- InputTest | RectanglesTest ->");
 	m_layerContext.window.setTitle("Menu");
 }
 
 void Menu::onDetach()
 {
-	ORC_LOG_INFO("Leaving from Menu.");
 }
 
 void Menu::onUpdate(float deltaTime)

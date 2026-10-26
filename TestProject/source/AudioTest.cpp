@@ -3,8 +3,6 @@
 AudioTest::AudioTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("AudioTest init.");
-
 	m_buses[Buses::Master] = m_layerContext.audio.getBus("bus:/");
 	m_buses[Buses::Sfx] = m_layerContext.audio.getBus("bus:/SFX");
 	m_buses[Buses::Music] = m_layerContext.audio.getBus("bus:/Music");
@@ -12,19 +10,16 @@ AudioTest::AudioTest(orc::LayerContext& layerContext)
 
 AudioTest::~AudioTest()
 {
-	ORC_LOG_INFO("AudioTest deinit.");
 }
 
 void AudioTest::onAttach()
 {
-	ORC_LOG_INFO("Switching to AudioTest,");
-	ORC_LOG_INFO("<- AnimationTest | CameraTest ->");
+	ORC_LOG_INFO("Switching to AudioTest.");
 	m_layerContext.window.setTitle("AudioTest");
 }
 
 void AudioTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from AudioTest,");
 }
 
 void AudioTest::onUpdate(float deltaTime)

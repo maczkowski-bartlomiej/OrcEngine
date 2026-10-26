@@ -23,7 +23,7 @@ class Renderer
 {
 public:
 	Renderer();
-	~Renderer() = default;
+	~Renderer();
 
 	Renderer(const Renderer&) = delete;
 	Renderer& operator=(const Renderer&) = delete;

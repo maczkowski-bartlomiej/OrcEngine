@@ -3,8 +3,6 @@
 CirclesTest::CirclesTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("CirclesTest init.");
-
 	orc::Ref<orc::Texture> gradientTexture = m_layerContext.textureResources.getResource("gradient_texture");
 	orc::Ref<orc::Texture> smallTexture = m_layerContext.textureResources.getResource("small_texture");
 	orc::Ref<orc::Font> font = m_layerContext.fontResources.getResource("arial_font");
@@ -109,19 +107,16 @@ CirclesTest::CirclesTest(orc::LayerContext& layerContext)
 
 CirclesTest::~CirclesTest()
 {
-	ORC_LOG_INFO("CirclesTest deinit.");
 }
 
 void CirclesTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to CirclesTest.");
-	ORC_LOG_INFO("<- CameraTest | InputTest ->");
 	m_layerContext.window.setTitle("CirclesTest");
 }
 
 void CirclesTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from CirclesTest.");
 }
 
 void CirclesTest::onUpdate(float deltaTime)
