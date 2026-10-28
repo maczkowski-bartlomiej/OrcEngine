@@ -22,16 +22,7 @@ public class RenderTest : public GameLayer
 	
 	void onRender()
 	{
-		OrcEngine.draw(m_sprite`
-		
-		+
-		
-		
-		
-		
-		
-		
-		
+		OrcEngine.draw(m_sprite);
 	}
 }
 
