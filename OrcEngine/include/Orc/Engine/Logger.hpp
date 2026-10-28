@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <source_location>
-#include <string>
 
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/logger.h>

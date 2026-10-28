@@ -89,17 +89,17 @@ uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 	// clang-format off
 	switch (type)
 	{
-		case orc::BufferLayout::ShaderDataType::Bool:		return GL_BOOL;
-		case orc::BufferLayout::ShaderDataType::Matrix3:	return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Matrix4:	return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Int:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int2:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int3:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int4:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Float:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float2:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float3:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float4:		return GL_FLOAT;
+		case ShaderDataType::Bool:		return GL_BOOL;
+		case ShaderDataType::Matrix3:	return GL_FLOAT;
+		case ShaderDataType::Matrix4:	return GL_FLOAT;
+		case ShaderDataType::Int:		return GL_INT;
+		case ShaderDataType::Int2:		return GL_INT;
+		case ShaderDataType::Int3:		return GL_INT;
+		case ShaderDataType::Int4:		return GL_INT;
+		case ShaderDataType::Float:		return GL_FLOAT;
+		case ShaderDataType::Float2:		return GL_FLOAT;
+		case ShaderDataType::Float3:		return GL_FLOAT;
+		case ShaderDataType::Float4:		return GL_FLOAT;
 
 		case ShaderDataType::Invalid:
 		default:											return 0u;

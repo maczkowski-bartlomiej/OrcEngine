@@ -14,7 +14,7 @@ public:
 
 	void scale(float value);
 	void scale(float x, float y);
-	void scale(const Vector2f& size);
+	void scale(const Vector2f& factor);
 
 	void move(float x, float y);
 	void move(const Vector2f& offset);

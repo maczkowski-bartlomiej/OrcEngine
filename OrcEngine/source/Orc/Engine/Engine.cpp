@@ -62,14 +62,14 @@ Engine::Engine(const Config& config)
 	m_animationResources.loadResources(config.animationsPath);
 
 	m_layerContext = createUniquePtr<LayerContext>(LayerContext{
-		*m_window,
-		*m_renderer,
-		*m_audio,
-		*m_gameLayerManager,
-		m_fontResources,
-		m_textureResources,
-		m_animationResources,
-		*m_input});
+		.window = *m_window,
+		.renderer = *m_renderer,
+		.audio = *m_audio,
+		.gameLayerManager = *m_gameLayerManager,
+		.fontResources = m_fontResources,
+		.textureResources = m_textureResources,
+		.animationResources = m_animationResources,
+		.input = *m_input});
 }
 
 Engine::~Engine()

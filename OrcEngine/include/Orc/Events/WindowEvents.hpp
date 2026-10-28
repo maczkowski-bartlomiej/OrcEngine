@@ -9,7 +9,7 @@ namespace orc {
 struct WindowResizedEvent : public Event
 {
 	WindowResizedEvent(uint32_t width, uint32_t height)
-		: Event(Event::Type::WindowResized), width(width), height(height)
+		: Event(Type::WindowResized), width(width), height(height)
 	{
 	}
 
@@ -20,7 +20,7 @@ struct WindowResizedEvent : public Event
 struct WindowClosedEvent : public Event
 {
 	WindowClosedEvent()
-		: Event(Event::Type::WindowClosed)
+		: Event(Type::WindowClosed)
 	{
 	}
 };

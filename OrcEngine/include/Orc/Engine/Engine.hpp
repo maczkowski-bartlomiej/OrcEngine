@@ -11,7 +11,6 @@
 #include "Graphics/Window.hpp"
 #include "Input/Input.hpp"
 #include "Script/Scripting.hpp"
-#include "Core/Core.hpp"
 
 namespace orc {
 

@@ -37,7 +37,6 @@ build/
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
-.idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 
@@ -102,7 +101,6 @@ CMakeUserPresets.json
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
 **/.idea/shelf/*
-**/.idea/dictionaries
 **/.idea/httpRequests/
 
 # Sensitive or high-churn files

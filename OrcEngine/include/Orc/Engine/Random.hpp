@@ -23,9 +23,9 @@ public:
 private:
 	static uint32_t m_seed;
 	static std::mt19937 m_engine;
-	static std::uniform_int_distribution<int> m_distributionInt;
+	static std::uniform_int_distribution<> m_distributionInt;
 	static std::uniform_real_distribution<float> m_distributionFloat;
-	static std::uniform_real_distribution<double> m_distributionDouble;
+	static std::uniform_real_distribution<> m_distributionDouble;
 };
 
 }

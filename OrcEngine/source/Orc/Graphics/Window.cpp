@@ -55,7 +55,7 @@ void Window::setTitle(std::string_view title)
 	glfwSetWindowTitle(m_glfwWindow, m_videoSettings.title.c_str());
 }
 
-void Window::setEventCallback(Window::EventCallback eventCallback)
+void Window::setEventCallback(EventCallback eventCallback)
 {
 	m_videoSettings.eventCallback = std::move(eventCallback);
 }
@@ -159,7 +159,7 @@ void Window::setCallbacks()
 								  self.m_videoSettings.height = static_cast<uint32_t>(height);
 								  self.updateFramebufferDimensions();
 
-								  orc::WindowResizedEvent windowResizedEvent(self.m_videoSettings.width, self.m_videoSettings.height);
+								  WindowResizedEvent windowResizedEvent(self.m_videoSettings.width, self.m_videoSettings.height);
 								  self.m_videoSettings.eventCallback(windowResizedEvent);
 							  });
 
@@ -169,7 +169,7 @@ void Window::setCallbacks()
 									   self.m_framebufferWidth = static_cast<uint32_t>(width);
 									   self.m_framebufferHeight = static_cast<uint32_t>(height);
 
-									   orc::WindowResizedEvent windowResizedEvent(self.m_videoSettings.width, self.m_videoSettings.height);
+									   WindowResizedEvent windowResizedEvent(self.m_videoSettings.width, self.m_videoSettings.height);
 									   self.m_videoSettings.eventCallback(windowResizedEvent);
 								   });
 
@@ -177,22 +177,22 @@ void Window::setCallbacks()
 							   [](GLFWwindow* window) noexcept {
 								   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
-								   orc::WindowClosedEvent windowClosedEvent;
+								   WindowClosedEvent windowClosedEvent;
 								   self.m_videoSettings.eventCallback(windowClosedEvent);
 							   });
 
 	glfwSetKeyCallback(m_glfwWindow,
-					   [](GLFWwindow* window, int key, int scancode, int action, int mods) noexcept {
+					   [](GLFWwindow* window, int key, [[maybe_unused]]int scancode, int action, int mods) noexcept {
 						   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
 						   if (action == GLFW_PRESS)
 						   {
-							   orc::KeyboardKeyPressedEvent keyboardKeyPressedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
+							   KeyboardKeyPressedEvent keyboardKeyPressedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
 							   self.m_videoSettings.eventCallback(keyboardKeyPressedEvent);
 						   }
 						   else if (action == GLFW_RELEASE)
 						   {
-							   orc::KeyboardKeyReleasedEvent keyboardKeyReleasedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
+							   KeyboardKeyReleasedEvent keyboardKeyReleasedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
 							   self.m_videoSettings.eventCallback(keyboardKeyReleasedEvent);
 						   }
 						   else if (action == GLFW_REPEAT)
@@ -201,17 +201,17 @@ void Window::setCallbacks()
 					   });
 
 	glfwSetMouseButtonCallback(m_glfwWindow,
-							   [](GLFWwindow* window, int button, int action, int mods) noexcept {
+							   [](GLFWwindow* window, int button, int action, [[maybe_unused]]int mods) noexcept {
 								   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
 								   if (action == GLFW_PRESS)
 								   {
-									   orc::MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToOrcButton(button));
+									   MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToOrcButton(button));
 									   self.m_videoSettings.eventCallback(mouseButtonPressedEvent);
 								   }
 								   else if (action == GLFW_RELEASE)
 								   {
-									   orc::MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToOrcButton(button));
+									   MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToOrcButton(button));
 									   self.m_videoSettings.eventCallback(mouseButtonReleasedEvent);
 								   }
 							   });
@@ -220,7 +220,7 @@ void Window::setCallbacks()
 							 [](GLFWwindow* window, double x, double y) noexcept {
 								 Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
-								 orc::MouseMovedEvent mouseMovedEvent(static_cast<float>(x), static_cast<float>(y));
+								 MouseMovedEvent mouseMovedEvent(static_cast<float>(x), static_cast<float>(y));
 								 self.m_videoSettings.eventCallback(mouseMovedEvent);
 							 });
 
@@ -228,7 +228,7 @@ void Window::setCallbacks()
 						  [](GLFWwindow* window, double xDelta, double yDelta) noexcept {
 							  Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
-							  orc::MouseWheelScrolledEvent mouseWheelScrolledEvent(static_cast<float>(xDelta), static_cast<float>(yDelta));
+							  MouseWheelScrolledEvent mouseWheelScrolledEvent(static_cast<float>(xDelta), static_cast<float>(yDelta));
 							  self.m_videoSettings.eventCallback(mouseWheelScrolledEvent);
 						  });
 }

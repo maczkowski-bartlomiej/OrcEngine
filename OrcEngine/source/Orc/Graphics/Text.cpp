@@ -123,7 +123,7 @@ void Text::updateVertices() const
 		{
 			break;
 		}
-		const Character& ch = m_font->getCharacter(static_cast<uint32_t>(static_cast<unsigned char>(c)));
+		const Character& ch = m_font->getCharacter(static_cast<unsigned char>(c));
 		maxAscender = std::max(maxAscender, ch.offset.y);
 	}
 	if (maxAscender == 0.0f)
@@ -141,12 +141,12 @@ void Text::updateVertices() const
 			continue;
 		}
 
-		const Character& character = m_font->getCharacter(static_cast<uint32_t>(static_cast<unsigned char>(m_string[i])));
-		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
+		const Character& character = m_font->getCharacter(static_cast<unsigned char>(m_string[i]));
+		Vector2f normalizedBitmapCoordStart = aract / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
-		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
-		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
+		float width = character.bitmapCoordEnd.x - aract.x;
+		float height = character.bitmapCoordEnd.y - aract.y;
 
 		Vector2f glyphPos(position.x, position.y + maxAscender - character.offset.y);
 

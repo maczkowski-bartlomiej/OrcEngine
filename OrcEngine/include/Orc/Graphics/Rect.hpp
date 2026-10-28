@@ -7,7 +7,6 @@ namespace orc {
 template <typename T>
 struct Rect
 {
-public:
 	Rect()
 		: left(T{}), top(T{}), right(T{}), bottom(T{}) {}
 
@@ -28,7 +27,7 @@ public:
 		return Vector2<T>(right, bottom);
 	}
 
-	bool intersects(const Rect<T>& other) const
+	bool intersects(const Rect& other) const
 	{
 		return left < other.left + other.right && left + right > other.left && top < other.top + other.bottom && top + bottom > other.top;
 	}

@@ -8,7 +8,7 @@ namespace orc {
 struct KeyboardKeyPressedEvent : public Event
 {
 	explicit KeyboardKeyPressedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys())
-		: Event(Event::Type::KeyboardKeyPressed), key(key), specialKeys(specialKeys)
+		: Event(Type::KeyboardKeyPressed), key(key), specialKeys(specialKeys)
 	{
 	}
 
@@ -19,7 +19,7 @@ struct KeyboardKeyPressedEvent : public Event
 struct KeyboardKeyReleasedEvent : public Event
 {
 	explicit KeyboardKeyReleasedEvent(Keyboard::Key key, Keyboard::SpecialKeys specialKeys = Keyboard::SpecialKeys())
-		: Event(Event::Type::KeyboardKeyReleased), key(key), specialKeys(specialKeys)
+		: Event(Type::KeyboardKeyReleased), key(key), specialKeys(specialKeys)
 	{
 	}
 

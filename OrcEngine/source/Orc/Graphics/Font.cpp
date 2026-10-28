@@ -113,8 +113,8 @@ const Character& Font::getCharacter(uint32_t character) const
 	if (character >= CHARACTER_COUNT)
 	{
 		ORC_LOG_WARNING("Attempted to get a non-ascii character from a font. Character code: {}.", character);
-		static const Character fallback{};
-		if (auto it = m_characters.find(static_cast<uint32_t>('?')); it != m_characters.end())
+		static constexpr Character fallback{};
+		if (auto it = m_characters.find('?'); it != m_characters.end())
 		{
 			return it->second;
 		}
@@ -131,7 +131,7 @@ const Character& Font::getCharacter(uint32_t character) const
 		return it->second;
 	}
 
-	static const Character fallback{};
+	static constexpr Character fallback{};
 	return fallback;
 }
 

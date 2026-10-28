@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Core.hpp"
 #include "Graphics/Color.hpp"
 #include "Graphics/Rect.hpp"
 #include "Graphics/Texturable.hpp"
