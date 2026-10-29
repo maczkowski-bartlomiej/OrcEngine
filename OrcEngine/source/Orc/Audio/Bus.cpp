@@ -4,7 +4,7 @@
 #include <fmod_studio_common.h>
 
 #include "Audio/AudioUtility.hpp"
-#include "Engine/Debug.hpp"
+#include "Core/Debug.hpp"
 
 namespace orc {
 

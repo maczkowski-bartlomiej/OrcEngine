@@ -73,9 +73,9 @@ void Texturable::calculateGlobalRect() const
 
 	Vector2f points[] = {
 		transform * Vector3f(localRect.left, localRect.top, 1.0f),
-		transform * Vector3f(localRect.left, localRect.top + localRect.bottom, 1.0f),
-		transform * Vector3f(localRect.left + localRect.right, localRect.top, 1.0f),
-		transform * Vector3f(localRect.left + localRect.right, localRect.top + localRect.bottom, 1.0f)};
+		transform * Vector3f(localRect.left, localRect.top + localRect.height, 1.0f),
+		transform * Vector3f(localRect.left + localRect.width, localRect.top, 1.0f),
+		transform * Vector3f(localRect.left + localRect.width, localRect.top + localRect.height, 1.0f)};
 
 	float left = points[0].x;
 	float top = points[0].y;
@@ -110,17 +110,16 @@ void Texturable::updateVerticesTexCoords() const
 {
 	if (m_texture)
 	{
-		Vector2f textureSize(m_texture->getSize());
-		FloatRect clipSpacedTextureRect(
-			m_textureRect.left / textureSize.x,
-			m_textureRect.top / textureSize.y,
-			(m_textureRect.left + m_textureRect.right) / textureSize.x,
-			(m_textureRect.top + m_textureRect.bottom) / textureSize.y);
+		const Vector2f textureSize(m_texture->getSize());
+		const float u0 = m_textureRect.left / textureSize.x;
+		const float v0 = m_textureRect.top / textureSize.y;
+		const float u1 = (m_textureRect.left + m_textureRect.width) / textureSize.x;
+		const float v1 = (m_textureRect.top + m_textureRect.height) / textureSize.y;
 
-		m_vertices[0].textureCoord = Vector2f(clipSpacedTextureRect.left, clipSpacedTextureRect.top);
-		m_vertices[1].textureCoord = Vector2f(clipSpacedTextureRect.right, clipSpacedTextureRect.top);
-		m_vertices[2].textureCoord = Vector2f(clipSpacedTextureRect.left, clipSpacedTextureRect.bottom);
-		m_vertices[3].textureCoord = Vector2f(clipSpacedTextureRect.right, clipSpacedTextureRect.bottom);
+		m_vertices[0].textureCoord = Vector2f(u0, v0);
+		m_vertices[1].textureCoord = Vector2f(u1, v0);
+		m_vertices[2].textureCoord = Vector2f(u0, v1);
+		m_vertices[3].textureCoord = Vector2f(u1, v1);
 	}
 	else
 	{

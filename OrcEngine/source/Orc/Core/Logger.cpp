@@ -1,17 +1,25 @@
-#include "Engine/Logger.hpp"
+#include "Core/Logger.hpp"
 
 #include <array>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
+#include <string_view>
+#include <vector>
 
+#include <fmt/format.h>
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include "Core/Platform.hpp"
+
 namespace orc {
 
 namespace {
+
+std::shared_ptr<spdlog::logger> logger;
 
 class CapitalizedLevelNamesFormatter : public spdlog::custom_flag_formatter
 {
@@ -53,11 +61,11 @@ void Logger::init(const FilePath& logPath)
 		sinks[0]->set_formatter(formatter->clone());
 		sinks[1]->set_formatter(formatter->clone());
 
-		m_logger = std::make_shared<spdlog::logger>("ENGINE", sinks.begin(), sinks.end());
-		m_logger->set_level(spdlog::level::info);
-		m_logger->flush_on(spdlog::level::level_enum::err);
+		logger = std::make_shared<spdlog::logger>("ENGINE", sinks.begin(), sinks.end());
+		logger->set_level(spdlog::level::info);
+		logger->flush_on(spdlog::level::level_enum::err);
 
-		m_logger->set_error_handler([](const std::string& msg) { m_logger->error("Tried to pass invalid arguments to Logger: {}", msg); });
+		logger->set_error_handler([](const std::string& msg) { logger->error("Tried to pass invalid arguments to Logger: {}", msg); });
 	}
 	catch (const spdlog::spdlog_ex& exception)
 	{
@@ -70,16 +78,35 @@ void Logger::init(const FilePath& logPath)
 void Logger::deinit()
 {
 	flush();
-	m_logger.reset();
+	logger.reset();
 	spdlog::shutdown();
 }
 
 void Logger::flush()
 {
-	if (m_logger)
+	if (logger)
 	{
-		m_logger->flush();
+		logger->flush();
 	}
+}
+
+void Logger::logImpl(Level level, std::source_location sourceLocation, fmt::string_view format, fmt::format_args args)
+{
+	const auto spdlogLevel = static_cast<spdlog::level::level_enum>(level);
+	if (!logger->should_log(spdlogLevel))
+	{
+		return;
+	}
+
+	fmt::memory_buffer buffer;
+	fmt::vformat_to(std::back_inserter(buffer), format, args);
+
+	spdlog::source_loc location{
+		sourceLocation.file_name(),
+		static_cast<std::int32_t>(sourceLocation.line()),
+		sourceLocation.function_name()};
+
+	logger->log(location, spdlogLevel, std::string_view{buffer.data(), buffer.size()});
 }
 
 }

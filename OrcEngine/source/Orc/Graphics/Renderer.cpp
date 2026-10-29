@@ -6,7 +6,7 @@
 
 #include <glad/glad.h>
 
-#include "Engine/Debug.hpp"
+#include "Core/Debug.hpp"
 
 namespace orc {
 

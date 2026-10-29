@@ -1,14 +1,13 @@
 #pragma once
 
-#include <memory>
+#include <filesystem>
 #include <source_location>
 
-#include <spdlog/fmt/fmt.h>
-#include <spdlog/logger.h>
-
-#include "Core/Types.hpp"
+#include <fmt/core.h>
 
 namespace orc {
+
+using FilePath = std::filesystem::path;
 
 class Logger
 {
@@ -25,14 +24,13 @@ public:
 	static void deinit();
 	static void flush();
 
+	static void logImpl(Level level, std::source_location sourceLocation, fmt::string_view format, fmt::format_args args);
+
 	template <typename... Arguments>
 	static void log(Level level, std::source_location sourceLocation, fmt::format_string<Arguments...> message, Arguments&&... arguments)
 	{
-		m_logger->log({sourceLocation.file_name(), static_cast<std::int32_t>(sourceLocation.line()), sourceLocation.function_name()}, static_cast<spdlog::level::level_enum>(level), message, std::forward<Arguments>(arguments)...);
+		logImpl(level, sourceLocation, message.get(), fmt::make_format_args(arguments...));
 	}
-
-private:
-	inline static std::shared_ptr<spdlog::logger> m_logger;
 };
 
 }

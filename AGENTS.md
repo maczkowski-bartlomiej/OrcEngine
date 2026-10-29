@@ -55,14 +55,14 @@ OrcEngine is a modular 2D game engine built in C++20 using OpenGL 4.6 (Core Prof
 
 ### Subsystem Context Pointers (Read Before Modifying a Subsystem)
 Always check existing ADRs before proposing architectural changes, and flag any contradiction explicitly:
-- **Core Primitives (`Orc/Core/`)**: Layer 0 platform macros, `Ref<T>`/`UniquePtr<T>`, math/path aliases, and version constants $\rightarrow$ [ADR 0006](docs/adr/0006-modularize-core-primitives.md).
+- **Core Primitives (`Orc/Core/`)**: Layer 0 platform macros, diagnostics (`Logger`, `Debug`), time measurement (`Clock`), random generation (`Random`), `StringViewHash`, `Rect<T>`, `Ref<T>`/`UniquePtr<T>`, math/path aliases, and version constants $\rightarrow$ [ADR 0006](docs/adr/0006-modularize-core-primitives.md), [ADR 0011](docs/adr/0011-deepen-layer-0-core.md).
 - **2D Rendering & Quad Batcher (`Orc/Graphics/`)**: Unified `orc::Vertex`, non-templated `Texturable`, 32-slot texture batching, lines as oriented quads, and natural submission order $\rightarrow$ [ADR 0001](docs/adr/0001-collapse-2d-render-submission-pipeline.md), [ADR 0002](docs/adr/0002-unify-vertex-and-untemplate-texturable.md).
 - **Font Lifecycle & Platform SDKs (`Orc/Graphics/Font.hpp`)**: ISO C++20 `__VA_OPT__` macros and multi-tier SDK discovery $\rightarrow$ [ADR 0003](docs/adr/0003-cross-platform-preprocessor-and-multi-tier-sdk-discovery.md).
 - **Game Layers & `LayerContext` (`Orc/Engine/`)**: Constructor-injected `LayerContext&` and singleton-free layer lifecycle $\rightarrow$ [ADR 0004](docs/adr/0004-decouple-layer-runtime-from-engine-singleton.md).
 - **Events & Input (`Orc/Events/`, `Orc/Input/Input.hpp`)**: Deepened frame-snapshot `Input`, direct `Window` feeding, and pure-enum `Event` lifecycle $\rightarrow$ [ADR 0010](docs/adr/0010-deepen-input-and-collapse-event-to-pure-enum.md).
 - **Viewport & Camera Sync (`Orc/Graphics/`, `Orc/Graphics/Window.hpp`)**: Authoritative `Renderer::setViewport` from `Window::getFramebufferSize()` and automatic camera viewport synchronization on resize/layer switch $\rightarrow$ [ADR 0007](docs/adr/0007-centralize-viewport-and-synchronize-camera.md).
 - **C# Scripting (`Orc/Script/`, `OrcEngine.Scripting/`)**: .NET 10 CoreCLR hosting via `nethost`/`hostfxr`, direct class layout without PIMPL, and unconditional `ORC_FATAL_CHECK` fail-fast semantics $\rightarrow$ [ADR 0008](docs/adr/0008-hostfxr-dotnet-coreclr-scripting.md).
-- **Universal Fail-Fast Error Handling (`Orc/Engine/Debug.hpp`, `Orc/Audio/AudioUtility.hpp`, `Orc/Graphics/FontUtility.hpp`)**: Unconditional `ORC_FATAL_CHECK` / `ORC_FATAL` (`std::abort()` in Debug and Release), `ORC_FMOD_CALL` / `ORC_FT_CALL` macro wrappers, and zero `bool`/`nullptr` error returns or defensive half-initialized state guards $\rightarrow$ [ADR 0009](docs/adr/0009-universal-fail-fast-error-handling.md).
+- **Universal Fail-Fast Error Handling (`Orc/Core/Debug.hpp`, `Orc/Audio/AudioUtility.hpp`, `Orc/Graphics/Font.cpp`)**: Unconditional `ORC_FATAL_CHECK` / `ORC_FATAL` (`std::abort()` in Debug and Release), `ORC_FMOD_CALL` / `ORC_FT_CALL` macro wrappers, and zero `bool`/`nullptr` error returns or defensive half-initialized state guards $\rightarrow$ [ADR 0009](docs/adr/0009-universal-fail-fast-error-handling.md).
 
 ---
 

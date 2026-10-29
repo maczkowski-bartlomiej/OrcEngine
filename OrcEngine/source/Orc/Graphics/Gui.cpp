@@ -3,7 +3,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include "Engine/Debug.hpp"
+#include "Core/Debug.hpp"
 #include "Graphics/Window.hpp"
 
 namespace orc {

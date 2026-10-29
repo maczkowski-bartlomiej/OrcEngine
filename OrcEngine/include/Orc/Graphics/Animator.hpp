@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "Engine/Clock.hpp"
-#include "Engine/Utility.hpp"
-#include "Graphics/Rect.hpp"
+#include "Core/Clock.hpp"
+#include "Core/StringViewHash.hpp"
+#include "Core/Rect.hpp"
 
 namespace orc {
 

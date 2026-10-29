@@ -10,7 +10,7 @@
 #include "Graphics/Shader.hpp"
 #include "Graphics/Texture.hpp"
 
-#include "Utility.hpp"
+#include "Core/StringViewHash.hpp"
 
 namespace orc {
 

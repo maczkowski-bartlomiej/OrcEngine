@@ -47,7 +47,7 @@ Use domain terms strictly as defined in [`GLOSSARY.md`](GLOSSARY.md) and avoid l
 - **Logical Constness**: Methods that advance simulation, poll OS events, swap buffers, tick timers, advance audio mixers, or upload GPU buffer data must be non-`const`, even if internal handles are pointers (`GLFWwindow*`, `FMOD::Studio::System*`) or driver IDs (`RendererID`). Conversely, OpenGL bind and uniform upload methods (`Texture::bind()`, `Shader::uploadUniform...`) and state inspectors are marked `const` because they do not mutate the logical state of the C++ asset object.
 - **Linkage & Header Hygiene**:
   - Enclose `.cpp`-local helper classes, functions, and formatters in an anonymous namespace.
-  - Keep cross-module utilities declared in public headers (`getErrnoMessage`, `StringViewHash`) under `namespace orc`.
+  - Keep foundational utilities declared in public headers (`StringViewHash`) under `namespace orc`.
   - Keep public headers (`OrcEngine/include/Orc/`) free of third-party SDK headers (such as FMOD `<fmod_studio.hpp>`, `<fmod_common.h>`, FreeType `<freetype/*.h>`, native OS headers `<Windows.h>`, `<dlfcn.h>`, and .NET hosting headers `<nethost.h>`, `<hostfxr.h>`, `<coreclr_delegates.h>`). Forward-declare third-party types in public class headers and isolate SDK-specific helper macros (`ORC_FMOD_CALL`, `ORC_FT_CALL`) in internal engine headers or `.cpp` implementation files.
 - **Type Casts**: Use `static_cast` for value/arithmetic conversions (including narrowing conversions such as `uint32_t` to `GLsizei`) and `reinterpret_cast` for opaque pointer reinterpretation. Never use C-style casts.
 - **Modern C++20 Syntax**:
@@ -70,13 +70,13 @@ Use domain terms strictly as defined in [`GLOSSARY.md`](GLOSSARY.md) and avoid l
 
 ## 5. Error Handling, Fail-Fast Contract & Logging
 
-- **Logging (`Orc/Engine/Logger.hpp`)**: Use ISO C++20 `__VA_OPT__` spdlog macros:
+- **Logging (`Orc/Core/Logger.hpp`)**: Use ISO C++20 `__VA_OPT__` spdlog macros:
   - `ORC_LOG_INFO(message, ...)` — normal diagnostic events.
   - `ORC_LOG_WARNING(message, ...)` — benign, non-fatal runtime notices where the engine remains in a valid state (e.g., requesting a switch to the already-active `GameLayer` or falling back on a non-ASCII character code in `Font`).
   - `ORC_LOG_FATAL(message, ...)` — unrecoverable critical errors (invoked via `ORC_FATAL` and `ORC_FATAL_CHECK`). Standalone `ORC_LOG_ERROR` is not used.
-- **Universal Fail-Fast Contract (`Orc/Engine/Debug.hpp`)**: Whenever the engine enters an invalid state—across subsystem/SDK bootstrap, asset loading and manifest parsing, resource lookups, or API preconditions—log the fatal error and terminate immediately:
+- **Universal Fail-Fast Contract (`Orc/Core/Debug.hpp`)**: Whenever the engine enters an invalid state—across subsystem/SDK bootstrap, asset loading and manifest parsing, resource lookups, or API preconditions—log the fatal error and terminate immediately:
   - Use `ORC_FATAL_CHECK(check, message, ...)` and `ORC_FATAL(message, ...)` across all subsystems. Both macros log via `ORC_LOG_FATAL`, invoke `ORC_DEBUGBREAK()` in Debug builds (`ORC_DEBUG_ASSERTS`), and call `std::abort()` in both Debug and Release builds.
-  - Use `ORC_FMOD_CALL(call, message, ...)` (`Audio/AudioUtility.hpp`) and `ORC_FT_CALL(call, message, ...)` (`Graphics/FontUtility.hpp`) for FMOD and FreeType SDK calls; both delegate directly to `ORC_FATAL_CHECK` and accept variadic format arguments natively without `fmt::format` boilerplate.
+  - Use `ORC_FMOD_CALL(call, message, ...)` (`Audio/AudioUtility.hpp`) and `ORC_FT_CALL(call, message, ...)` (`Graphics/Font.cpp`) for FMOD and FreeType SDK calls; both delegate directly to `ORC_FATAL_CHECK` and accept variadic format arguments natively without `fmt::format` boilerplate.
   - **Assume Valid State**: Never return `false` or `nullptr` to signal an error, never add defensive "half-initialized state" guards (such as `if (!m_system)`), and omit redundant post-call out-pointer checks when the SDK return code already guarantees validity.
 
 ---

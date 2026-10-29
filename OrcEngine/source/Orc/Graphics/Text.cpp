@@ -135,7 +135,7 @@ void Text::updateVertices() const
 	{
 		if (m_string[i] == '\n')
 		{
-			m_localRect.right = std::max(m_localRect.right, position.x);
+			m_localRect.width = std::max(m_localRect.width, position.x);
 			position.x = 0.0f;
 			position.y += lineHeight;
 			continue;
@@ -200,8 +200,8 @@ void Text::updateVertices() const
 
 		position.x += character.advance;
 
-		m_localRect.right = std::max(m_localRect.right, position.x);
-		m_localRect.bottom = std::max(m_localRect.bottom, position.y + lineHeight);
+		m_localRect.width = std::max(m_localRect.width, position.x);
+		m_localRect.height = std::max(m_localRect.height, position.y + lineHeight);
 	}
 
 	calculateGlobalRect();
@@ -214,9 +214,9 @@ void Text::calculateGlobalRect() const
 
 	Vector2f points[] = {
 		transform * Vector3f(m_localRect.left, m_localRect.top, 1.0f),
-		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.bottom, 1.0f),
-		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top, 1.0f),
-		transform * Vector3f(m_localRect.left + m_localRect.right, m_localRect.top + m_localRect.bottom, 1.0f)};
+		transform * Vector3f(m_localRect.left, m_localRect.top + m_localRect.height, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.width, m_localRect.top, 1.0f),
+		transform * Vector3f(m_localRect.left + m_localRect.width, m_localRect.top + m_localRect.height, 1.0f)};
 
 	float left = points[0].x;
 	float top = points[0].y;

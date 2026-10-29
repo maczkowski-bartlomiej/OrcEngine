@@ -3,7 +3,7 @@
 #include <array>
 
 #include "Core/Core.hpp"
-#include "Graphics/Rect.hpp"
+#include "Core/Rect.hpp"
 #include "Graphics/Texture.hpp"
 #include "Graphics/Transformable.hpp"
 #include "Graphics/Vertex.hpp"

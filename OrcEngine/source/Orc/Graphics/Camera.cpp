@@ -10,10 +10,10 @@ Camera::Camera(const FloatRect& viewport)
 	setViewportSize(viewport);
 }
 
-Camera::Camera(float left, float top, float right, float bottom)
+Camera::Camera(float left, float top, float width, float height)
 	: m_viewMatrix(1.0f)
 {
-	setViewportSize(left, top, right, bottom);
+	setViewportSize(left, top, width, height);
 }
 
 void Camera::setZoom(float zoom)
@@ -42,13 +42,13 @@ void Camera::setPosition(const Vector2f& position)
 
 void Camera::setViewportSize(const FloatRect& viewport)
 {
-	setViewportSize(viewport.left, viewport.top, viewport.right, viewport.bottom);
+	setViewportSize(viewport.left, viewport.top, viewport.width, viewport.height);
 }
 
-void Camera::setViewportSize(float left, float top, float right, float bottom)
+void Camera::setViewportSize(float left, float top, float width, float height)
 {
-	m_viewport = FloatRect(left, top, right, bottom);
-	m_projectionMatrix = glm::ortho(left, right, bottom, top, 1.0f, -1.0f);
+	m_viewport = FloatRect(left, top, width, height);
+	m_projectionMatrix = glm::ortho(left, left + width, top + height, top, 1.0f, -1.0f);
 	recalculateViewMatrix();
 }
 
@@ -94,7 +94,7 @@ const Matrix4& Camera::getViewProjectionMatrix() const
 
 void Camera::recalculateViewMatrix()
 {
-	Vector3f center((m_viewport.right - m_viewport.left) / 2.0f, (m_viewport.bottom - m_viewport.top) / 2.0f, 0.0f);
+	Vector3f center(m_viewport.width / 2.0f, m_viewport.height / 2.0f, 0.0f);
 	m_viewMatrix =
 		glm::translate(Matrix4(1.0f), center) *
 		glm::scale(Matrix4(1.0f), Vector3f(m_zoom, m_zoom, 1.0f)) *

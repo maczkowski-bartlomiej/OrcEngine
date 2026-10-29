@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -25,7 +26,5 @@ struct StringViewHash
 		return HashType{}(str);
 	}
 };
-
-std::string getErrnoMessage(int error);
 
 }

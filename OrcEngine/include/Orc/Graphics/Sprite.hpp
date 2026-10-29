@@ -3,7 +3,7 @@
 #include "Core/Core.hpp"
 #include "Graphics/Animator.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Rect.hpp"
+#include "Core/Rect.hpp"
 #include "Graphics/Texturable.hpp"
 #include "Graphics/Texture.hpp"
 

@@ -2,7 +2,7 @@
 
 #include "Core/Core.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Rect.hpp"
+#include "Core/Rect.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {

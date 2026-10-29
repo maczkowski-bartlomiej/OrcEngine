@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-#include "Engine/Utility.hpp"
+#include <system_error>
 
 namespace orc {
 
@@ -103,7 +103,7 @@ void Shader::uploadUniformMatrix3(const std::string& name, const Matrix& matrix)
 void Shader::readShader(std::string* shader, const FilePath& filePath)
 {
 	std::ifstream shaderFile(filePath, std::ios::in | std::ios::binary);
-	ORC_FATAL_CHECK(shaderFile.is_open(), "Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
+	ORC_FATAL_CHECK(shaderFile.is_open(), "Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), std::system_category().message(errno));
 
 	std::stringstream buffer;
 	buffer << shaderFile.rdbuf();

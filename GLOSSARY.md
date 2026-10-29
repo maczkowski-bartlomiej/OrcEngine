@@ -37,7 +37,7 @@ The pure enum class representing discrete window lifecycle occurrences (`WindowR
 _Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage, PolymorphicEvent
 
 **Core**:
-The foundational Layer 0 module providing universal primitives, platform macros, memory ownership aliases, math vectors/matrices, and semantic version constants decoupled from engine lifecycle coordination.
+The foundational Layer 0 module providing universal primitives, platform macros, diagnostics and fail-fast crash contracts, time measurement, pseudo-random generation, string-view hashing, 2D geometric rectangles, memory ownership aliases, math vectors/matrices, and semantic version constants decoupled from engine lifecycle coordination.
 _Avoid_: Engine/Core, EngineCore, Base, Common, UtilityModule
 
 **Viewport**:

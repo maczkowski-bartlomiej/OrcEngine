@@ -3,9 +3,9 @@
 #include <string>
 
 #include "Core/Memory.hpp"
-#include "Engine/Debug.hpp"
+#include "Core/Debug.hpp"
 #include "Engine/GameLayer.hpp"
-#include "Engine/Logger.hpp"
+#include "Core/Logger.hpp"
 
 namespace orc {
 

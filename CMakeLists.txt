@@ -120,12 +120,12 @@ target_link_libraries(OrcEngine
     PUBLIC
         glm::glm
         fmt::fmt
-        spdlog::spdlog
         FMOD::Studio
         FMOD::Core
     PRIVATE
         glfw
         glad::glad
+        spdlog::spdlog
         tinyxml2::tinyxml2
         Freetype::Freetype
         OpenGL::GL

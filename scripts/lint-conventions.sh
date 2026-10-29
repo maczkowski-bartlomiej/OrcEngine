@@ -83,7 +83,7 @@ for f in "${FILES[@]}"; do
     fi
 
     # 2. Check namespace orc in OrcEngine/
-    if [[ "$f" =~ ^OrcEngine/ ]] && [[ "$f" != *"OrcPch.hpp" ]] && [[ "$f" != *"EntryPoint.cpp" ]] && [[ "$f" != *"StbImage.cpp" ]] && [[ "$f" != *"Debug.hpp" ]] && [[ "$f" != *"Orc.hpp" ]] && [[ "$f" != *"Platform.hpp" ]] && [[ "$f" != *"Core.hpp" ]] && [[ "$f" != *"AudioUtility.hpp" ]] && [[ "$f" != *"FontUtility.hpp" ]]; then
+    if [[ "$f" =~ ^OrcEngine/ ]] && [[ "$f" != *"OrcPch.hpp" ]] && [[ "$f" != *"EntryPoint.cpp" ]] && [[ "$f" != *"StbImage.cpp" ]] && [[ "$f" != *"Debug.hpp" ]] && [[ "$f" != *"Orc.hpp" ]] && [[ "$f" != *"Platform.hpp" ]] && [[ "$f" != *"Core.hpp" ]] && [[ "$f" != *"AudioUtility.hpp" ]]; then
         if ! grep -qE '\bnamespace[[:space:]]+orc\b' "$f"; then
             printf "%s\n  \033[31mLine 1 [ERROR]: Engine code must be enclosed in 'namespace orc'\033[0m\n" "$f"
             FILE_ERRORS=$((FILE_ERRORS + 1))

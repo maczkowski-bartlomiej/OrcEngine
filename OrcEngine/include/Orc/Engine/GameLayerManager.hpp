@@ -6,7 +6,7 @@
 
 #include "Core/Memory.hpp"
 #include "Engine/GameLayer.hpp"
-#include "Engine/Utility.hpp"
+#include "Core/StringViewHash.hpp"
 
 namespace orc {
 

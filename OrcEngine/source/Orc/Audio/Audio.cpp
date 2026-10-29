@@ -11,8 +11,8 @@
 #include "Audio/AudioUtility.hpp"
 #include "Audio/Bus.hpp"
 #include "Core/Core.hpp"
-#include "Engine/Debug.hpp"
-#include "Engine/Logger.hpp"
+#include "Core/Debug.hpp"
+#include "Core/Logger.hpp"
 
 namespace orc {
 
