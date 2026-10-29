@@ -5,14 +5,13 @@
 class ScriptTest : public orc::GameLayer
 {
 public:
-	ScriptTest();
-	~ScriptTest();
+	explicit ScriptTest(orc::LayerContext& layerContext);
+	~ScriptTest() override;
 
 	void onAttach() override;
 	void onDetach() override;
 
 	void onUpdate(float deltaTime) override;
-	void onEvent(const orc::Event& event) override;
 
 	void onRender() override;
 	void onGuiRender() override;

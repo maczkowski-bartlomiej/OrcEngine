@@ -1,19 +1,16 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
-#include "Graphics/Rect.hpp"
 #include "Graphics/Color.hpp"
-#include "Graphics/Vertex.hpp"
+#include "Core/Rect.hpp"
 #include "Graphics/Texturable.hpp"
 
 namespace orc {
 
-class Circle : public Texturable<CircleVertex, 4>
+class Circle : public Texturable
 {
 public:
 	Circle();
-	Circle(float radius, const Color& color = Color());
+	explicit Circle(float radius, const Color& color = Color());
 	Circle(const Vector2f& position, float radius, const Color& color = Color());
 
 	void setFillColor(const Color& fillColor);
@@ -31,7 +28,7 @@ public:
 	float getBorderThickness() const;
 
 	FloatRect getLocalRect() const override;
-	
+
 private:
 	void updateVerticesPositions() const override;
 

@@ -1,22 +1,22 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Graphics/Rect.hpp"
+#include "Core/Types.hpp"
+#include "Core/Rect.hpp"
 
 namespace orc {
 
 class Camera
 {
 public:
-	Camera(const FloatRect& viewPort);
-	Camera(float left, float top, float right, float bottom);
+	explicit Camera(const FloatRect& viewport);
+	Camera(float left, float top, float width, float height);
 
 	void setZoom(float zoom);
 	void setRotation(float angle);
 	void setPosition(float x, float y);
 	void setPosition(const Vector2f& position);
-	void setViewportSize(const FloatRect& viewPort);
-	void setViewportSize(float left, float top, float right, float bottom);
+	void setViewportSize(const FloatRect& viewport);
+	void setViewportSize(float left, float top, float width, float height);
 
 	void zoom(float zoom);
 	void rotate(float angle);
@@ -35,9 +35,9 @@ private:
 	Matrix4 m_projectionMatrix;
 	Matrix4 m_viewProjectionMatrix;
 
-	FloatRect m_viewPort;
+	FloatRect m_viewport;
 	Vector2f m_position;
-	
+
 	float m_zoom = 1.0f;
 	float m_rotation = 0.0f;
 };

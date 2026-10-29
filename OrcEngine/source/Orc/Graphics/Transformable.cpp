@@ -1,4 +1,3 @@
-#include "OrcPch.hpp"
 #include "Graphics/Transformable.hpp"
 
 #include <cmath>
@@ -17,17 +16,17 @@ void Transformable::rotate(float angle)
 
 void Transformable::scale(float value)
 {
-	setScale(m_scale + Vector2f(value, value));
+	setScale(Vector2f(m_scale.x * value, m_scale.y * value));
 }
 
 void Transformable::scale(float x, float y)
 {
-	setScale(m_scale + Vector2f(x, y));
+	setScale(Vector2f(m_scale.x * x, m_scale.y * y));
 }
 
-void Transformable::scale(const Vector2f& size)
+void Transformable::scale(const Vector2f& factor)
 {
-	setScale(m_scale + size);
+	setScale(Vector2f(m_scale.x * factor.x, m_scale.y * factor.y));
 }
 
 void Transformable::move(float x, float y)
@@ -42,17 +41,10 @@ void Transformable::move(const Vector2f& offset)
 
 void Transformable::setRotation(float angle)
 {
-	m_rotation = angle;
-	
-	if (m_rotation > 0.0f)
+	m_rotation = std::fmod(angle, 360.0f);
+	if (m_rotation < 0.0f)
 	{
-		while (m_rotation > 360.0f)
-			m_rotation -= 360.0f;
-	}
-	else
-	{
-		while (m_rotation < 0.0f)
-			m_rotation += 360.0f;
+		m_rotation += 360.0f;
 	}
 
 	m_isTransformMatrixUpdateNeeded = true;

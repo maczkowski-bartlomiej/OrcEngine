@@ -1,19 +1,22 @@
 #pragma once
 
-#include "Events/Event.hpp"
-
-#include <string>
 #include <cstdint>
 #include <functional>
+#include <string>
+
+#include "Core/Types.hpp"
+#include "Events/Event.hpp"
 
 struct GLFWwindow;
 
 namespace orc {
 
+class Input;
+
 class Window
 {
 public:
-	using EventCallback = std::function<void(const Event&)>;
+	using EventCallback = std::function<void(Event)>;
 
 	struct VideoSettings
 	{
@@ -27,12 +30,17 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	Window(const VideoSettings& videoSettings);
+	Window(const VideoSettings& videoSettings, Input& input);
 	~Window();
 
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
+	Window(Window&&) = delete;
+	Window& operator=(Window&&) = delete;
+
 	void display();
-	
-	void setTitle(const std::string& title);
+
+	void setTitle(std::string_view title);
 	void setEventCallback(EventCallback eventCallback);
 
 	bool getVsync() const;
@@ -42,13 +50,23 @@ public:
 	uint32_t getHeight() const;
 	Vector2u getSize() const;
 
+	uint32_t getFramebufferWidth() const;
+	uint32_t getFramebufferHeight() const;
+	Vector2u getFramebufferSize() const;
+
 	void* getNativeWindow() const;
 
 private:
-	bool initGLAD();
+	void initGLAD();
 	void setCallbacks();
+	void updateFramebufferDimensions();
+	void onWindowResize(uint32_t width, uint32_t height);
+	void onFramebufferResize(uint32_t width, uint32_t height);
 
 	VideoSettings m_videoSettings;
+	Input& m_input;
+	uint32_t m_framebufferWidth = 0;
+	uint32_t m_framebufferHeight = 0;
 	GLFWwindow* m_glfwWindow = nullptr;
 };
 

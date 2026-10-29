@@ -1,32 +1,35 @@
-#include "OrcPch.hpp"
-
 #include "Graphics/Window.hpp"
 
-#include "Events/MouseEvents.hpp"
-#include "Events/WindowEvents.hpp"
-#include "Events/KeyboardEvents.hpp"
-
-#include "Input/Mouse.hpp"
-#include "Input/Keyboard.hpp"
+#include <utility>
 
 #include <glad/glad.h>
+
 #include <GLFW/glfw3.h>
+
+#include "Events/Event.hpp"
+#include "Input/GlfwInputMapping.hpp"
+#include "Input/Input.hpp"
+
+namespace orc {
+
+namespace {
 
 constexpr int OPENGL_MAJOR_VERSION = 4;
 constexpr int OPENGL_MINOR_VERSION = 6;
 
-namespace orc {
-
-static void glfwErrorCallback(int code, const char* description) noexcept
+void glfwErrorCallback(int code, const char* description) noexcept
 {
-	ORC_LOG_ERROR("GLFW error occured...\n\tCode: {}\n\tDescription: {}", code, description);
+	ORC_FATAL("GLFW error occurred...\n\tCode: {}\n\tDescription: {}", code, description);
 }
 
-Window::Window(const VideoSettings& videoSettings)
-{
-	m_videoSettings = videoSettings;
+}
 
-	ORC_LOG_INFO("Initializing window...\nWindow info:\n\tResolution: {}x{}\n\tTitle: {}", m_videoSettings.width, m_videoSettings.height, m_videoSettings.title);
+Window::Window(const VideoSettings& videoSettings, Input& input)
+	: m_videoSettings(videoSettings),
+	  m_input(input)
+{
+	ORC_LOG_INFO("Initializing window.");
+	ORC_LOG_INFO("Window:\n\tTitle: {}\n\tResolution: {}x{}\n\tVSync: {}", m_videoSettings.title, m_videoSettings.width, m_videoSettings.height, m_videoSettings.vsync ? "Enabled" : "Disabled");
 
 	initGLAD();
 }
@@ -38,29 +41,30 @@ Window::~Window()
 	glfwTerminate();
 }
 
-void Window::display() 
+void Window::display()
 {
+	m_input.beginFrame();
 	glfwPollEvents();
 	glfwSwapBuffers(m_glfwWindow);
 }
 
-void Window::setTitle(const std::string& title)
+void Window::setTitle(std::string_view title)
 {
 	m_videoSettings.title = title;
 	glfwSetWindowTitle(m_glfwWindow, m_videoSettings.title.c_str());
 }
 
-void Window::setEventCallback(Window::EventCallback eventCallback) 
+void Window::setEventCallback(EventCallback eventCallback)
 {
-	m_videoSettings.eventCallback = eventCallback;
+	m_videoSettings.eventCallback = std::move(eventCallback);
 }
 
-bool Window::getVsync() const 
+bool Window::getVsync() const
 {
 	return m_videoSettings.vsync;
 }
 
-void Window::setVsync(bool vsync) 
+void Window::setVsync(bool vsync)
 {
 	if (vsync)
 	{
@@ -74,19 +78,34 @@ void Window::setVsync(bool vsync)
 	m_videoSettings.vsync = vsync;
 }
 
-uint32_t Window::getWidth() const 
+uint32_t Window::getWidth() const
 {
 	return m_videoSettings.width;
 }
 
-uint32_t Window::getHeight() const 
+uint32_t Window::getHeight() const
 {
 	return m_videoSettings.height;
 }
 
-Vector2u Window::getSize() const 
+Vector2u Window::getSize() const
 {
-	return Vector2u(m_videoSettings.width, m_videoSettings.height);
+	return {m_videoSettings.width, m_videoSettings.height};
+}
+
+uint32_t Window::getFramebufferWidth() const
+{
+	return m_framebufferWidth;
+}
+
+uint32_t Window::getFramebufferHeight() const
+{
+	return m_framebufferHeight;
+}
+
+Vector2u Window::getFramebufferSize() const
+{
+	return {m_framebufferWidth, m_framebufferHeight};
 }
 
 void* Window::getNativeWindow() const
@@ -94,14 +113,58 @@ void* Window::getNativeWindow() const
 	return m_glfwWindow;
 }
 
-bool Window::initGLAD()
+void Window::updateFramebufferDimensions()
 {
-	int errorResult = glfwInit();
-	if (!errorResult)
+	int fbWidth = 0;
+	int fbHeight = 0;
+	glfwGetFramebufferSize(m_glfwWindow, &fbWidth, &fbHeight);
+	m_framebufferWidth = static_cast<uint32_t>(fbWidth);
+	m_framebufferHeight = static_cast<uint32_t>(fbHeight);
+}
+
+void Window::onWindowResize(uint32_t width, uint32_t height)
+{
+	const bool windowChanged = (m_videoSettings.width != width || m_videoSettings.height != height);
+	m_videoSettings.width = width;
+	m_videoSettings.height = height;
+
+	const uint32_t prevFbWidth = m_framebufferWidth;
+	const uint32_t prevFbHeight = m_framebufferHeight;
+	updateFramebufferDimensions();
+	const bool fbChanged = (m_framebufferWidth != prevFbWidth || m_framebufferHeight != prevFbHeight);
+
+	if ((windowChanged || fbChanged) && m_videoSettings.eventCallback)
 	{
-		ORC_LOG_FATAL("Failed to initialize GLFW.");
-		return false;
+		m_videoSettings.eventCallback(Event::WindowResized);
 	}
+}
+
+void Window::onFramebufferResize(uint32_t width, uint32_t height)
+{
+	if (m_framebufferWidth == width && m_framebufferHeight == height)
+	{
+		return;
+	}
+
+	m_framebufferWidth = width;
+	m_framebufferHeight = height;
+
+	int winWidth = 0;
+	int winHeight = 0;
+	glfwGetWindowSize(m_glfwWindow, &winWidth, &winHeight);
+	m_videoSettings.width = static_cast<uint32_t>(winWidth);
+	m_videoSettings.height = static_cast<uint32_t>(winHeight);
+
+	if (m_videoSettings.eventCallback)
+	{
+		m_videoSettings.eventCallback(Event::WindowResized);
+	}
+}
+
+void Window::initGLAD()
+{
+	ORC_LOG_INFO("Initializing GLFW.");
+	ORC_FATAL_CHECK(glfwInit(), "Failed to initialize GLFW.");
 
 	glfwSetErrorCallback(&glfwErrorCallback);
 
@@ -109,114 +172,92 @@ bool Window::initGLAD()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR_VERSION);
 
 	m_glfwWindow = glfwCreateWindow(static_cast<int>(m_videoSettings.width), static_cast<int>(m_videoSettings.height), m_videoSettings.title.c_str(), nullptr, nullptr);
+	ORC_FATAL_CHECK(m_glfwWindow != nullptr, "Failed to create GLFW window.");
 
 	glfwMakeContextCurrent(m_glfwWindow);
-	glfwSetWindowUserPointer(m_glfwWindow, &m_videoSettings);
+	updateFramebufferDimensions();
 
-	errorResult = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-	if (!errorResult)
-	{
-		ORC_LOG_FATAL("Failed to initialize GLAD.");
-		return false;
-	}
+	double cursorX = 0.0;
+	double cursorY = 0.0;
+	glfwGetCursorPos(m_glfwWindow, &cursorX, &cursorY);
+	m_input.setMousePosition(static_cast<float>(cursorX), static_cast<float>(cursorY));
 
-	ORC_LOG_INFO("Initialized GLFW & GLAD...\nGraphics info:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, (char*)glGetString(GL_VENDOR), (char*)glGetString(GL_RENDERER));
+	glfwSetWindowUserPointer(m_glfwWindow, this);
+
+	ORC_LOG_INFO("Initializing GLAD.");
+	ORC_FATAL_CHECK(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)), "Failed to initialize GLAD.");
+
+	ORC_LOG_INFO("Graphics:\n\tOpenGL version: {}.{}\n\tVendor: {}\n\tRenderer: {}", OPENGL_MAJOR_VERSION, OPENGL_MINOR_VERSION, reinterpret_cast<const char*>(glGetString(GL_VENDOR)), reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
 
 	setCallbacks();
 	setVsync(m_videoSettings.vsync);
-
-	return true;
 }
 
 void Window::setCallbacks()
 {
 	glfwSetWindowSizeCallback(m_glfwWindow,
-		[](GLFWwindow* window, int width, int height) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
-			videoSettings.width = static_cast<uint32_t>(width);
-			videoSettings.height = static_cast<uint32_t>(height);
-
-			orc::WindowResizedEvent windowResizedEvent(videoSettings.width, videoSettings.height);
-			videoSettings.eventCallback(windowResizedEvent);
-		}
-	);
+							  [](GLFWwindow* window, int width, int height) noexcept {
+								  Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+								  self.onWindowResize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+							  });
 
 	glfwSetFramebufferSizeCallback(m_glfwWindow,
-		[](GLFWwindow* window, int width, int height) noexcept
-		{
-			glViewport(0, 0, width, height);
-		}
-	);
+								   [](GLFWwindow* window, int width, int height) noexcept {
+									   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+									   self.onFramebufferResize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+								   });
 
 	glfwSetWindowCloseCallback(m_glfwWindow,
-		[](GLFWwindow* window) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
-
-			orc::WindowClosedEvent windowClosedEvent;
-			videoSettings.eventCallback(windowClosedEvent);
-		}
-	);
+							   [](GLFWwindow* window) noexcept {
+								   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+								   if (self.m_videoSettings.eventCallback)
+								   {
+									   self.m_videoSettings.eventCallback(Event::WindowClosed);
+								   }
+							   });
 
 	glfwSetKeyCallback(m_glfwWindow,
-		[](GLFWwindow* window, int key, int scancode, int action, int mods) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
+					   [](GLFWwindow* window, int key, [[maybe_unused]]int scancode, int action, int mods) noexcept {
+						   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+						   const Keyboard::Key orcKey = glfw::glfwKeyToOrcKey(key, mods);
+						   const Keyboard::SpecialKeys specialKeys = glfw::glfwKeyModsToOrcSpecialKeys(mods);
 
-			if (action == GLFW_PRESS)
-			{
-				orc::KeyboardKeyPressedEvent keyboardKeyPressedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
-				videoSettings.eventCallback(keyboardKeyPressedEvent);
-			}
-			else if (action == GLFW_RELEASE)
-			{
-				orc::KeyboardKeyReleasedEvent keyboardKeyReleasedEvent(glfw::glfwKeyToOrcKey(key, mods), glfw::glfwKeyModsToOrcSpecialKeys(mods));
-				videoSettings.eventCallback(keyboardKeyReleasedEvent);
-			}
-			else if (action == GLFW_REPEAT)
-			{
-			}
-		}
-	);
+						   if (action == GLFW_PRESS)
+						   {
+							   self.m_input.onKeyPressed(orcKey, specialKeys);
+						   }
+						   else if (action == GLFW_RELEASE)
+						   {
+							   self.m_input.onKeyReleased(orcKey, specialKeys);
+						   }
+					   });
 
 	glfwSetMouseButtonCallback(m_glfwWindow,
-		[](GLFWwindow* window, int button, int action, int mods) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
+							   [](GLFWwindow* window, int button, int action, [[maybe_unused]]int mods) noexcept {
+								   Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+								   const Mouse::Button orcButton = glfw::glfwButtonToOrcButton(button);
 
-			if (action == GLFW_PRESS)
-			{
-				orc::MouseButtonPressedEvent mouseButtonPressedEvent(glfw::glfwButtonToOrcButton(button));
-				videoSettings.eventCallback(mouseButtonPressedEvent);
-			}
-			else if (action == GLFW_RELEASE)
-			{
-				orc::MouseButtonReleasedEvent mouseButtonReleasedEvent(glfw::glfwButtonToOrcButton(button));
-				videoSettings.eventCallback(mouseButtonReleasedEvent);
-			}
-		}
-	);
+								   if (action == GLFW_PRESS)
+								   {
+									   self.m_input.onMouseButtonPressed(orcButton);
+								   }
+								   else if (action == GLFW_RELEASE)
+								   {
+									   self.m_input.onMouseButtonReleased(orcButton);
+								   }
+							   });
 
 	glfwSetCursorPosCallback(m_glfwWindow,
-		[](GLFWwindow* window, double x, double y) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
-
-			orc::MouseMovedEvent mouseMovedEvent(static_cast<float>(x), static_cast<float>(y));
-			videoSettings.eventCallback(mouseMovedEvent);
-		}
-	);
+							 [](GLFWwindow* window, double x, double y) noexcept {
+								 Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+								 self.m_input.onMouseMoved(static_cast<float>(x), static_cast<float>(y));
+							 });
 
 	glfwSetScrollCallback(m_glfwWindow,
-		[](GLFWwindow* window, double xDelta, double yDelta) noexcept
-		{
-			Window::VideoSettings& videoSettings = *reinterpret_cast<Window::VideoSettings*>(glfwGetWindowUserPointer(window));
-
-			orc::MouseWheelScrolledEvent mouseWheelScrolledEvent(static_cast<float>(xDelta), static_cast<float>(yDelta));
-			videoSettings.eventCallback(mouseWheelScrolledEvent);
-		}
-	);
+						  [](GLFWwindow* window, double xDelta, double yDelta) noexcept {
+							  Window& self = *reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+							  self.m_input.onMouseScrolled(static_cast<float>(xDelta), static_cast<float>(yDelta));
+						  });
 }
 
 }

@@ -1,62 +1,22 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-#include "Graphics/Color.hpp"
+#include "Core/Types.hpp"
 
 namespace orc {
 
-struct SpriteVertex
+struct Vertex
 {
+	Vector3f position;
 	Vector4f color = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	Vector3f position;
+	Vector4f secondaryColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 	Vector2f textureCoord;
-
-	float textureIndex = 0.0f;
-};
-
-struct RectangleVertex
-{
-	Vector4f fillColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	Vector4f borderColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	Vector3f position;
-	Vector2f textureCoord;
-
-	float textureIndex = 0.0f;
-	float borderThickness = 0.0f;
-};
-
-struct CircleVertex
-{
-	Vector4f fillColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	Vector4f borderColor = Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
-	
-	Vector3f globalPosition;
 	Vector2f localPosition;
-	Vector2f textureCoord;
 
-	float textureIndex = 0.0f;
-	
-	float radius = 0.0f;
-	float innerRadius = 0.0f;
+	float textureIndex = 32.0f;
+	float shapeType = 0.0f;
 	float borderThickness = 0.0f;
-};
-
-struct GlyphVertex
-{
-	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	
-	Vector3f position;
-	Vector2f textureCoord;
-
-	float textureIndex = 0.0f;
-};
-
-struct LineVertex
-{
-	Vector4f color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	Vector3f position;
+	float innerRadius = 0.0f;
+	float radius = 0.0f;
 };
 
 }

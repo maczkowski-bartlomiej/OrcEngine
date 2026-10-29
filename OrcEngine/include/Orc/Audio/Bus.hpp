@@ -1,15 +1,21 @@
 #pragma once
 
-#include <string>
-
-#include <fmod_studio.hpp>
+namespace FMOD::Studio {
+class Bus;
+}
 
 namespace orc {
 
 class Bus
 {
 public:
-	void load(FMOD::Studio::System* system, const std::string& busName);
+	explicit Bus(FMOD::Studio::Bus* bus);
+	~Bus() = default;
+
+	Bus(const Bus&) = delete;
+	Bus& operator=(const Bus&) = delete;
+	Bus(Bus&&) noexcept = default;
+	Bus& operator=(Bus&&) noexcept = default;
 
 	void stop();
 	void pause();

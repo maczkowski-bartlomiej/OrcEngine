@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Audio/Bus.hpp"
-#include "Engine/Core.hpp"
-
 #include <string>
-#include <string_view>
 #include <vector>
 
-#include <fmod_studio.hpp>
+#include "Audio/Bus.hpp"
+#include "Core/Core.hpp"
+
+namespace FMOD::Studio {
+class System;
+class Bank;
+}
 
 namespace orc {
 
@@ -17,19 +19,15 @@ public:
 	struct AudioSettings
 	{
 		int maxChannels = 512;
-		std::string masterBusName = "bus:/";
-		std::string sfxBusName = "bus:/SFX";	
-		std::string musicBusName = "bus:/Music";
-		std::vector<FilePath> banks = {
-			"assets/audio/Master.bank",
-			"assets/audio/Master.strings.bank",
-			"assets/audio/Music.bank",
-			"assets/audio/SFX.bank"
-		};
-	};	
+
+		FilePath masterBank = "assets/audio/Master.bank";
+		FilePath masterStringBank = "assets/audio/Master.strings.bank";
+
+		std::vector<FilePath> bankPaths;
+	};
 
 	Audio() = delete;
-	Audio(const AudioSettings& audioSettings);
+	explicit Audio(const AudioSettings& audioSettings);
 	~Audio();
 
 	Audio(const Audio&) = delete;
@@ -37,22 +35,16 @@ public:
 	Audio(Audio&&) = delete;
 	Audio& operator=(Audio&&) = delete;
 
-	bool loadBank(const FilePath& filePath);
+	UniquePtr<Bus> getBus(const std::string& busName);
 
 	void play(const std::string& eventPath);
 	void update();
 
-	Bus& getSfxBus();
-	Bus& getMusicBus();
-	Bus& getMasterBus();
-
 private:
-	Bus m_sfxBus;
-	Bus m_musicBus;
-	Bus m_masterBus;
+	void loadBank(const FilePath& filePath);
 
 	FMOD::Studio::System* m_system = nullptr;
-    std::vector<FMOD::Studio::Bank*> m_banks;
+	std::vector<FMOD::Studio::Bank*> m_banks;
 };
 
 }

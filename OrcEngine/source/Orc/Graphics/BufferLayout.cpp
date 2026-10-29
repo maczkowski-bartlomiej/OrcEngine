@@ -1,17 +1,17 @@
-#include "OrcPch.hpp"
 #include "Graphics/BufferLayout.hpp"
 
 #include <glad/glad.h>
 
 namespace orc {
 
-BufferLayout::Element::Element(ShaderDataType type, const std::string& name, bool normalized) 
+BufferLayout::Element::Element(ShaderDataType type, std::string_view name, bool normalized)
 	: normalized(normalized), name(name), size(getShaderDataTypeSize(type)), offset(0), type(type)
 {
 }
 
-uint32_t BufferLayout::Element::getComponentCount() const 
+uint32_t BufferLayout::Element::getComponentCount() const
 {
+	// clang-format off
 	switch (type)
 	{
 		case ShaderDataType::Bool:		return 1;
@@ -29,14 +29,15 @@ uint32_t BufferLayout::Element::getComponentCount() const
 		case ShaderDataType::Invalid:
 		default:						return 0u;
 	}
+	// clang-format on
 }
 
-BufferLayout::BufferLayout() 
+BufferLayout::BufferLayout()
 	: m_stride(0)
 {
 }
 
-BufferLayout::BufferLayout(const std::initializer_list<Element>& elements) 
+BufferLayout::BufferLayout(std::initializer_list<Element> elements)
 	: m_stride(0), m_elements(elements)
 {
 	uint32_t offset = 0;
@@ -50,18 +51,19 @@ BufferLayout::BufferLayout(const std::initializer_list<Element>& elements)
 	m_stride = offset;
 }
 
-uint32_t BufferLayout::getStride() const 
+uint32_t BufferLayout::getStride() const
 {
 	return m_stride;
 }
 
-const std::vector<BufferLayout::Element>& BufferLayout::getElements() const 
+const std::vector<BufferLayout::Element>& BufferLayout::getElements() const
 {
 	return m_elements;
 }
 
-uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type) 
+uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 {
+	// clang-format off
 	switch (type)
 	{
 		case ShaderDataType::Bool:		return 1;
@@ -79,27 +81,30 @@ uint32_t BufferLayout::getShaderDataTypeSize(ShaderDataType type)
 		case ShaderDataType::Invalid:
 		default:					     return 0u;
 	}
+	// clang-format on
 }
 
-uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type) 
+uint32_t BufferLayout::shaderDataTypeToOpenGLType(ShaderDataType type)
 {
+	// clang-format off
 	switch (type)
 	{
-		case orc::BufferLayout::ShaderDataType::Bool:		return GL_BOOL;
-		case orc::BufferLayout::ShaderDataType::Matrix3:	return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Matrix4:	return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Int:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int2:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int3:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Int4:		return GL_INT;
-		case orc::BufferLayout::ShaderDataType::Float:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float2:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float3:		return GL_FLOAT;
-		case orc::BufferLayout::ShaderDataType::Float4:		return GL_FLOAT;
+		case ShaderDataType::Bool:		return GL_BOOL;
+		case ShaderDataType::Matrix3:	return GL_FLOAT;
+		case ShaderDataType::Matrix4:	return GL_FLOAT;
+		case ShaderDataType::Int:		return GL_INT;
+		case ShaderDataType::Int2:		return GL_INT;
+		case ShaderDataType::Int3:		return GL_INT;
+		case ShaderDataType::Int4:		return GL_INT;
+		case ShaderDataType::Float:		return GL_FLOAT;
+		case ShaderDataType::Float2:		return GL_FLOAT;
+		case ShaderDataType::Float3:		return GL_FLOAT;
+		case ShaderDataType::Float4:		return GL_FLOAT;
 
 		case ShaderDataType::Invalid:
 		default:											return 0u;
 	}
+	// clang-format on
 }
 
 }

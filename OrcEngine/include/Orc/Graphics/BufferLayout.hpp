@@ -1,14 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 namespace orc {
 
 class BufferLayout
 {
 public:
+	// clang-format off
 	enum class ShaderDataType
 	{
 		Invalid = -1,
@@ -17,10 +18,11 @@ public:
 		Int, Int2, Int3, Int4,
 		Float, Float2, Float3, Float4,
 	};
+	// clang-format on
 
 	struct Element
 	{
-		Element(ShaderDataType type, const std::string& name, bool normalized = false);
+		Element(ShaderDataType type, std::string_view name, bool normalized = false);
 
 		uint32_t getComponentCount() const;
 
@@ -33,7 +35,7 @@ public:
 	};
 
 	BufferLayout();
-	BufferLayout(const std::initializer_list<Element>& elements);
+	explicit BufferLayout(std::initializer_list<Element> elements);
 
 	uint32_t getStride() const;
 	const std::vector<Element>& getElements() const;

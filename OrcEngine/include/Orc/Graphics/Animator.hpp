@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Engine/Clock.hpp"
-#include "Graphics/Rect.hpp"
-
 #include <string>
 #include <unordered_map>
+
+#include "Core/Clock.hpp"
+#include "Core/StringViewHash.hpp"
+#include "Core/Rect.hpp"
 
 namespace orc {
 
@@ -25,13 +26,14 @@ struct Animation
 class Animator
 {
 public:
-	Animator(Sprite* sprite);
+	explicit Animator(Sprite* sprite);
 
-	void addAnimation(const std::string& name, Ref<Animation> animation);
-	void playAnimation(const std::string& name, bool looping = false);
-	void setDefaultAnimation(const std::string& name);
+	void addAnimation(std::string_view name, Ref<Animation> animation);
+	void playAnimation(std::string_view name, bool looping = false);
+	void setDefaultAnimation(std::string_view name);
 
 	void update();
+	void setSprite(Sprite* sprite);
 
 private:
 	Sprite* m_sprite = nullptr;
@@ -41,8 +43,8 @@ private:
 	Clock m_currentAnimationClock;
 	uint64_t m_currentAnimationFrame = 0;
 	bool m_currentAnimationLooping = false;
-	
-	std::unordered_map<std::string, Ref<Animation>> m_animations;
+
+	std::unordered_map<std::string, Ref<Animation>, StringViewHash, std::equal_to<>> m_animations;
 };
 
 }

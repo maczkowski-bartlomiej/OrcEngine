@@ -1,9 +1,11 @@
 #include "InputTest.hpp"
 
-InputTest::InputTest()
+#include "DemoUtilities.hpp"
+
+InputTest::InputTest(orc::LayerContext& layerContext)
+	: orc::GameLayer(layerContext)
 {
-	ORC_LOG_INFO("InputTest init.");
-	orc::Ref<orc::Texture> soldierTexture = textureResources.getResource("soldier_texture");
+	orc::Ref<orc::Texture> soldierTexture = m_layerContext.textureResources.getResource("soldier_texture");
 	m_player.setTexture(soldierTexture);
 	m_player.setOrigin(m_player.getGlobalRect().getSize() / 2.0f);
 	m_player.setPosition(orc::Vector2f(400.0f, 300.0f));
@@ -11,61 +13,54 @@ InputTest::InputTest()
 
 InputTest::~InputTest()
 {
-	ORC_LOG_INFO("InputTest deinit.");
 }
 
 void InputTest::onAttach()
 {
 	ORC_LOG_INFO("Switching to InputTest.");
-	ORC_LOG_INFO("<- CirclesTest | Menu ->");
-	window.setTitle("InputTest");
+	m_layerContext.window.setTitle("InputTest");
 }
 
 void InputTest::onDetach()
 {
-	ORC_LOG_INFO("Leaving from InputTest.");
 }
 
 void InputTest::onUpdate(float deltaTime)
 {
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::A))
-		m_player.move(-M_SPEED * deltaTime, 0.0f);
-	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::D))
-		m_player.move(M_SPEED * deltaTime, 0.0f);
+	demo::handleLayerNavigation(m_layerContext, "CirclesTest", "Menu");
 
-	if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::W))
-		m_player.move(0.0f, -M_SPEED * deltaTime);
-	else if (orc::Keyboard::isKeyPressed(orc::Keyboard::Key::S))
-		m_player.move(0.0f, M_SPEED * deltaTime);
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A))
+	{
+		m_player.move(-SPEED * deltaTime, 0.0f);
+	}
+	else if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::D))
+	{
+		m_player.move(SPEED * deltaTime, 0.0f);
+	}
 
-	orc::Vector2f mouse = orc::Mouse::getPosition();
+	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::W))
+	{
+		m_player.move(0.0f, -SPEED * deltaTime);
+	}
+	else if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::S))
+	{
+		m_player.move(0.0f, SPEED * deltaTime);
+	}
+
+	orc::Vector2f mouse = m_layerContext.input.getMousePosition();
 	orc::Vector2f playerPos = m_player.getPosition();
 	orc::Vector2f delta(mouse.x - playerPos.x, mouse.y - playerPos.y);
 	float angle = glm::degrees(glm::atan(delta.y, delta.x));
 	m_player.setRotation(angle);
 }
 
-void InputTest::onEvent(const orc::Event& event)
-{
-	if (const auto* kbPressed = event.getIf<orc::KeyboardKeyPressedEvent>())
-	{
-		switch (kbPressed->key)
-		{
-			case orc::Keyboard::Key::Left: gameLayerManager.setActiveLayer("CirclesTest"); break;
-			case orc::Keyboard::Key::Right: gameLayerManager.setActiveLayer("Menu"); break;
-			default: break;
-		}
-	}
-}
-
 void InputTest::onRender()
 {
-	renderer.setClearColor(orc::Color(25, 25, 25, 255));
-	renderer.clear();
+	m_layerContext.renderer.setClearColor(orc::Color(25, 25, 25, 255));
 
-	renderer.begin(camera);
-	renderer.draw(m_player);
-	renderer.end();
+	m_layerContext.renderer.beginScene(m_camera);
+	m_layerContext.renderer.draw(m_player);
+	m_layerContext.renderer.endScene();
 }
 
 void InputTest::onGuiRender()
@@ -90,24 +85,58 @@ void InputTest::onGuiRender()
 	}
 	ImGui::End();
 
-	ImGui::Begin("Navigation Menu");
+	ImGui::Begin("Input State Diagnostics");
 	{
-		if (ImGui::Button("AnimationTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AnimationTest");
-		if (ImGui::Button("AudioTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("AudioTest");
-		if (ImGui::Button("CameraTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CameraTest");
-		if (ImGui::Button("CirclesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("CirclesTest");
-		if (ImGui::Button("Menu", { 200, 50 }))
-			gameLayerManager.setActiveLayer("Menu");
-		if (ImGui::Button("InputTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("InputTest");
-		if (ImGui::Button("RectanglesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("RectanglesTest");
-		if (ImGui::Button("SpritesTest", { 200, 50 }))
-			gameLayerManager.setActiveLayer("SpritesTest");
+		ImGui::Text("--- Held Keys ---");
+		ImGui::Text("W: %s | A: %s | S: %s | D: %s | Space: %s",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::W) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::S) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::D) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::Space) ? "Down" : "Up");
+
+		ImGui::Text("--- Key Transitions ---");
+		ImGui::Text("Space JustPressed: %s | JustReleased: %s",
+					m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Space) ? "True" : "False",
+					m_layerContext.input.wasKeyJustReleased(orc::Keyboard::Key::Space) ? "True" : "False");
+		ImGui::Text("Enter JustPressed: %s | JustReleased: %s",
+					m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Enter) ? "True" : "False",
+					m_layerContext.input.wasKeyJustReleased(orc::Keyboard::Key::Enter) ? "True" : "False");
+
+		const auto& specialKeys = m_layerContext.input.getSpecialKeys();
+		ImGui::Text("--- Modifiers (SpecialKeys) ---");
+		ImGui::Text("Alt: %s | Shift: %s | Ctrl: %s | System: %s | CapsLock: %s | NumLock: %s",
+					specialKeys.alt ? "True" : "False",
+					specialKeys.shift ? "True" : "False",
+					specialKeys.control ? "True" : "False",
+					specialKeys.system ? "True" : "False",
+					specialKeys.capsLock ? "True" : "False",
+					specialKeys.numLock ? "True" : "False");
+
+		ImGui::Text("--- Mouse Buttons ---");
+		ImGui::Text("Left   - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Left) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Left) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Left) ? "True" : "False");
+		ImGui::Text("Right  - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Right) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Right) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Right) ? "True" : "False");
+		ImGui::Text("Scroll - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Scroll) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Scroll) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Scroll) ? "True" : "False");
+
+		const auto& mousePos = m_layerContext.input.getMousePosition();
+		const auto mouseDelta = m_layerContext.input.getMouseDelta();
+		const auto& scrollDelta = m_layerContext.input.getMouseScrollDelta();
+
+		ImGui::Text("--- Mouse Coordinates & Deltas ---");
+		ImGui::Text("Position: (%.1f, %.1f)", mousePos.x, mousePos.y);
+		ImGui::Text("Delta:    (%.1f, %.1f)", mouseDelta.x, mouseDelta.y);
+		ImGui::Text("Scroll:   (%.1f, %.1f)", scrollDelta.x, scrollDelta.y);
 	}
 	ImGui::End();
+
+	demo::renderNavigationMenu(m_layerContext.gameLayerManager);
 }

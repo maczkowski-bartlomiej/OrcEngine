@@ -1,20 +1,44 @@
-#include "OrcPch.hpp"
 #include "Graphics/IndexBuffer.hpp"
+
+#include <utility>
 
 #include <glad/glad.h>
 
 namespace orc {
 
-IndexBuffer::IndexBuffer(const uint32_t* indices, uint32_t count)
-	: m_count(count)
+IndexBuffer::IndexBuffer(std::span<const uint32_t> indices)
+	: m_count(static_cast<uint32_t>(indices.size()))
 {
 	glCreateBuffers(1, &m_rendererID);
-	glNamedBufferData(m_rendererID, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+	glNamedBufferData(m_rendererID, indices.size_bytes(), indices.data(), GL_STATIC_DRAW);
 }
 
-IndexBuffer::~IndexBuffer() 
+IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
+	: m_count(std::exchange(other.m_count, 0)),
+	  m_rendererID(std::exchange(other.m_rendererID, 0))
 {
-	glDeleteBuffers(1, &m_rendererID);
+}
+
+IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
+{
+	if (this != &other)
+	{
+		if (m_rendererID)
+		{
+			glDeleteBuffers(1, &m_rendererID);
+		}
+		m_count = std::exchange(other.m_count, 0);
+		m_rendererID = std::exchange(other.m_rendererID, 0);
+	}
+	return *this;
+}
+
+IndexBuffer::~IndexBuffer()
+{
+	if (m_rendererID)
+	{
+		glDeleteBuffers(1, &m_rendererID);
+	}
 }
 
 uint32_t IndexBuffer::getCount() const

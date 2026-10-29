@@ -4,14 +4,24 @@
 
 namespace orc {
 
+class Window;
+
 class Gui
 {
 public:
-	Gui();
+	explicit Gui(Window& window);
 	~Gui();
+
+	Gui(const Gui&) = delete;
+	Gui& operator=(const Gui&) = delete;
+	Gui(Gui&&) = delete;
+	Gui& operator=(Gui&&) = delete;
 
 	void begin();
 	void end();
+
+private:
+	Window& m_window;
 };
 
 }

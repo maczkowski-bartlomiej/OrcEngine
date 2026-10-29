@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Engine/Core.hpp"
-
 #include <cstdint>
+#include <span>
+
+#include "Core/Core.hpp"
 
 namespace orc {
 
@@ -11,26 +12,26 @@ class Texture
 public:
 	enum class TextureMode
 	{
-		RED,
-		GREEN,
-		BLUE,
-		RGB,
-		RGBA
+		Red,
+		Green,
+		Blue,
+		Rgb,
+		Rgba
 	};
 
 	Texture();
-	Texture(const FilePath& filePath);
+	explicit Texture(const FilePath& filePath);
 	~Texture();
 
-	Texture(Texture&&) = delete;
+	Texture(Texture&& other) noexcept;
+	Texture& operator=(Texture&& other) noexcept;
 	Texture(const Texture&) = delete;
-	Texture operator=(Texture&&) = delete;
-	Texture operator=(const Texture&) = delete;
+	Texture& operator=(const Texture&) = delete;
 
-	bool loadFromFile(const FilePath& filePath);
-	bool loadFromMemory(const void* data, uint32_t width, uint32_t height, const TextureMode& textureMode);
+	void loadFromFile(const FilePath& filePath);
+	void loadFromMemory(std::span<const unsigned char> data, uint32_t width, uint32_t height, TextureMode textureMode);
 
-	void bind(uint32_t slot = 0);
+	void bind(uint32_t slot = 0) const;
 
 	float getWidth() const;
 	float getHeight() const;
@@ -39,8 +40,8 @@ public:
 	RendererID getRendererID() const;
 
 private:
-	Vector2f m_size;
-	RendererID m_rendererID;
+	Vector2f m_size = {0.0f, 0.0f};
+	RendererID m_rendererID = 0;
 };
 
 }

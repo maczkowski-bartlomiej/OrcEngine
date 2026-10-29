@@ -1,58 +1,52 @@
 #pragma once
 
 #include "Audio/Audio.hpp"
-#include "Core.hpp"
 #include "Engine/Config.hpp"
 #include "Engine/GameLayerManager.hpp"
+#include "Engine/LayerContext.hpp"
 #include "Engine/ResourceHolder.hpp"
 #include "Events/Event.hpp"
-#include "Graphics/FTLibrary.hpp"
 #include "Graphics/Gui.hpp"
 #include "Graphics/Renderer.hpp"
 #include "Graphics/Window.hpp"
+#include "Input/Input.hpp"
+#include "Script/Scripting.hpp"
 
 namespace orc {
 
 class Engine
 {
 public:
-	Engine(const Config& config);
+	explicit Engine(const Config& config);
 	~Engine();
+
+	Engine(const Engine&) = delete;
+	Engine& operator=(const Engine&) = delete;
+	Engine(Engine&&) = delete;
+	Engine& operator=(Engine&&) = delete;
 
 	void run();
 
-	Audio& getAudio();
-	Window& getWindow();
-	Renderer& getRenderer();
-	FTLibrary& getFTLibary();
-	GameLayerManager& getGameLayerManager();
-
-	FontResources& getFontResources();
-	TextureResources& getTextureResources();
-	AnimationResources& getAnimationResources();
-
-	static Engine& get();
+	LayerContext& getLayerContext();
+	const LayerContext& getLayerContext() const;
 
 private:
-	void onEvent(const Event& event);
+	void onEvent(Event event);
 
 	bool m_running = false;
 
 	UniquePtr<Gui> m_gui;
 	UniquePtr<Audio> m_audio;
+	UniquePtr<Input> m_input;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
-	UniquePtr<FTLibrary> m_ftLibary;
 	UniquePtr<GameLayerManager> m_gameLayerManager;
+	UniquePtr<LayerContext> m_layerContext;
+	UniquePtr<Scripting> m_scripting;
 
 	FontResources m_fontResources;
 	TextureResources m_textureResources;
 	AnimationResources m_animationResources;
-
-	static Engine* m_instance;
 };
-
-Config getEngineConfig();
-void onEngineStart(Engine& engine);
 
 }

@@ -1,180 +1,160 @@
-#include "OrcPch.hpp"
-#include "Engine/Core.hpp"
-#include "Engine/Clock.hpp"
 #include "Engine/Engine.hpp"
-#include "Events/WindowEvents.hpp"
 
-#include <vector>
-#include <string>
+#include <filesystem>
 #include <functional>
-#include <Audio/Audio.hpp>
-#include <Engine/Config.hpp>
-#include <Engine/Debug.hpp>
-#include <Engine/GameLayer.hpp>
-#include <Engine/GameLayerManager.hpp>
-#include <Engine/Logger.hpp>
-#include <Engine/ResourceHolder.hpp>
-#include <Events/Event.hpp>
-#include <Graphics/FTLibrary.hpp>
-#include <Graphics/Renderer.hpp>
-#include <Graphics/Window.hpp>
+#include <string_view>
+#include <thread>
+
+#include "Audio/Audio.hpp"
+#include "Core/Core.hpp"
+#include "Core/Clock.hpp"
+#include "Engine/Config.hpp"
+#include "Core/Debug.hpp"
+#include "Engine/GameLayer.hpp"
+#include "Engine/GameLayerManager.hpp"
+#include "Core/Logger.hpp"
+#include "Engine/ResourceHolder.hpp"
+#include "Events/Event.hpp"
+#include "Graphics/Renderer.hpp"
+#include "Graphics/Window.hpp"
+#include "Input/Input.hpp"
 
 namespace orc {
 
-	Engine* Engine::m_instance = nullptr;
+Engine::Engine(const Config& config)
+{
+	Logger::init(config.logPath);
 
-	Engine::Engine(const Config& config)
+	ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
+
+#if defined(ORC_DEBUG)
+	constexpr std::string_view BUILD_CONFIG = "Debug";
+#else
+	constexpr std::string_view BUILD_CONFIG = "Release";
+#endif
+
+#if defined(ORC_PLATFORM_WINDOWS)
+	constexpr std::string_view PLATFORM_NAME = "Windows (x64)";
+#else
+	constexpr std::string_view PLATFORM_NAME = "Linux (x64)";
+#endif
+
+	ORC_LOG_INFO("Platform:\n\tOS: {}\n\tBuild Configuration: {}\n\tHardware Threads: {}\n\tWorking Directory: {}", PLATFORM_NAME, BUILD_CONFIG, std::thread::hardware_concurrency(), std::filesystem::current_path().string());
+
+	m_scripting = createUniquePtr<Scripting>();
+
+	m_gameLayerManager = createUniquePtr<GameLayerManager>();
+
+	m_input = createUniquePtr<Input>();
+
+	m_window = createUniquePtr<Window>(config.videoSettings, *m_input);
+	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
+
+	m_renderer = createUniquePtr<Renderer>();
+	m_renderer->setViewport(m_window->getFramebufferWidth(), m_window->getFramebufferHeight());
+
+	m_gui = createUniquePtr<Gui>(*m_window);
+
+	m_audio = createUniquePtr<Audio>(config.audioSettings);
+
+	m_fontResources.loadResources(config.fontsPath);
+	m_textureResources.loadResources(config.texturesPath);
+	m_animationResources.loadResources(config.animationsPath);
+
+	m_layerContext = createUniquePtr<LayerContext>(LayerContext{
+		.window = *m_window,
+		.renderer = *m_renderer,
+		.audio = *m_audio,
+		.gameLayerManager = *m_gameLayerManager,
+		.fontResources = m_fontResources,
+		.textureResources = m_textureResources,
+		.animationResources = m_animationResources,
+		.input = *m_input});
+}
+
+Engine::~Engine()
+{
+	ORC_LOG_INFO("Shutting down Orc Engine.");
+
+	m_gameLayerManager->clear();
+
+	m_layerContext.reset();
+
+	m_animationResources.clear();
+	m_textureResources.clear();
+	m_fontResources.clear();
+
+	m_audio.reset();
+	m_gui.reset();
+	m_renderer.reset();
+	m_window.reset();
+	m_input.reset();
+	m_gameLayerManager.reset();
+
+	m_scripting.reset();
+
+	Logger::deinit();
+}
+
+void Engine::run()
+{
+	Clock clock;
+
+	m_running = true;
+	while (m_running)
 	{
-		if (m_instance)
-		{
-			ORC_FATAL("Engine already initialized.");
-		}
+		float elapsed = clock.restart();
 
-		m_instance = this;
+		m_renderer->clear();
 
-		Logger::init(config.logPath);
-
-		ORC_LOG_INFO("Starting Orc Engine v.{}.{}.{}", version::MAJOR_VERSION, version::MINOR_VERSION, version::PATCH_VERSION);
-
-		m_gameLayerManager = createUniquePtr<GameLayerManager>();
-
-		m_ftLibary = createUniquePtr<FTLibrary>();
-
-		m_window = createUniquePtr<Window>(config.videoSettings);
-		m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
-
-		m_renderer = createUniquePtr<Renderer>();
-
-		m_gui = createUniquePtr<Gui>();
-
-		m_audio = createUniquePtr<Audio>(config.audioSettings);
-
-		m_fontResources.loadResources(config.fontsPath);
-		m_textureResources.loadResources(config.texturesPath);
-		m_animationResources.loadResources(config.animationsPath);
-	}
-
-	Engine::~Engine()
-	{
-		if (m_instance != this) return;
-
-		m_gameLayerManager->clear();
-
-		m_animationResources.clear();
-		m_textureResources.clear();
-		m_fontResources.clear();
-
-		m_audio.reset();
-		m_gui.reset();
-		m_renderer.reset();
-		m_window.reset();
-		m_ftLibary.reset();
-		m_gameLayerManager.reset();
-
-		Logger::deinit();
-		m_instance = nullptr;
-	}
-
-	void Engine::run()
-	{
-		Clock clock;
-
-		m_running = true;
-		while (m_running)
-		{
-			float elapsed = clock.restart();
-
-			Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
-			if (gameLayer)
-			{
-				gameLayer->onUpdate(elapsed);
-
-				m_renderer->begin(gameLayer->getCamera());
-				gameLayer->onRender();
-				m_renderer->end();
-
-				m_gui->begin();
-				gameLayer->onGuiRender();
-				m_gui->end();
-			}
-
-			m_audio->update();
-			m_window->display();
-		}
-	}
-
-	Engine& Engine::get()
-	{
-		return *m_instance;
-	}
-
-	FontResources& Engine::getFontResources()
-	{
-		return m_fontResources;
-	}
-
-	Audio& Engine::getAudio()
-	{
-		return *m_audio;
-	}
-
-	Window& Engine::getWindow()
-	{
-		return *m_window;
-	}
-
-	Renderer& Engine::getRenderer()
-	{
-		return *m_renderer;
-	}
-
-	GameLayerManager& Engine::getGameLayerManager()
-	{
-		return *m_gameLayerManager;
-	}
-
-	FTLibrary& Engine::getFTLibary()
-	{
-		return *m_ftLibary;
-	}
-
-	TextureResources& Engine::getTextureResources()
-	{
-		return m_textureResources;
-	}
-
-	AnimationResources& Engine::getAnimationResources()
-	{
-		return m_animationResources;
-	}
-
-	void Engine::onEvent(const Event& event)
-	{
-		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
+		const Ref<GameLayer>& gameLayer = m_gameLayerManager->getActiveLayer();
 		if (gameLayer)
 		{
-			gameLayer->onEvent(event);
+			gameLayer->onUpdate(elapsed);
+
+			gameLayer->onRender();
+
+			m_gui->begin();
+			gameLayer->onGuiRender();
+			m_gui->end();
 		}
 
-		event.visit(
-			[this, &event](const WindowClosedEvent&)
-			{
-				m_running = false;
-				event.setHandled();
-			},
-			[this, &gameLayer, &event](const WindowResizedEvent& windowResizedEvent)
-			{
-				if (gameLayer)
-				{
-					gameLayer->getCamera().setViewportSize(0.0f, static_cast<float>(windowResizedEvent.width), static_cast<float>(windowResizedEvent.height), 0.0f);
-				}
-				event.setHandled();
-			},
-			[&event](auto&&)
-			{
-				event.setHandled();
-			}
-		);
+		m_audio->update();
+		m_window->display();
 	}
+}
+
+LayerContext& Engine::getLayerContext()
+{
+	return *m_layerContext;
+}
+
+const LayerContext& Engine::getLayerContext() const
+{
+	return *m_layerContext;
+}
+
+void Engine::onEvent(Event event)
+{
+	if (event == Event::WindowResized)
+	{
+		m_renderer->setViewport(m_window->getFramebufferWidth(), m_window->getFramebufferHeight());
+	}
+
+	const Ref<GameLayer>& gameLayer = m_gameLayerManager->getActiveLayer();
+	if (gameLayer)
+	{
+		if (event == Event::WindowResized)
+		{
+			gameLayer->syncCameraWithWindow();
+		}
+		gameLayer->onEvent(event);
+	}
+
+	if (event == Event::WindowClosed)
+	{
+		m_running = false;
+	}
+}
 
 }

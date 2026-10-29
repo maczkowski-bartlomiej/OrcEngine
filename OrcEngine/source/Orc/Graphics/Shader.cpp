@@ -1,8 +1,11 @@
-#include "OrcPch.hpp"
 #include "Graphics/Shader.hpp"
-#include "Engine/Utility.hpp"
+
+#include <fstream>
+#include <utility>
 
 #include <glad/glad.h>
+
+#include <system_error>
 
 namespace orc {
 
@@ -11,38 +14,52 @@ Shader::Shader(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
 	loadFromFile(vertexFilePath, fragmentFilePath);
 }
 
-Shader::~Shader() 
+Shader::Shader(Shader&& other) noexcept
+	: m_rendererID(std::exchange(other.m_rendererID, 0))
 {
-	glDeleteProgram(m_rendererID);
 }
 
-bool Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
+Shader& Shader::operator=(Shader&& other) noexcept
+{
+	if (this != &other)
+	{
+		if (m_rendererID)
+		{
+			glDeleteProgram(m_rendererID);
+		}
+		m_rendererID = std::exchange(other.m_rendererID, 0);
+	}
+	return *this;
+}
+
+Shader::~Shader()
+{
+	if (m_rendererID)
+	{
+		glDeleteProgram(m_rendererID);
+	}
+}
+
+void Shader::loadFromFile(const FilePath& vertexFilePath, const FilePath& fragmentFilePath)
 {
 	std::string vertexShaderSource, fragmentShaderSource;
 
-	if (!readShader(&vertexShaderSource, vertexFilePath))      return false;
-	if (!readShader(&fragmentShaderSource, fragmentFilePath))  return false;
-	if (!compile(vertexShaderSource, fragmentShaderSource))    return false;
-
-	return true;
+	readShader(&vertexShaderSource, vertexFilePath);
+	readShader(&fragmentShaderSource, fragmentFilePath);
+	compile(vertexShaderSource, fragmentShaderSource);
 }
 
-bool Shader::loadFromString(std::string_view vertexShaderSource, std::string_view fragmentShaderSource)
+void Shader::loadFromString(std::string_view vertexSource, std::string_view fragmentSource)
 {
-	if (!compile(vertexShaderSource, fragmentShaderSource))
-	{
-		return false;
-	}
-
-	return true;
+	compile(vertexSource, fragmentSource);
 }
 
-void Shader::bind() const 
+void Shader::bind() const
 {
 	glUseProgram(m_rendererID);
 }
 
-void Shader::unbind() const 
+void Shader::unbind() const
 {
 	glUseProgram(0);
 }
@@ -53,10 +70,10 @@ void Shader::uploadUniformInt(const std::string& name, int integer) const
 	glUniform1i(location, integer);
 }
 
-void Shader::uploadUniformIntArray(const std::string& name, const int* array, uint32_t size) const
+void Shader::uploadUniformIntArray(const std::string& name, std::span<const int> values) const
 {
 	GLint location = glGetUniformLocation(m_rendererID, name.c_str());
-	glUniform1iv(location, static_cast<GLsizei>(size), array);
+	glUniform1iv(location, static_cast<GLsizei>(values.size()), values.data());
 }
 
 void Shader::uploadUniformFloat3(const std::string& name, const Vector3f& float3) const
@@ -83,36 +100,22 @@ void Shader::uploadUniformMatrix3(const std::string& name, const Matrix& matrix)
 	glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-bool Shader::readShader(std::string* shader, const FilePath& filePath)
+void Shader::readShader(std::string* shader, const FilePath& filePath)
 {
-	bool success = true;
-
 	std::ifstream shaderFile(filePath, std::ios::in | std::ios::binary);
-	if (!shaderFile.is_open())
-	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
-		success = false;
-	}
-	else if (!shaderFile.good())
-	{
-		ORC_ERROR("Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), getErrnoMessage(errno));
-		success = false;
-	}
-	else
-	{
-		std::stringstream buffer;
-		buffer << shaderFile.rdbuf();
-		*shader = buffer.str();
-	}
+	ORC_FATAL_CHECK(shaderFile.is_open(), "Failed to load shader at path '{}'\n\tReason: {}", filePath.string(), std::system_category().message(errno));
+
+	std::stringstream buffer;
+	buffer << shaderFile.rdbuf();
+	*shader = buffer.str();
 
 	shaderFile.close();
-	return success;
 }
 
-bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSource)
+void Shader::compile(std::string_view vertexSource, std::string_view fragmentSource)
 {
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	
+
 	const char* vSource = vertexSource.data();
 	GLint vLength = static_cast<GLint>(vertexSource.size());
 	glShaderSource(vertexShader, 1, &vSource, &vLength);
@@ -126,9 +129,7 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		std::vector<char> errorMessage(static_cast<uint32_t>(errorLength));
 		glGetShaderInfoLog(vertexShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
-		ORC_ERROR("Vertex shader compilation\n{}", errorMessage.data());
-
-		return false;
+		ORC_FATAL("Vertex shader compilation\n{}", errorMessage.data());
 	}
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -145,9 +146,7 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		glGetShaderInfoLog(fragmentShader, errorLength, &errorLength, errorMessage.data());
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
-		ORC_ERROR("Fragment shader compilation\n{}", errorMessage.data());
-
-		return false;
+		ORC_FATAL("Fragment shader compilation\n{}", errorMessage.data());
 	}
 
 	glDeleteProgram(m_rendererID);
@@ -165,15 +164,13 @@ bool Shader::compile(std::string_view vertexSource, std::string_view fragmentSou
 		glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
 		glDeleteProgram(m_rendererID);
-		ORC_ERROR("Shader link failure\n{}", errorMessage.data());
-
-		return false;
+		ORC_FATAL("Shader link failure\n{}", errorMessage.data());
 	}
 
 	glDetachShader(m_rendererID, vertexShader);
 	glDetachShader(m_rendererID, fragmentShader);
-
-	return true;
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
 }
 
 }

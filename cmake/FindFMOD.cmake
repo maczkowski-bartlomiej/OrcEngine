@@ -16,7 +16,39 @@
 set(FMOD_ROOT "${FMOD_ROOT}" CACHE PATH "Root directory of the FMOD Engine SDK (contains api/)")
 
 set(_fmod_hints "${FMOD_ROOT}" "$ENV{FMOD_ROOT}")
-set(_fmod_arch "x86_64")
+
+if(WIN32)
+    list(APPEND _fmod_hints
+        "$ENV{ProgramFiles}/FMOD SoundSystem/FMOD Studio API Windows"
+        "$ENV{ProgramFiles\(x86\)}/FMOD SoundSystem/FMOD Studio API Windows"
+        "C:/Program Files/FMOD SoundSystem/FMOD Studio API Windows"
+        "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows"
+        "$ENV{USERPROFILE}/fmod"
+        "$ENV{USERPROFILE}/dev/libs/cpp/fmod"
+    )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(_fmod_arch "x86")
+    else()
+        set(_fmod_arch "x64")
+    endif()
+    set(_fmod_core_names fmod_vc fmod fmodL_vc)
+    set(_fmod_studio_names fmodstudio_vc fmodstudio fmodstudioL_vc)
+else()
+    list(APPEND _fmod_hints
+        "/opt/fmod"
+        "/usr/local/fmod"
+        "/usr/local/opt/fmod"
+        "$ENV{HOME}/fmod"
+        "$ENV{HOME}/dev/libs/cpp/fmod"
+    )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(_fmod_arch "x86")
+    else()
+        set(_fmod_arch "x86_64")
+    endif()
+    set(_fmod_core_names fmod)
+    set(_fmod_studio_names fmodstudio)
+endif()
 
 find_path(FMOD_CORE_INCLUDE_DIR
     NAMES fmod.hpp fmod_common.h fmod_errors.h
@@ -31,16 +63,30 @@ find_path(FMOD_STUDIO_INCLUDE_DIR
 )
 
 find_library(FMOD_CORE_LIBRARY
-    NAMES fmod
+    NAMES ${_fmod_core_names}
     HINTS ${_fmod_hints}
     PATH_SUFFIXES api/core/lib/${_fmod_arch}
 )
 
 find_library(FMOD_STUDIO_LIBRARY
-    NAMES fmodstudio
+    NAMES ${_fmod_studio_names}
     HINTS ${_fmod_hints}
     PATH_SUFFIXES api/studio/lib/${_fmod_arch}
 )
+
+if(WIN32)
+    find_file(FMOD_CORE_DLL
+        NAMES fmod.dll fmodL.dll
+        HINTS ${_fmod_hints}
+        PATH_SUFFIXES api/core/lib/${_fmod_arch}
+    )
+
+    find_file(FMOD_STUDIO_DLL
+        NAMES fmodstudio.dll fmodstudioL.dll
+        HINTS ${_fmod_hints}
+        PATH_SUFFIXES api/studio/lib/${_fmod_arch}
+    )
+endif()
 
 # FMOD_VERSION is encoded as 0xaaaabbcc -> aaaa.bb.cc
 if(FMOD_CORE_INCLUDE_DIR AND EXISTS "${FMOD_CORE_INCLUDE_DIR}/fmod_common.h")
@@ -57,12 +103,26 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(FMOD
-    REQUIRED_VARS
+if(WIN32)
+    set(_fmod_required_vars
+        FMOD_CORE_LIBRARY
+        FMOD_STUDIO_LIBRARY
+        FMOD_CORE_DLL
+        FMOD_STUDIO_DLL
+        FMOD_CORE_INCLUDE_DIR
+        FMOD_STUDIO_INCLUDE_DIR
+    )
+else()
+    set(_fmod_required_vars
         FMOD_CORE_LIBRARY
         FMOD_STUDIO_LIBRARY
         FMOD_CORE_INCLUDE_DIR
         FMOD_STUDIO_INCLUDE_DIR
+    )
+endif()
+
+find_package_handle_standard_args(FMOD
+    REQUIRED_VARS ${_fmod_required_vars}
     VERSION_VAR FMOD_VERSION
 )
 
@@ -79,26 +139,50 @@ function(_fmod_soname library out_var)
 endfunction()
 
 if(FMOD_FOUND)
-    _fmod_soname("${FMOD_CORE_LIBRARY}" FMOD_CORE_SONAME)
-    _fmod_soname("${FMOD_STUDIO_LIBRARY}" FMOD_STUDIO_SONAME)
+    if(WIN32)
+        get_filename_component(FMOD_CORE_SONAME "${FMOD_CORE_DLL}" NAME)
+        get_filename_component(FMOD_STUDIO_SONAME "${FMOD_STUDIO_DLL}" NAME)
 
-    if(NOT TARGET FMOD::Core)
-        add_library(FMOD::Core SHARED IMPORTED)
-        set_target_properties(FMOD::Core PROPERTIES
-            IMPORTED_LOCATION "${FMOD_CORE_LIBRARY}"
-            IMPORTED_SONAME "${FMOD_CORE_SONAME}"
-            INTERFACE_INCLUDE_DIRECTORIES "${FMOD_CORE_INCLUDE_DIR}"
-        )
-    endif()
+        if(NOT TARGET FMOD::Core)
+            add_library(FMOD::Core SHARED IMPORTED)
+            set_target_properties(FMOD::Core PROPERTIES
+                IMPORTED_LOCATION "${FMOD_CORE_DLL}"
+                IMPORTED_IMPLIB "${FMOD_CORE_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${FMOD_CORE_INCLUDE_DIR}"
+            )
+        endif()
 
-    if(NOT TARGET FMOD::Studio)
-        add_library(FMOD::Studio SHARED IMPORTED)
-        set_target_properties(FMOD::Studio PROPERTIES
-            IMPORTED_LOCATION "${FMOD_STUDIO_LIBRARY}"
-            IMPORTED_SONAME "${FMOD_STUDIO_SONAME}"
-            INTERFACE_INCLUDE_DIRECTORIES "${FMOD_STUDIO_INCLUDE_DIR}"
-            INTERFACE_LINK_LIBRARIES FMOD::Core
-        )
+        if(NOT TARGET FMOD::Studio)
+            add_library(FMOD::Studio SHARED IMPORTED)
+            set_target_properties(FMOD::Studio PROPERTIES
+                IMPORTED_LOCATION "${FMOD_STUDIO_DLL}"
+                IMPORTED_IMPLIB "${FMOD_STUDIO_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${FMOD_STUDIO_INCLUDE_DIR}"
+                INTERFACE_LINK_LIBRARIES FMOD::Core
+            )
+        endif()
+    else()
+        _fmod_soname("${FMOD_CORE_LIBRARY}" FMOD_CORE_SONAME)
+        _fmod_soname("${FMOD_STUDIO_LIBRARY}" FMOD_STUDIO_SONAME)
+
+        if(NOT TARGET FMOD::Core)
+            add_library(FMOD::Core SHARED IMPORTED)
+            set_target_properties(FMOD::Core PROPERTIES
+                IMPORTED_LOCATION "${FMOD_CORE_LIBRARY}"
+                IMPORTED_SONAME "${FMOD_CORE_SONAME}"
+                INTERFACE_INCLUDE_DIRECTORIES "${FMOD_CORE_INCLUDE_DIR}"
+            )
+        endif()
+
+        if(NOT TARGET FMOD::Studio)
+            add_library(FMOD::Studio SHARED IMPORTED)
+            set_target_properties(FMOD::Studio PROPERTIES
+                IMPORTED_LOCATION "${FMOD_STUDIO_LIBRARY}"
+                IMPORTED_SONAME "${FMOD_STUDIO_SONAME}"
+                INTERFACE_INCLUDE_DIRECTORIES "${FMOD_STUDIO_INCLUDE_DIR}"
+                INTERFACE_LINK_LIBRARIES FMOD::Core
+            )
+        endif()
     endif()
 endif()
 
@@ -107,4 +191,6 @@ mark_as_advanced(
     FMOD_STUDIO_INCLUDE_DIR
     FMOD_CORE_LIBRARY
     FMOD_STUDIO_LIBRARY
+    FMOD_CORE_DLL
+    FMOD_STUDIO_DLL
 )
