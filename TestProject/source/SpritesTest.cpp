@@ -1,63 +1,73 @@
 #include "SpritesTest.hpp"
 
+#include "DemoUtilities.hpp"
+
 SpritesTest::SpritesTest(orc::LayerContext& layerContext)
 	: orc::GameLayer(layerContext)
 {
-	orc::Ref<orc::Texture> gradientTexture = m_layerContext.textureResources.getResource("gradient_texture");
-	orc::Ref<orc::Texture> smallTexture = m_layerContext.textureResources.getResource("small_texture");
 	orc::Ref<orc::Texture> zombieTexture = m_layerContext.textureResources.getResource("zombie_texture");
 	orc::Ref<orc::Texture> soldierTexture = m_layerContext.textureResources.getResource("soldier_texture");
 	orc::Ref<orc::Font> font = m_layerContext.fontResources.getResource("arial_font");
 
-	m_text1 = orc::Text(font, "Soldier Texture");
-	m_text1.setPosition(100.0f, 0.0f);
-	m_text1.setScale(0.25f, 0.25f);
-	m_text1.setOrigin(m_text1.getGlobalRect().getSize() / 2.0f);
-	m_sprite1 = orc::Sprite(soldierTexture, orc::Vector2f(100.0f, 75.0f));
-	m_sprite1.setScale(0.5f);
-	m_sprite1.setOrigin(m_sprite1.getGlobalRect().getSize() / 2.0f);
+	m_items.reserve(6);
 
-	m_text2 = orc::Text(font, "Zombie Texture");
-	m_text2.setPosition(300.0f, 0.0f);
-	m_text2.setScale(0.25f, 0.25f);
-	m_text2.setOrigin(m_text2.getGlobalRect().getSize() / 2.0f);
-	m_sprite2 = orc::Sprite(zombieTexture, orc::Vector2f(300.0f, 75.0f));
-	m_sprite2.setScale(0.5f);
-	m_sprite2.setOrigin(m_sprite2.getGlobalRect().getSize() / 2.0f);
+	{
+		orc::Sprite shape(soldierTexture, orc::Vector2f(100.0f, 75.0f));
+		shape.setScale(0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Soldier Texture", orc::Vector2f(100.0f, 20.0f))});
+	}
 
-	m_text3 = orc::Text(font, "Soldier + Rotated 45");
-	m_text3.setPosition(500.0f, 0.0f);
-	m_text3.setScale(0.25f, 0.25f);
-	m_text3.setOrigin(m_text3.getGlobalRect().getSize() / 2.0f);
-	m_sprite3 = orc::Sprite(soldierTexture, orc::Vector2f(500.0f, 75.0f));
-	m_sprite3.setScale(0.5f);
-	m_sprite3.setOrigin(m_sprite3.getGlobalRect().getSize() / 2.0f);
-	m_sprite3.setRotation(45.0f);
+	{
+		orc::Sprite shape(zombieTexture, orc::Vector2f(300.0f, 75.0f));
+		shape.setScale(0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Zombie Texture", orc::Vector2f(300.0f, 20.0f))});
+	}
 
-	m_text4 = orc::Text(font, "Soldier + Rotating");
-	m_text4.setPosition(700.0f, 0.0f);
-	m_text4.setScale(0.25f, 0.25f);
-	m_text4.setOrigin(m_text4.getGlobalRect().getSize() / 2.0f);
-	m_sprite4 = orc::Sprite(soldierTexture, orc::Vector2f(700.0f, 75.0f));
-	m_sprite4.setScale(0.5f);
-	m_sprite4.setOrigin(m_sprite4.getGlobalRect().getSize() / 2.0f);
+	{
+		orc::Sprite shape(soldierTexture, orc::Vector2f(500.0f, 75.0f));
+		shape.setScale(0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		shape.setRotation(45.0f);
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Soldier + Rotated 45", orc::Vector2f(500.0f, 20.0f))});
+	}
 
-	m_text5 = orc::Text(font, "Soldier + Red color");
-	m_text5.setPosition(100.0f, 150.0f);
-	m_text5.setScale(0.25f, 0.25f);
-	m_text5.setOrigin(m_text5.getGlobalRect().getSize() / 2.0f);
-	m_sprite5 = orc::Sprite(soldierTexture, orc::Vector2f(100.0f, 225.0f));
-	m_sprite5.setScale(0.5f);
-	m_sprite5.setOrigin(m_sprite5.getGlobalRect().getSize() / 2.0f);
-	m_sprite5.setColor(orc::Color(255, 0, 0));
+	{
+		orc::Sprite shape(soldierTexture, orc::Vector2f(700.0f, 75.0f));
+		shape.setScale(0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Soldier + Rotating", orc::Vector2f(700.0f, 20.0f))});
+	}
 
-	m_text6 = orc::Text(font, "Zombie + negative 0.5 scaled");
-	m_text6.setPosition(300.0f, 150.0f);
-	m_text6.setScale(0.25f, 0.25f);
-	m_text6.setOrigin(m_text6.getGlobalRect().getSize() / 2.0f);
-	m_sprite6 = orc::Sprite(zombieTexture, orc::Vector2f(300.0f, 225.0f));
-	m_sprite6.setScale(-0.5f);
-	m_sprite6.setOrigin(m_sprite6.getGlobalRect().getSize() / 2.0f);
+	{
+		orc::Sprite shape(soldierTexture, orc::Vector2f(100.0f, 225.0f));
+		shape.setScale(0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		shape.setColor(orc::Color(255, 0, 0));
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Soldier + Red color", orc::Vector2f(100.0f, 170.0f))});
+	}
+
+	{
+		orc::Sprite shape(zombieTexture, orc::Vector2f(300.0f, 225.0f));
+		shape.setScale(-0.5f);
+		shape.setOrigin(shape.getGlobalRect().getSize() / 2.0f);
+		m_items.push_back(GridItem{
+			.shape = shape,
+			.label = demo::createShowcaseLabel(font, "Zombie + negative 0.5 scaled", orc::Vector2f(300.0f, 170.0f))});
+	}
+
+	m_sprite4 = &m_items[3].shape;
 }
 
 SpritesTest::~SpritesTest()
@@ -76,16 +86,9 @@ void SpritesTest::onDetach()
 
 void SpritesTest::onUpdate(float deltaTime)
 {
-	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
-	{
-		m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
-	}
-	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
-	{
-		m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
-	}
+	demo::handleLayerNavigation(m_layerContext, "RectanglesTest", "AnimationTest");
 
-	m_sprite4.rotate(45.0f * deltaTime);
+	m_sprite4->rotate(45.0f * deltaTime);
 }
 
 void SpritesTest::onRender()
@@ -94,84 +97,18 @@ void SpritesTest::onRender()
 
 	m_layerContext.renderer.beginScene(m_camera);
 
-	m_layerContext.renderer.draw(m_sprite1);
-	m_layerContext.renderer.draw(m_sprite2);
-	m_layerContext.renderer.draw(m_sprite3);
-	m_layerContext.renderer.draw(m_sprite4);
-	m_layerContext.renderer.draw(m_sprite5);
-	m_layerContext.renderer.draw(m_sprite6);
-	// m_layerContext.renderer.draw(m_sprite7);
-	// m_layerContext.renderer.draw(m_sprite8);
-	// m_layerContext.renderer.draw(m_sprite9);
-	// m_layerContext.renderer.draw(m_sprite10);
-	// m_layerContext.renderer.draw(m_sprite11);
-	// m_layerContext.renderer.draw(m_sprite12);
+	for (const auto& item : m_items)
+	{
+		m_layerContext.renderer.draw(item.shape);
+		m_layerContext.renderer.draw(item.label);
+	}
 
-	m_layerContext.renderer.draw(m_text1);
-	m_layerContext.renderer.draw(m_text2);
-	m_layerContext.renderer.draw(m_text3);
-	m_layerContext.renderer.draw(m_text4);
-	m_layerContext.renderer.draw(m_text5);
-	m_layerContext.renderer.draw(m_text6);
-	// m_layerContext.renderer.draw(m_text7);
-	// m_layerContext.renderer.draw(m_text8);
-	// m_layerContext.renderer.draw(m_text9);
-	// m_layerContext.renderer.draw(m_text10);
-	// m_layerContext.renderer.draw(m_text11);
-	// m_layerContext.renderer.draw(m_text12);
-
-	drawLines();
+	demo::drawGrid(m_layerContext.renderer);
 
 	m_layerContext.renderer.endScene();
 }
 
 void SpritesTest::onGuiRender()
 {
-	ImGui::Begin("Navigation Menu");
-	{
-		if (ImGui::Button("AnimationTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
-		}
-		if (ImGui::Button("AudioTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
-		}
-		if (ImGui::Button("CameraTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
-		}
-		if (ImGui::Button("CirclesTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
-		}
-		if (ImGui::Button("Menu", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("Menu");
-		}
-		if (ImGui::Button("InputTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("InputTest");
-		}
-		if (ImGui::Button("RectanglesTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
-		}
-		if (ImGui::Button("SpritesTest", {200, 50}))
-		{
-			m_layerContext.gameLayerManager.setActiveLayer("SpritesTest");
-		}
-	}
-	ImGui::End();
-}
-
-void SpritesTest::drawLines()
-{
-	m_layerContext.renderer.drawLine(orc::Vector2f(200.0f, 0.0f), orc::Vector2f(200.0f, 600.0f), orc::Color(255));
-	m_layerContext.renderer.drawLine(orc::Vector2f(400.0f, 0.0f), orc::Vector2f(400.0f, 600.0f), orc::Color(255));
-	m_layerContext.renderer.drawLine(orc::Vector2f(600.0f, 0.0f), orc::Vector2f(600.0f, 600.0f), orc::Color(255));
-
-	m_layerContext.renderer.drawLine(orc::Vector2f(0.0f, 150.0f), orc::Vector2f(800.0f, 150.0f), orc::Color(255));
-	m_layerContext.renderer.drawLine(orc::Vector2f(0.0f, 300.0f), orc::Vector2f(800.0f, 300.0f), orc::Color(255));
-	m_layerContext.renderer.drawLine(orc::Vector2f(0.0f, 450.0f), orc::Vector2f(800.0f, 450.0f), orc::Color(255));
+	demo::renderNavigationMenu(m_layerContext.gameLayerManager);
 }
