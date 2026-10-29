@@ -11,16 +11,16 @@ Authoritative C++20 coding conventions for `OrcEngine` and `TestProject`. (C# sc
 | Category | Convention | Examples |
 | :--- | :--- | :--- |
 | **Namespaces** | `lowercase_snake_case` | `orc`, `orc::version`, `orc::glfw` |
-| **Types / Classes / Structs** | `PascalCase` | `GameLayer`, `WindowResizedEvent`, `Vertex`, `AudioSettings` |
+| **Types / Classes / Structs** | `PascalCase` | `GameLayer`, `VideoSettings`, `Vertex`, `AudioSettings` |
 | **Functions / Methods** | `camelCase` | `loadFromFile()`, `isKeyPressed()`, `onAttach()`, `setViewportSize()` |
-| **Local Variables & Parameters** | `camelCase` | `elapsed`, `windowResizedEvent`, `gameLayer`, `dt` |
+| **Local Variables & Parameters** | `camelCase` | `elapsed`, `layerContext`, `gameLayer`, `dt` |
 | **Class Member Variables** | `m_camelCase` | `m_running`, `m_videoSettings`, `m_glfwWindow`, `m_texture`, `m_camera` |
 | **Struct Fields (Data)** | `camelCase` | `position`, `color`, `width`, `height`, `assetsPath`, `event` |
 | **Constants & Macros** | `UPPER_SNAKE_CASE` | `MAX_TEXTURE_SLOTS`, `ORC_LOG_INFO`, `ORC_FATAL_CHECK`, `ORC_DEBUG` |
 | **Enum Classes & Values** | `PascalCase` | `enum class Key { Space, Escape, LeftShift };` |
 | **File Names** | `PascalCase` | `GameLayer.hpp`, `Renderer.cpp`, `Transformable.hpp` |
 
-Private and protected class members use the `m_camelCase` prefix. Public fields of plain data structs (`Config`, `LayerContext`, `Vertex`, `Color`, `Rect`, `AudioSettings`, `VideoSettings`, `SpecialKeys`, and `Event` structs) use unprefixed `camelCase`.
+Private and protected class members use the `m_camelCase` prefix. Public fields of plain data structs (`Config`, `LayerContext`, `Vertex`, `Color`, `Rect`, `AudioSettings`, `VideoSettings`, and `SpecialKeys`) use unprefixed `camelCase`.
 
 Use domain terms strictly as defined in [`GLOSSARY.md`](GLOSSARY.md) and avoid listed synonyms.
 
@@ -42,7 +42,7 @@ Use domain terms strictly as defined in [`GLOSSARY.md`](GLOSSARY.md) and avoid l
 
 ## 3. Constructors, Constness, Linkage & Type Safety
 
-- **Explicit Constructors**: Mark all single-argument constructors (and multi-argument constructors where trailing parameters have defaults) `explicit` across classes and event structs, except intentional type-erasure wrappers.
+- **Explicit Constructors**: Mark all single-argument constructors (and multi-argument constructors where trailing parameters have defaults) `explicit` across classes and structs, except intentional type-erasure wrappers.
 - **In-Class Member Initialization**: Use `=` assignment syntax for default member initializers (e.g., `void* m_hostfxrLib = nullptr;`, `bool m_running = false;`, `uint32_t m_rendererID = 0;`) rather than brace initialization (`{nullptr}`, `{false}`, `{0}`).
 - **Logical Constness**: Methods that advance simulation, poll OS events, swap buffers, tick timers, advance audio mixers, or upload GPU buffer data must be non-`const`, even if internal handles are pointers (`GLFWwindow*`, `FMOD::Studio::System*`) or driver IDs (`RendererID`). Conversely, OpenGL bind and uniform upload methods (`Texture::bind()`, `Shader::uploadUniform...`) and state inspectors are marked `const` because they do not mutate the logical state of the C++ asset object.
 - **Linkage & Header Hygiene**:

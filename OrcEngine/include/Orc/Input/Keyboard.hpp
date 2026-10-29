@@ -36,10 +36,3 @@ public:
 };
 
 }
-
-namespace orc::glfw {
-
-Keyboard::Key glfwKeyToOrcKey(int glfwKey, int mods);
-Keyboard::SpecialKeys glfwKeyModsToOrcSpecialKeys(int mods);
-
-}

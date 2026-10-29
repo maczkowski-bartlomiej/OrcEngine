@@ -16,9 +16,3 @@ public:
 };
 
 }
-
-namespace orc::glfw {
-
-Mouse::Button glfwButtonToOrcButton(int glfwButton);
-
-}

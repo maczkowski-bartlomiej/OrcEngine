@@ -11,10 +11,12 @@ struct GLFWwindow;
 
 namespace orc {
 
+class Input;
+
 class Window
 {
 public:
-	using EventCallback = std::function<void(const Event&)>;
+	using EventCallback = std::function<void(Event)>;
 
 	struct VideoSettings
 	{
@@ -28,7 +30,7 @@ public:
 		EventCallback eventCallback = nullptr;
 	};
 
-	explicit Window(const VideoSettings& videoSettings);
+	Window(const VideoSettings& videoSettings, Input& input);
 	~Window();
 
 	Window(const Window&) = delete;
@@ -58,8 +60,11 @@ private:
 	void initGLAD();
 	void setCallbacks();
 	void updateFramebufferDimensions();
+	void onWindowResize(uint32_t width, uint32_t height);
+	void onFramebufferResize(uint32_t width, uint32_t height);
 
 	VideoSettings m_videoSettings;
+	Input& m_input;
 	uint32_t m_framebufferWidth = 0;
 	uint32_t m_framebufferHeight = 0;
 	GLFWwindow* m_glfwWindow = nullptr;

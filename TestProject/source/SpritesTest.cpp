@@ -76,28 +76,16 @@ void SpritesTest::onDetach()
 
 void SpritesTest::onUpdate(float deltaTime)
 {
-	m_sprite4.rotate(45.0f * deltaTime);
-}
-
-void SpritesTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
 	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
-				break;
-			default:
-				break;
-		}
+		m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
 	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
+	}
+
+	m_sprite4.rotate(45.0f * deltaTime);
 }
 
 void SpritesTest::onRender()

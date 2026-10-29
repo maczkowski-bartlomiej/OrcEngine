@@ -36,26 +36,13 @@ void Menu::onDetach()
 
 void Menu::onUpdate(float deltaTime)
 {
-}
-
-void Menu::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
 	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("InputTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
-				break;
-			default:
-				break;
-		}
+		m_layerContext.gameLayerManager.setActiveLayer("InputTest");
+	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("RectanglesTest");
 	}
 }
 

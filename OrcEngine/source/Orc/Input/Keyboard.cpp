@@ -2,6 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Input/GlfwInputMapping.hpp"
+
 namespace orc::glfw {
 
 Keyboard::Key glfwKeyToOrcKey(int glfwKey, int /*mods*/)

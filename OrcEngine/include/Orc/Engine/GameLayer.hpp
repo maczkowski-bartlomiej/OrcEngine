@@ -16,7 +16,7 @@ public:
 	virtual void onDetach() {}
 
 	virtual void onUpdate(float deltaTime) {}
-	virtual void onEvent(const Event& event);
+	virtual void onEvent([[maybe_unused]]Event event) {}
 
 	virtual void onRender() {}
 	virtual void onGuiRender() {}

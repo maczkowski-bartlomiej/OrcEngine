@@ -31,16 +31,16 @@ public:
 	const LayerContext& getLayerContext() const;
 
 private:
-	void onEvent(const Event& event);
+	void onEvent(Event event);
 
 	bool m_running = false;
 
 	UniquePtr<Gui> m_gui;
 	UniquePtr<Audio> m_audio;
+	UniquePtr<Input> m_input;
 	UniquePtr<Window> m_window;
 	UniquePtr<Renderer> m_renderer;
 	UniquePtr<GameLayerManager> m_gameLayerManager;
-	UniquePtr<Input> m_input;
 	UniquePtr<LayerContext> m_layerContext;
 	UniquePtr<Scripting> m_scripting;
 

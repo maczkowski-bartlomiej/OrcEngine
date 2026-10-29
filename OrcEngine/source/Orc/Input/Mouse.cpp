@@ -2,6 +2,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Input/GlfwInputMapping.hpp"
+
 namespace orc::glfw {
 
 Mouse::Button glfwButtonToOrcButton(int glfwButton)

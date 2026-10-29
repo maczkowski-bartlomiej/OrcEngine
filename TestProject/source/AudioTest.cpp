@@ -24,6 +24,14 @@ void AudioTest::onDetach()
 
 void AudioTest::onUpdate(float deltaTime)
 {
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
+	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
+	}
 }
 
 void AudioTest::onRender()
@@ -31,27 +39,6 @@ void AudioTest::onRender()
 	m_layerContext.renderer.setClearColor(orc::Color(25, 25, 25, 255));
 	m_layerContext.renderer.beginScene(m_camera);
 	m_layerContext.renderer.endScene();
-}
-
-void AudioTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
-	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("AnimationTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
-				break;
-			default:
-				break;
-		}
-	}
 }
 
 void AudioTest::onGuiRender()

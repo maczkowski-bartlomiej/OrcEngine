@@ -25,6 +25,15 @@ void InputTest::onDetach()
 
 void InputTest::onUpdate(float deltaTime)
 {
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
+	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("Menu");
+	}
+
 	if (m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A))
 	{
 		m_player.move(-SPEED * deltaTime, 0.0f);
@@ -48,27 +57,6 @@ void InputTest::onUpdate(float deltaTime)
 	orc::Vector2f delta(mouse.x - playerPos.x, mouse.y - playerPos.y);
 	float angle = glm::degrees(glm::atan(delta.y, delta.x));
 	m_player.setRotation(angle);
-}
-
-void InputTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
-	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("CirclesTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("Menu");
-				break;
-			default:
-				break;
-		}
-	}
 }
 
 void InputTest::onRender()
@@ -99,6 +87,59 @@ void InputTest::onGuiRender()
 		ImGui::Text("x = %f", position.x);
 		ImGui::Text("y = %f", position.y);
 		ImGui::Text("rotation - %f", rotation);
+	}
+	ImGui::End();
+
+	ImGui::Begin("Input State Diagnostics");
+	{
+		ImGui::Text("--- Held Keys ---");
+		ImGui::Text("W: %s | A: %s | S: %s | D: %s | Space: %s",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::W) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::A) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::S) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::D) ? "Down" : "Up",
+					m_layerContext.input.isKeyPressed(orc::Keyboard::Key::Space) ? "Down" : "Up");
+
+		ImGui::Text("--- Key Transitions ---");
+		ImGui::Text("Space JustPressed: %s | JustReleased: %s",
+					m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Space) ? "True" : "False",
+					m_layerContext.input.wasKeyJustReleased(orc::Keyboard::Key::Space) ? "True" : "False");
+		ImGui::Text("Enter JustPressed: %s | JustReleased: %s",
+					m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Enter) ? "True" : "False",
+					m_layerContext.input.wasKeyJustReleased(orc::Keyboard::Key::Enter) ? "True" : "False");
+
+		const auto& specialKeys = m_layerContext.input.getSpecialKeys();
+		ImGui::Text("--- Modifiers (SpecialKeys) ---");
+		ImGui::Text("Alt: %s | Shift: %s | Ctrl: %s | System: %s | CapsLock: %s | NumLock: %s",
+					specialKeys.alt ? "True" : "False",
+					specialKeys.shift ? "True" : "False",
+					specialKeys.control ? "True" : "False",
+					specialKeys.system ? "True" : "False",
+					specialKeys.capsLock ? "True" : "False",
+					specialKeys.numLock ? "True" : "False");
+
+		ImGui::Text("--- Mouse Buttons ---");
+		ImGui::Text("Left   - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Left) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Left) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Left) ? "True" : "False");
+		ImGui::Text("Right  - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Right) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Right) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Right) ? "True" : "False");
+		ImGui::Text("Scroll - Held: %s | Pressed: %s | Released: %s",
+					m_layerContext.input.isMouseButtonPressed(orc::Mouse::Button::Scroll) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustPressed(orc::Mouse::Button::Scroll) ? "True" : "False",
+					m_layerContext.input.wasMouseButtonJustReleased(orc::Mouse::Button::Scroll) ? "True" : "False");
+
+		const auto& mousePos = m_layerContext.input.getMousePosition();
+		const auto mouseDelta = m_layerContext.input.getMouseDelta();
+		const auto& scrollDelta = m_layerContext.input.getMouseScrollDelta();
+
+		ImGui::Text("--- Mouse Coordinates & Deltas ---");
+		ImGui::Text("Position: (%.1f, %.1f)", mousePos.x, mousePos.y);
+		ImGui::Text("Delta:    (%.1f, %.1f)", mouseDelta.x, mouseDelta.y);
+		ImGui::Text("Scroll:   (%.1f, %.1f)", scrollDelta.x, scrollDelta.y);
 	}
 	ImGui::End();
 

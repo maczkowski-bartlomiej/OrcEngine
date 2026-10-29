@@ -121,28 +121,16 @@ void CirclesTest::onDetach()
 
 void CirclesTest::onUpdate(float deltaTime)
 {
-	m_circle11.rotate(45.0f * deltaTime);
-}
-
-void CirclesTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
 	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("InputTest");
-				break;
-			default:
-				break;
-		}
+		m_layerContext.gameLayerManager.setActiveLayer("CameraTest");
 	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("InputTest");
+	}
+
+	m_circle11.rotate(45.0f * deltaTime);
 }
 
 void CirclesTest::onRender()

@@ -12,7 +12,6 @@ public:
 	void onDetach() override;
 
 	void onUpdate(float deltaTime) override;
-	void onEvent(const orc::Event& event) override;
 
 	void onRender() override;
 	void onGuiRender() override;

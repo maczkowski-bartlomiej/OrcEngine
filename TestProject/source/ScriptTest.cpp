@@ -21,11 +21,6 @@ void ScriptTest::onUpdate(float deltaTime)
 {
 }
 
-void ScriptTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-}
-
 void ScriptTest::onRender()
 {
 }

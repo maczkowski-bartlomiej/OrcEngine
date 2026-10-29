@@ -29,12 +29,12 @@ The persistent environment context supplied to a layer via constructor injection
 _Avoid_: EngineContext, SystemRegistry, ServiceLocator
 
 **Input**:
-The engine subsystem tracking keyboard, mouse, and cursor state snapshots decoupled from window handles and platform APIs.
+The engine subsystem tracking per-frame keyboard, mouse button, modifier, cursor position, cursor delta, and scroll delta state snapshots decoupled from window handles and platform APIs.
 _Avoid_: InputManager, InputState, RawInput
 
 **Event**:
-The lightweight polymorphic base class representing discrete window, keyboard, and mouse occurrences dispatched through `onEvent` using `getType()` and `getEvent<T>()`.
-_Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage
+The pure enum class representing discrete window lifecycle occurrences (`WindowResized`, `WindowClosed`) dispatched by value through `onEvent`.
+_Avoid_: EventVariant, EventDispatcher, ActionEvent, InputMessage, PolymorphicEvent
 
 **Core**:
 The foundational Layer 0 module providing universal primitives, platform macros, memory ownership aliases, math vectors/matrices, and semantic version constants decoupled from engine lifecycle coordination.

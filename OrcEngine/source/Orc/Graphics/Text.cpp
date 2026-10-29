@@ -142,11 +142,11 @@ void Text::updateVertices() const
 		}
 
 		const Character& character = m_font->getCharacter(static_cast<unsigned char>(m_string[i]));
-		Vector2f normalizedBitmapCoordStart = aract / bitmapSize;
+		Vector2f normalizedBitmapCoordStart = character.bitmapCoordStart / bitmapSize;
 		Vector2f normalizedBitmapCoordEnd = character.bitmapCoordEnd / bitmapSize;
 
-		float width = character.bitmapCoordEnd.x - aract.x;
-		float height = character.bitmapCoordEnd.y - aract.y;
+		float width = character.bitmapCoordEnd.x - character.bitmapCoordStart.x;
+		float height = character.bitmapCoordEnd.y - character.bitmapCoordStart.y;
 
 		Vector2f glyphPos(position.x, position.y + maxAscender - character.offset.y);
 

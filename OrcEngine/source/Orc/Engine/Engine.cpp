@@ -5,19 +5,19 @@
 #include <string_view>
 #include <thread>
 
-#include <Audio/Audio.hpp>
-#include <Engine/Config.hpp>
-#include <Engine/Debug.hpp>
-#include <Engine/GameLayer.hpp>
-#include <Engine/GameLayerManager.hpp>
-#include <Engine/Logger.hpp>
-#include <Engine/ResourceHolder.hpp>
-#include <Events/Event.hpp>
-#include <Graphics/Renderer.hpp>
-#include <Graphics/Window.hpp>
-
-#include "Engine/Clock.hpp"
+#include "Audio/Audio.hpp"
 #include "Core/Core.hpp"
+#include "Engine/Clock.hpp"
+#include "Engine/Config.hpp"
+#include "Engine/Debug.hpp"
+#include "Engine/GameLayer.hpp"
+#include "Engine/GameLayerManager.hpp"
+#include "Engine/Logger.hpp"
+#include "Engine/ResourceHolder.hpp"
+#include "Events/Event.hpp"
+#include "Graphics/Renderer.hpp"
+#include "Graphics/Window.hpp"
+#include "Input/Input.hpp"
 
 namespace orc {
 
@@ -45,7 +45,9 @@ Engine::Engine(const Config& config)
 
 	m_gameLayerManager = createUniquePtr<GameLayerManager>();
 
-	m_window = createUniquePtr<Window>(config.videoSettings);
+	m_input = createUniquePtr<Input>();
+
+	m_window = createUniquePtr<Window>(config.videoSettings, *m_input);
 	m_window->setEventCallback(std::bind(&Engine::onEvent, this, std::placeholders::_1));
 
 	m_renderer = createUniquePtr<Renderer>();
@@ -54,8 +56,6 @@ Engine::Engine(const Config& config)
 	m_gui = createUniquePtr<Gui>(*m_window);
 
 	m_audio = createUniquePtr<Audio>(config.audioSettings);
-
-	m_input = createUniquePtr<Input>();
 
 	m_fontResources.loadResources(config.fontsPath);
 	m_textureResources.loadResources(config.texturesPath);
@@ -79,7 +79,6 @@ Engine::~Engine()
 	m_gameLayerManager->clear();
 
 	m_layerContext.reset();
-	m_input.reset();
 
 	m_animationResources.clear();
 	m_textureResources.clear();
@@ -89,6 +88,7 @@ Engine::~Engine()
 	m_gui.reset();
 	m_renderer.reset();
 	m_window.reset();
+	m_input.reset();
 	m_gameLayerManager.reset();
 
 	m_scripting.reset();
@@ -107,7 +107,7 @@ void Engine::run()
 
 		m_renderer->clear();
 
-		Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
+		const Ref<GameLayer>& gameLayer = m_gameLayerManager->getActiveLayer();
 		if (gameLayer)
 		{
 			gameLayer->onUpdate(elapsed);
@@ -134,22 +134,24 @@ const LayerContext& Engine::getLayerContext() const
 	return *m_layerContext;
 }
 
-void Engine::onEvent(const Event& event)
+void Engine::onEvent(Event event)
 {
-	m_input->onEvent(event);
-
-	if (event.getType() == Event::Type::WindowResized)
+	if (event == Event::WindowResized)
 	{
 		m_renderer->setViewport(m_window->getFramebufferWidth(), m_window->getFramebufferHeight());
 	}
 
-	Ref<GameLayer> gameLayer = m_gameLayerManager->getActiveLayer();
+	const Ref<GameLayer>& gameLayer = m_gameLayerManager->getActiveLayer();
 	if (gameLayer)
 	{
+		if (event == Event::WindowResized)
+		{
+			gameLayer->syncCameraWithWindow();
+		}
 		gameLayer->onEvent(event);
 	}
 
-	if (event.getType() == Event::Type::WindowClosed)
+	if (event == Event::WindowClosed)
 	{
 		m_running = false;
 	}

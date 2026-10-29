@@ -21,26 +21,13 @@ void AnimationTest::onDetach()
 
 void AnimationTest::onUpdate(float deltaTime)
 {
-}
-
-void AnimationTest::onEvent(const orc::Event& event)
-{
-	orc::GameLayer::onEvent(event);
-
-	if (event.getType() == orc::Event::Type::KeyboardKeyPressed)
+	if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Left))
 	{
-		const auto& kbPressed = orc::getEvent<orc::KeyboardKeyPressedEvent>(event);
-		switch (kbPressed.key)
-		{
-			case orc::Keyboard::Key::Left:
-				m_layerContext.gameLayerManager.setActiveLayer("SpritesTest");
-				break;
-			case orc::Keyboard::Key::Right:
-				m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
-				break;
-			default:
-				break;
-		}
+		m_layerContext.gameLayerManager.setActiveLayer("SpritesTest");
+	}
+	else if (m_layerContext.input.wasKeyJustPressed(orc::Keyboard::Key::Right))
+	{
+		m_layerContext.gameLayerManager.setActiveLayer("AudioTest");
 	}
 }
 
